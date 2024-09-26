@@ -1,20 +1,56 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { Text, View, TouchableOpacity } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import LoginScreen from './screens/LoginScreen';
+import { Svg, Path } from 'react-native-svg';
+import Toast from 'react-native-toast-message';
+import SignUpScreen from './screens/SignUpScreen';
 
 const Stack = createNativeStackNavigator();
 
 function HomeScreen({ navigation }) {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome to the Messenger!</Text>
-      <Button
-        title="Go to Login"
-        onPress={() => navigation.navigate('Login')}
-      />
-      <StatusBar style="auto" />
+    <View className="flex-1 bg-white relative">
+      <View className="absolute top-0 right-0 w-full">
+        <Svg
+          height="200"
+          width="100%"
+          viewBox="0 0 400 200"
+          preserveAspectRatio="none"
+        >
+          <Path
+            d="M-50,100 C0,-50 300,250 400,100 C400,200 100,0 -50,100 Z"
+            fill="#a855f7"
+          />
+        </Svg>
+      </View>
+
+      <View className="flex-1 items-center justify-center relative z-10">
+        <Text className="text-3xl p-2 font-bold text-purple-600 mb-4 text-center">
+          Welcome to the Messenger!
+        </Text>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('SignUp')}
+          className="border border-purple-600 px-4 py-2 rounded"
+        >
+          <Text className="text-purple-600 text-lg">Go to SignUp</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View className="absolute bottom-0 left-0 w-full">
+        <Svg
+          height="200"
+          width="100%"
+          viewBox="0 0 400 200"
+          preserveAspectRatio="none"
+        >
+          <Path
+            d="M-50,100 C0,-50 300,250 400,100 C400,200 100,0 -50,100 Z"
+            fill="#a855f7"
+          />
+        </Svg>
+      </View>
+      <StatusBar style="dark" />
     </View>
   );
 }
@@ -23,24 +59,14 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
       </Stack.Navigator>
+      <Toast position="top" topOffset={100} />
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: '#6a0dad',
-    marginBottom: 10,
-  },
-});

@@ -31,7 +31,7 @@ export default function LoginScreen({ navigation }) {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <Button title="Submit" onPress={handleLogin} />
+      <Button title="" onPress={handleLogin} />
     </View>
   );
 }
