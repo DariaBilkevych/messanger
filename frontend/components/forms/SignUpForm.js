@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, TextInput, TouchableOpacity, Text } from 'react-native';
+import PhoneInput from 'react-native-phone-number-input';
 
 const SignUpForm = ({ onSubmit, errors, formData, setFormData }) => {
   return (
@@ -30,13 +31,37 @@ const SignUpForm = ({ onSubmit, errors, formData, setFormData }) => {
         <Text className="text-red-500 text-xs mb-2">{errors.lastName}</Text>
       )}
 
-      <TextInput
-        className="border border-purple-300 p-3 mb-3 rounded-lg shadow-sm"
-        placeholder="Phone Number"
-        value={formData.phoneNumber}
-        onChangeText={(text) => setFormData({ ...formData, phoneNumber: text })}
-        keyboardType="phone-pad"
-      />
+      <View className="border border-purple-300 p-3 mb-3 rounded-lg shadow-sm">
+        <PhoneInput
+          defaultValue={formData.phoneNumber}
+          defaultCode="UA"
+          onChangeFormattedText={(text) => {
+            setFormData({ ...formData, phoneNumber: text });
+          }}
+          containerStyle={{
+            width: '100%',
+            borderColor: 'transparent',
+            padding: 0,
+            height: 50,
+          }}
+          textContainerStyle={{
+            backgroundColor: 'transparent',
+            paddingVertical: 0,
+            paddingHorizontal: 10,
+            height: 50,
+          }}
+          textInputStyle={{
+            padding: 0,
+            margin: 0,
+            height: 40,
+            fontSize: 16,
+          }}
+          codeTextStyle={{
+            fontSize: 16,
+          }}
+        />
+      </View>
+
       {errors.phoneNumber && (
         <Text className="text-red-500 text-xs mb-2">{errors.phoneNumber}</Text>
       )}
