@@ -7,6 +7,7 @@ import {
   generateRefreshToken,
 } from '../utils/generateTokens.js';
 import { setHttpOnlyCookie, clearHttpOnlyCookie } from '../utils/cookies.js';
+import { TOKEN_EXPIRATION } from '../config.js';
 
 export const signup = async (req, res) => {
   try {
@@ -39,12 +40,7 @@ export const signup = async (req, res) => {
     newUser.refreshToken = refreshToken;
     await newUser.save();
 
-    setHttpOnlyCookie(
-      res,
-      'refreshToken',
-      refreshToken,
-      7 * 24 * 60 * 60 * 1000
-    );
+    setHttpOnlyCookie(res, 'refreshToken', refreshToken, TOKEN_EXPIRATION);
 
     res.status(201).json({
       user: {
@@ -88,12 +84,7 @@ export const login = async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    setHttpOnlyCookie(
-      res,
-      'refreshToken',
-      refreshToken,
-      7 * 24 * 60 * 60 * 1000
-    );
+    setHttpOnlyCookie(res, 'refreshToken', refreshToken, TOKEN_EXPIRATION);
 
     res.status(200).json({
       message: 'Logged in successfully',
@@ -157,11 +148,7 @@ export const refreshToken = async (req, res) => {
           return res.status(403).json({ message: 'Invalid refresh token' });
         }
 
-        const accessToken = jwt.sign(
-          { userId: decoded.userId },
-          process.env.ACCESS_TOKEN_SECRET,
-          { expiresIn: '15m' }
-        );
+        const accessToken = generateAccessToken(decoded.userId);
 
         res.status(200).json({
           accessToken,
