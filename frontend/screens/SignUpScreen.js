@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import axios from '../utils/axios-config';
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
-import SignUpForm from '../components/forms/SignUpForm';
+import SignUpForm from '../components/SignUpForm/SignUpForm';
 import { signUpValidator } from '../validators/signUpValidator';
 
 const SignUpScreen = () => {
