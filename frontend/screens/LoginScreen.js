@@ -1,60 +1,57 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
+import { View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
+import { login } from '../services/authService';
+import LoginForm from '../components/authForms/LoginForm';
+import { loginValidator } from '../validators/loginValidator';
 
-export default function LoginScreen({ navigation }) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+const LoginScreen = () => {
+  const [formData, setFormData] = useState({
+    phoneNumber: '',
+    password: '',
+  });
+  const [errors, setErrors] = useState({});
+  const navigation = useNavigation();
 
-  const handleLogin = () => {
-    console.log('Email:', email);
-    console.log('Password:', password);
+  const handleLogin = async () => {
+    const newErrors = loginValidator(formData);
+    if (Object.keys(newErrors).length) {
+      setErrors(newErrors);
+      return;
+    }
 
-    navigation.navigate('Home');
+    try {
+      await login(formData);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Logged in successfully!',
+      });
+
+      navigation.navigate('Home');
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || 'Something went wrong';
+
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: errorMessage,
+      });
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        autoCorrect={false}
+    <View className="flex-1 justify-center p-6 bg-purple-50">
+      <LoginForm
+        onSubmit={handleLogin}
+        errors={errors}
+        formData={formData}
+        setFormData={setFormData}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-      />
-      <Button title="" onPress={handleLogin} />
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  title: {
-    fontSize: 28,
-    color: '#6a0dad',
-    marginBottom: 20,
-  },
-  input: {
-    width: '100%',
-    padding: 10,
-    marginVertical: 10,
-    borderWidth: 1,
-    borderColor: '#6a0dad',
-    borderRadius: 5,
-  },
-});
+export default LoginScreen;

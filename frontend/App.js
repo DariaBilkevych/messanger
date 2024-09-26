@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Svg, Path } from 'react-native-svg';
 import Toast from 'react-native-toast-message';
 import SignUpScreen from './screens/SignUpScreen';
+import LoginScreen from './screens/LoginScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,10 +31,10 @@ function HomeScreen({ navigation }) {
           Welcome to the Messenger!
         </Text>
         <TouchableOpacity
-          onPress={() => navigation.navigate('SignUp')}
+          onPress={() => navigation.navigate('Sign Up')}
           className="border border-purple-600 px-4 py-2 rounded"
         >
-          <Text className="text-purple-600 text-lg">Go to SignUp</Text>
+          <Text className="text-purple-600 text-lg">Go to Sign Up</Text>
         </TouchableOpacity>
       </View>
 
@@ -64,7 +65,8 @@ export default function App() {
           component={HomeScreen}
           options={{ headerShown: false }}
         />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="Sign Up" component={SignUpScreen} />
+        <Stack.Screen name="Login" component={LoginScreen} />
       </Stack.Navigator>
       <Toast position="top" topOffset={100} />
     </NavigationContainer>
