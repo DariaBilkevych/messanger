@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import axios from '../utils/axios-config';
 import { useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import { signUp } from '../services/authService';
 import SignUpForm from '../components/SignUpForm/SignUpForm';
 import { signUpValidator } from '../validators/signUpValidator';
 
@@ -24,7 +24,7 @@ const SignUpScreen = () => {
     }
 
     try {
-      const response = await axios.post('/auth/signup', formData);
+      await signUp(formData);
       Toast.show({
         type: 'success',
         text1: 'Success',
