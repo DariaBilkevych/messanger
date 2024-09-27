@@ -1,8 +1,12 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { refreshToken, logout } from '../services/authService';
 
 const axiosInstance = axios.create({
+  baseURL: 'http://192.168.0.104:5000/api',
+  withCredentials: true,
+});
+
+const axiosNoAuthInstance = axios.create({
   baseURL: 'http://192.168.0.104:5000/api',
   withCredentials: true,
 });
@@ -27,9 +31,9 @@ axiosInstance.interceptors.response.use(
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       try {
-        const data = await refreshToken();
-        const { accessToken } = data;
-
+        const { accessToken } = await axiosNoAuthInstance.post(
+          '/auth/refresh-token'
+        );
         await AsyncStorage.setItem('accessToken', accessToken);
 
         axiosInstance.defaults.headers.common[
@@ -39,7 +43,8 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         console.error('Token refresh failed:', refreshError);
-        await logout();
+        await axiosNoAuthInstance.post('/auth/logout');
+        await AsyncStorage.removeItem('accessToken');
         return Promise.reject(refreshError);
       }
     }
@@ -47,4 +52,4 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export default axiosInstance;
+export { axiosInstance, axiosNoAuthInstance };
