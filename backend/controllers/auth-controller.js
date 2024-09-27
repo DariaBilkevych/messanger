@@ -32,8 +32,6 @@ export const signup = async (req, res) => {
       avatar,
     });
 
-    await newUser.save();
-
     const accessToken = generateAccessToken(newUser._id);
     const refreshToken = generateRefreshToken(newUser._id);
 

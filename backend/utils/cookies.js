@@ -3,6 +3,7 @@ export const setHttpOnlyCookie = (res, cookieName, cookieValue, maxAge) => {
     httpOnly: true,
     sameSite: 'Strict',
     maxAge: maxAge,
+    secure: process.env.NODE_ENV !== 'development',
   });
 };
 
@@ -11,5 +12,6 @@ export const clearHttpOnlyCookie = (res, cookieName, maxAge) => {
     httpOnly: true,
     sameSite: 'Strict',
     maxAge: maxAge,
+    secure: process.env.NODE_ENV !== 'development',
   });
 };
