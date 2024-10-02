@@ -1,4 +1,4 @@
-import { MAX_NAME_LENGTH, MAX_PASSWORD_LENGTH } from '../../utils/constants';
+import { MAX_NAME_LENGTH, MAX_PASSWORD_LENGTH } from '../utils/constants';
 
 export const signUpValidator = (formData) => {
   const { firstName, lastName, phoneNumber, password } = formData;
@@ -15,7 +15,7 @@ export const signUpValidator = (formData) => {
     newErrors.lastName = 'Required and should be between 1 and 30 characters';
   }
   if (!phoneNumber || !/^\+?[0-9]{10,15}$/.test(phoneNumber)) {
-    newErrors.phoneNumber = 'Should be numbers between 10 to 15 digits';
+    newErrors.phoneNumber = 'Should be between 10 to 15 digits';
   }
   if (!password || password.length < MAX_PASSWORD_LENGTH) {
     newErrors.password = 'Should be at least 8 characters long';

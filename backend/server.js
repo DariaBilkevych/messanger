@@ -4,6 +4,7 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 
 import authRoutes from './routes/auth-routes.js';
+import userRoutes from './routes/user-routes.js';
 import connectToMongoDB from './db/connectToMongoDB.js';
 
 const app = express();
@@ -25,6 +26,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 
 app.listen(PORT, () => {
   connectToMongoDB();

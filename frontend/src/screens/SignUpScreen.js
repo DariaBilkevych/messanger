@@ -25,13 +25,7 @@ const SignUpScreen = () => {
 
     try {
       await signUp(formData);
-      Toast.show({
-        type: 'success',
-        text1: 'Success',
-        text2: 'User registered successfully!',
-      });
-
-      navigation.navigate('Home');
+      navigation.navigate('ChatList');
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || 'Something went wrong';
