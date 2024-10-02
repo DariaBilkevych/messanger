@@ -1,4 +1,4 @@
-import { MAX_PASSWORD_LENGTH } from '../../utils/constants';
+import { MAX_PASSWORD_LENGTH } from '../src/utils/constants';
 
 export const loginValidator = (formData) => {
   const { phoneNumber, password } = formData;

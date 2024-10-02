@@ -1,4 +1,4 @@
-import { MAX_NAME_LENGTH, MAX_PASSWORD_LENGTH } from '../../utils/constants';
+import { MAX_NAME_LENGTH, MAX_PASSWORD_LENGTH } from '../src/utils/constants';
 
 export const signUpValidator = (formData) => {
   const { firstName, lastName, phoneNumber, password } = formData;
