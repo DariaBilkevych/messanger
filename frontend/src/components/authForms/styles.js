@@ -22,6 +22,10 @@ const styles = StyleSheet.create({
   phoneInputCodeText: {
     fontSize: 16,
   },
+  passwordIcon: {
+    size: 20,
+    color: '#6B21A8',
+  },
 });
 
 export default styles;

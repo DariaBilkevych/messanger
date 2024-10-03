@@ -15,6 +15,8 @@ const LoginScreen = () => {
   const navigation = useNavigation();
 
   const handleLogin = async () => {
+    setErrors({});
+
     const newErrors = loginValidator(formData);
     if (Object.keys(newErrors).length) {
       setErrors(newErrors);
@@ -45,10 +47,9 @@ const LoginScreen = () => {
         setFormData={setFormData}
       />
       <View className="mt-4 flex-row justify-center items-center">
-        <Text className="text-purple-700">Don't have an account?</Text>
+        <Text className="text-purple-700">Don't have an account? </Text>
         <TouchableOpacity onPress={() => navigation.navigate('Sign Up')}>
           <Text className="text-purple-700 font-semibold underline">
-            {' '}
             Sign Up
           </Text>
         </TouchableOpacity>

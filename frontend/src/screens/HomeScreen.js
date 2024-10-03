@@ -20,15 +20,25 @@ const HomeScreen = ({ navigation }) => {
       </View>
 
       <View className="flex-1 items-center justify-center relative z-10">
-        <Text className="text-3xl p-2 font-bold text-purple-600 mb-4 text-center">
+        <Text className="text-3xl p-2 font-bold text-purple-600 mb-6 text-center">
           Welcome to the Messenger!
         </Text>
-        <TouchableOpacity
-          onPress={() => navigation.navigate('Sign Up')}
-          className="border border-purple-600 px-4 py-2 rounded"
-        >
-          <Text className="text-purple-600 text-lg">Go to Sign Up</Text>
-        </TouchableOpacity>
+
+        <View className="flex-row justify-center space-x-4">
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Sign Up')}
+            className="border border-purple-600 px-6 py-3 rounded"
+          >
+            <Text className="text-purple-600 text-lg">Sign Up</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Login')}
+            className="border border-purple-600 px-6 py-3 rounded"
+          >
+            <Text className="text-purple-600 text-lg">Log In</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View className="absolute bottom-0 left-0 w-full">
