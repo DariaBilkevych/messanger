@@ -15,6 +15,8 @@ const LoginScreen = () => {
   const navigation = useNavigation();
 
   const handleLogin = async () => {
+    setErrors({});
+
     const newErrors = loginValidator(formData);
     if (Object.keys(newErrors).length) {
       setErrors(newErrors);
