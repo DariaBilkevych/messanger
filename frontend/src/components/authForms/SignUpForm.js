@@ -41,7 +41,7 @@ const SignUpForm = ({ onSubmit, errors, formData, setFormData }) => {
 
       <View className="border border-purple-300 p-3 mb-3 rounded-lg shadow-sm">
         <PhoneInput
-          defaultValue={formData.phoneNumber}
+          value={formData.phoneNumber}
           defaultCode="UA"
           onChangeFormattedText={(text) => {
             setFormData({ ...formData, phoneNumber: text });

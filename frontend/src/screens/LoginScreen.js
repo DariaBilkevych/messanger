@@ -25,6 +25,9 @@ const LoginScreen = () => {
 
     try {
       await login(formData);
+
+      setFormData({ phoneNumber: '', password: '' });
+
       navigation.navigate('ChatList');
     } catch (error) {
       const errorMessage =

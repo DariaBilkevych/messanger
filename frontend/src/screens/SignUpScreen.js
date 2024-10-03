@@ -27,6 +27,14 @@ const SignUpScreen = () => {
 
     try {
       await signUp(formData);
+
+      setFormData({
+        firstName: '',
+        lastName: '',
+        phoneNumber: '',
+        password: '',
+      });
+
       navigation.navigate('ChatList');
     } catch (error) {
       const errorMessage =
