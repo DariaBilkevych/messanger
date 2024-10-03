@@ -6,6 +6,8 @@ import HomeScreen from '../screens/HomeScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ContactsScreen from '../screens/ContactsScreen';
+import { ACCESS_TOKEN_KEY } from '../utils/constants';
+import Loading from '../components/common/Loading';
 
 const Stack = createNativeStackNavigator();
 
@@ -14,10 +16,10 @@ const Navigation = () => {
 
   useEffect(() => {
     const checkUserLoggedIn = async () => {
-      const token = await AsyncStorage.getItem('accessToken');
+      const token = await AsyncStorage.getItem(ACCESS_TOKEN_KEY);
 
       if (token) {
-        setInitialRoute('ChatList');
+        setInitialRoute('Contacts');
       } else {
         setInitialRoute('Home');
       }
@@ -27,7 +29,7 @@ const Navigation = () => {
   }, []);
 
   if (initialRoute === null) {
-    return null;
+    return <Loading />;
   }
 
   return (
@@ -49,7 +51,7 @@ const Navigation = () => {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="ChatList"
+          name="Contacts"
           component={ContactsScreen}
           options={{ headerShown: false }}
         />
