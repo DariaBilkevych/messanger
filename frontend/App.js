@@ -31,7 +31,6 @@ function HomeScreen({ navigation }) {
           Welcome to the Messenger!
         </Text>
 
-        {/* Контейнер з кнопками в ряд */}
         <View className="flex-row justify-center space-x-4">
           <TouchableOpacity
             onPress={() => navigation.navigate('Sign Up')}
