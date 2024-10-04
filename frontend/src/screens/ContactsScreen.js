@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { getUserData, getUsersForSidebar } from '../services/userService';
+import {
+  getUserData,
+  getUsersForSidebar,
+  searchUsers,
+} from '../services/userService';
 import { logout } from '../services/authService';
 import Toast from 'react-native-toast-message';
 import SearchInput from '../components/common/SearchInput';
@@ -34,6 +38,19 @@ const ContactsScreen = () => {
     }
   };
 
+  const handleSearch = async (query) => {
+    try {
+      if (query) {
+        const data = await searchUsers(query);
+        setUsers(data);
+      } else {
+        await fetchUsers();
+      }
+    } catch (error) {
+      console.error('Failed to search users:', error);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -59,6 +76,10 @@ const ContactsScreen = () => {
     const unsubscribe = navigation.addListener('focus', fetchData);
     return unsubscribe;
   }, [navigation]);
+
+  useEffect(() => {
+    handleSearch(searchQuery);
+  }, [searchQuery]);
 
   if (loading) {
     return <Loading />;

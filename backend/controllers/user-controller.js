@@ -33,3 +33,33 @@ export const getUsersForSidebar = async (req, res) => {
       .json({ message: 'Something went wrong', error: error.message });
   }
 };
+
+export const searchUsers = async (req, res) => {
+  try {
+    const { query } = req.query;
+    const loggedInUser = req.user._id;
+    const regex = new RegExp(query, 'i');
+
+    const users = await User.find({
+      _id: { $ne: loggedInUser },
+      $or: [
+        { firstName: { $regex: regex } },
+        { lastName: { $regex: regex } },
+        {
+          $expr: {
+            $regexMatch: {
+              input: { $concat: ['$firstName', ' ', '$lastName'] },
+              regex: regex,
+            },
+          },
+        },
+      ],
+    }).sort({ firstName: 1 });
+
+    res.status(200).json(users);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'Something went wrong', error: error.message });
+  }
+};
