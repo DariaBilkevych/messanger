@@ -31,7 +31,7 @@ const LoginForm = ({ navigation }) => {
 
     try {
       await login(formData);
-      setFormData({ phoneNumber: '' });
+      setFormData({ phoneNumber: '', password: '' });
       phoneInputRef.current?.setState({ number: '' });
       navigation.navigate('Contacts');
     } catch (error) {
