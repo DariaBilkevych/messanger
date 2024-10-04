@@ -8,6 +8,7 @@ import LoginScreen from '../screens/LoginScreen';
 import ContactsScreen from '../screens/ContactsScreen';
 import { ACCESS_TOKEN_KEY } from '../utils/constants';
 import Loading from '../components/common/Loading';
+import { setNavigator } from '../services/navigationService';
 
 const Stack = createNativeStackNavigator();
 
@@ -33,7 +34,11 @@ const Navigation = () => {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      ref={(navigator) => {
+        setNavigator(navigator);
+      }}
+    >
       <Stack.Navigator initialRouteName={initialRoute}>
         <Stack.Screen
           name="Home"

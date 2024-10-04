@@ -1,6 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ACCESS_TOKEN_KEY } from './constants';
+import { navigate } from '../services/navigationService';
 
 const axiosInstance = axios.create({
   baseURL: 'http://192.168.0.104:5000/api',
@@ -48,18 +49,10 @@ axiosInstance.interceptors.response.use(
 
         return axiosInstance(originalRequest);
       } catch (refreshError) {
-        if (refreshError.response && refreshError.response.status === 403) {
-          console.log('Trying to logout...');
+        if (refreshError.response) {
+          await axiosNoAuthInstance.post('/auth/logout');
           await AsyncStorage.removeItem(ACCESS_TOKEN_KEY);
-
-          const tokenAfterRemoval = await AsyncStorage.getItem(
-            ACCESS_TOKEN_KEY
-          );
-          if (!tokenAfterRemoval) {
-            console.log('Token successfully removed!');
-          } else {
-            console.log('Token still exists:', tokenAfterRemoval);
-          }
+          navigate('Login');
 
           return Promise.reject(refreshError);
         }
