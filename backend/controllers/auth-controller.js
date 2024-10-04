@@ -103,7 +103,17 @@ export const logout = async (req, res) => {
       return res.status(401).json({ message: 'No token provided' });
     }
 
-    const decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    let decoded;
+    try {
+      decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
+    } catch (error) {
+      console.log('Error in logout!');
+      clearHttpOnlyCookie(res, 'refreshToken', 0);
+      return res
+        .status(403)
+        .json({ error: 'Unauthorized - invalid refresh token!' });
+    }
+
     const userId = decoded.userId;
 
     const user = await User.findById(userId);

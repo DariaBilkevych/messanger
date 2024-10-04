@@ -10,8 +10,10 @@ const protectRoute = async (req, res, next) => {
         .json({ error: 'Unauthorized - no refresh token provided!' });
     }
 
-    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-    if (!decoded) {
+    let decoded;
+    try {
+      decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    } catch (err) {
       return res
         .status(401)
         .json({ error: 'Unauthorized - invalid refresh token!' });
