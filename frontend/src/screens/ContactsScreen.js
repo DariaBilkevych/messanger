@@ -51,6 +51,10 @@ const ContactsScreen = () => {
     }
   };
 
+  const handleUserPress = (user) => {
+    navigation.navigate('Chat', { receiverId: user._id });
+  };
+
   const handleLogout = async () => {
     try {
       await logout();
@@ -89,7 +93,7 @@ const ContactsScreen = () => {
     <View className="flex-1 px-4 bg-white">
       <UserHeader user={user} onLogout={handleLogout} />
       <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <UserList users={users} />
+      <UserList users={users} onUserPress={handleUserPress} />
     </View>
   );
 };

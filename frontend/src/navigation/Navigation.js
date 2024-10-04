@@ -6,6 +6,7 @@ import HomeScreen from '../screens/HomeScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ContactsScreen from '../screens/ContactsScreen';
+import ChatScreen from '../screens/ChatScreen';
 import { ACCESS_TOKEN_KEY } from '../utils/constants';
 import Loading from '../components/common/Loading';
 
@@ -55,6 +56,7 @@ const Navigation = () => {
           component={ContactsScreen}
           options={{ headerShown: false }}
         />
+        <Stack.Screen name="Chat" component={ChatScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

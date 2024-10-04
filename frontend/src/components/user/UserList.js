@@ -1,12 +1,15 @@
 import React from 'react';
 import { FlatList, TouchableOpacity, Image, Text } from 'react-native';
 
-const UserList = ({ users }) => (
+const UserList = ({ users, onUserPress }) => (
   <FlatList
     data={users}
     keyExtractor={(user) => user._id}
     renderItem={({ item: user }) => (
-      <TouchableOpacity className="border-b border-purple-200 py-4 flex-row items-center">
+      <TouchableOpacity
+        className="border-b border-purple-200 py-4 flex-row items-center"
+        onPress={() => onUserPress(user)}
+      >
         <Image
           source={{ uri: user.avatar }}
           className="w-10 h-10 rounded-full mr-3"
