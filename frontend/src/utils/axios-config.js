@@ -1,6 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ACCESS_TOKEN_KEY } from './constants';
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from './constants';
 import { navigate } from '../services/navigationService';
 
 const axiosInstance = axios.create({
@@ -38,11 +38,23 @@ axiosInstance.interceptors.response.use(
       console.log('Access Token expired, trying to refresh...');
 
       try {
-        const { accessToken } = await axiosNoAuthInstance.post(
-          '/auth/refresh-token'
+        const storedRefreshToken = await AsyncStorage.getItem(
+          REFRESH_TOKEN_KEY
         );
 
+        if (!storedRefreshToken) {
+          throw new Error('Refresh token is missing');
+        }
+
+        const response = await axiosNoAuthInstance.post('/auth/refresh-token', {
+          token: storedRefreshToken,
+        });
+
+        const { accessToken, newRefreshToken } = response.data;
+
         await AsyncStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+        await AsyncStorage.setItem(REFRESH_TOKEN_KEY, newRefreshToken);
+
         axiosInstance.defaults.headers.common[
           'Authorization'
         ] = `Bearer ${accessToken}`;
@@ -51,9 +63,11 @@ axiosInstance.interceptors.response.use(
       } catch (refreshError) {
         if (refreshError.response) {
           await axiosNoAuthInstance.post('/auth/logout');
-          await AsyncStorage.removeItem(ACCESS_TOKEN_KEY);
-          navigate('Login');
 
+          await AsyncStorage.removeItem(ACCESS_TOKEN_KEY);
+          await AsyncStorage.removeItem(REFRESH_TOKEN_KEY);
+
+          navigate('Login');
           return Promise.reject(refreshError);
         }
       }

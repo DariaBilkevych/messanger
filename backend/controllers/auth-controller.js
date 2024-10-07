@@ -7,7 +7,6 @@ import {
   generateRefreshToken,
 } from '../utils/generateTokens.js';
 import { setHttpOnlyCookie, clearHttpOnlyCookie } from '../utils/cookies.js';
-import { TOKEN_EXPIRATION } from '../config.js';
 
 export const signup = async (req, res) => {
   try {
@@ -38,7 +37,7 @@ export const signup = async (req, res) => {
     newUser.refreshToken = refreshToken;
     await newUser.save();
 
-    setHttpOnlyCookie(res, 'refreshToken', refreshToken, TOKEN_EXPIRATION);
+    setHttpOnlyCookie(res, 'refreshToken', refreshToken);
 
     res.status(201).json({
       user: {
@@ -49,6 +48,7 @@ export const signup = async (req, res) => {
         avatar: newUser.avatar,
       },
       accessToken,
+      refreshToken,
     });
   } catch (error) {
     res
@@ -68,7 +68,7 @@ export const login = async (req, res) => {
 
     const user = await User.findOne({ phoneNumber });
     if (!user) {
-      return res.status(400).json({ message: 'User not found' });
+      return res.status(404).json({ message: 'User not found' });
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
@@ -82,11 +82,12 @@ export const login = async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    setHttpOnlyCookie(res, 'refreshToken', refreshToken, TOKEN_EXPIRATION);
+    setHttpOnlyCookie(res, 'refreshToken', refreshToken);
 
     res.status(200).json({
       message: 'Logged in successfully',
       accessToken,
+      refreshToken,
     });
   } catch (error) {
     res
@@ -99,16 +100,11 @@ export const logout = async (req, res) => {
   try {
     const token = req.cookies.refreshToken;
 
-    if (!token) {
-      clearHttpOnlyCookie(res, 'refreshToken', 0);
-      return res.status(200).json({ message: 'Logged out successfully' });
-    }
-
     let decoded;
     try {
       decoded = jwt.verify(token, process.env.REFRESH_TOKEN_SECRET);
     } catch (error) {
-      clearHttpOnlyCookie(res, 'refreshToken', 0);
+      clearHttpOnlyCookie(res, 'refreshToken');
       return res.status(200).json({
         message: 'Logged out successfully, token was expired or invalid',
       });
@@ -123,7 +119,7 @@ export const logout = async (req, res) => {
     user.refreshToken = '';
     await user.save();
 
-    clearHttpOnlyCookie(res, 'refreshToken', 0);
+    clearHttpOnlyCookie(res, 'refreshToken');
 
     res.status(200).json({ message: 'Logged out successfully' });
   } catch (error) {
@@ -136,7 +132,7 @@ export const logout = async (req, res) => {
 
 export const refreshToken = async (req, res) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
+    const refreshToken = req.body.token || req.cookies.refreshToken;
 
     if (!refreshToken) {
       return res.status(401).json({ message: 'Refresh token is required' });
@@ -150,15 +146,22 @@ export const refreshToken = async (req, res) => {
     jwt.verify(
       refreshToken,
       process.env.REFRESH_TOKEN_SECRET,
-      (err, decoded) => {
+      async (err, decoded) => {
         if (err) {
           return res.status(403).json({ message: 'Invalid refresh token' });
         }
 
         const accessToken = generateAccessToken(decoded.userId);
+        const newRefreshToken = generateRefreshToken(decoded.userId);
+
+        user.refreshToken = newRefreshToken;
+        await user.save();
+
+        setHttpOnlyCookie(res, 'refreshToken', newRefreshToken);
 
         res.status(200).json({
           accessToken,
+          newRefreshToken,
         });
       }
     );

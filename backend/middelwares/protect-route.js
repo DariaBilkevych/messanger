@@ -3,20 +3,25 @@ import User from '../models/user-model.js';
 
 const protectRoute = async (req, res, next) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) {
+    const authHeader = req.headers['authorization'];
+    const token =
+      authHeader && authHeader.startsWith('Bearer ')
+        ? authHeader.split(' ')[1]
+        : null;
+
+    if (!token) {
       return res
         .status(401)
-        .json({ error: 'Unauthorized - no refresh token provided!' });
+        .json({ error: 'Unauthorized - no access token provided!' });
     }
 
     let decoded;
     try {
-      decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+      decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
     } catch (err) {
       return res
         .status(401)
-        .json({ error: 'Unauthorized - invalid refresh token!' });
+        .json({ error: 'Unauthorized - invalid access token!' });
     }
 
     const user = await User.findById(decoded.userId).select('-password');
