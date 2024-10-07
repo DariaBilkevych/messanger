@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList } from 'react-native';
+import { View, Text } from 'react-native';
 import { getMessages } from '../services/chatService';
+import ChatHeader from '../components/chat/ChatHeader';
+import MessageList from '../components/chat/MessageList';
+import MessageInput from '../components/chat/MessageInput';
+import Loading from '../components/common/Loading';
 
 const ChatScreen = ({ route }) => {
-  const { receiverId } = route.params;
+  const { receiverId, receiverName, receiverAvatar } = route.params;
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -13,26 +18,32 @@ const ChatScreen = ({ route }) => {
         setMessages(data);
       } catch (error) {
         console.error('Failed to load messages:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchMessages();
   }, [receiverId]);
 
+  const handleMessageSent = async () => {
+    const data = await getMessages(receiverId);
+    setMessages(data);
+  };
+
   return (
-    <View className="flex-1 p-4 bg-white">
-      <Text className="text-xl font-bold mb-4">
-        Chat with User ID: {receiverId}
-      </Text>
-      <FlatList
-        data={messages}
-        renderItem={({ item }) => (
-          <View className="bg-gray-100 p-2 rounded-lg mb-2">
-            <Text className="text-black">{item.message}</Text>
-          </View>
-        )}
-        keyExtractor={(item) => item._id}
-      />
+    <View className="flex-1 bg-white">
+      <ChatHeader receiverAvatar={receiverAvatar} receiverName={receiverName} />
+      {loading ? (
+        <Loading />
+      ) : messages.length === 0 ? (
+        <View className="flex-1 justify-center items-center">
+          <Text className="text-gray-500 text-lg">No messages here</Text>
+        </View>
+      ) : (
+        <MessageList messages={messages} receiverId={receiverId} />
+      )}
+      <MessageInput receiverId={receiverId} onMessageSent={handleMessageSent} />
     </View>
   );
 };

@@ -52,7 +52,11 @@ const ContactsScreen = () => {
   };
 
   const handleUserPress = (user) => {
-    navigation.navigate('Chat', { receiverId: user._id });
+    navigation.navigate('Chat', {
+      receiverId: user._id,
+      receiverName: user.firstName + ' ' + user.lastName,
+      receiverAvatar: user.avatar,
+    });
   };
 
   const handleLogout = async () => {
