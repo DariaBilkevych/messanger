@@ -19,7 +19,7 @@ const MessageInput = ({ receiverId, onMessageSent }) => {
   };
 
   return (
-    <View className="flex-row items-center py-5 px-2 mb-5 border-t border-gray-300 bg-white">
+    <View className="flex-row items-center py-5 px-2 mb-5 border-t border-purple-200 bg-white">
       <TextInput
         value={message}
         onChangeText={setMessage}

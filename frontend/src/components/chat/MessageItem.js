@@ -6,10 +6,8 @@ const MessageItem = ({ message, isCurrentUserMessage, formattedDate }) => {
     <View className="mb-4 px-4">
       <View
         className={`p-2 rounded-lg ${
-          isCurrentUserMessage
-            ? 'bg-gray-200 mr-auto '
-            : 'bg-purple-800 ml-auto'
-        }`}
+          isCurrentUserMessage ? 'bg-gray-200 mr-auto' : 'bg-purple-800 ml-auto'
+        } max-w-[70%]`}
       >
         <Text
           className={`${

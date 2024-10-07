@@ -7,7 +7,7 @@ const ChatHeader = ({ receiverName, receiverAvatar }) => {
   const navigation = useNavigation();
 
   return (
-    <View className="flex-row items-center p-3 border-b border-gray-300 mb-5 mt-10 justify-between">
+    <View className="flex-row items-center p-3 border-b border-purple-200 mb-5 mt-10 justify-between">
       <TouchableOpacity onPress={() => navigation.goBack()}>
         <Ionicons name="chevron-back" size={24} color="black" />
       </TouchableOpacity>
