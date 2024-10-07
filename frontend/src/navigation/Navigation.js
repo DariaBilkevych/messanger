@@ -19,11 +19,12 @@ const Navigation = () => {
     const checkUserLoggedIn = async () => {
       const token = await AsyncStorage.getItem(ACCESS_TOKEN_KEY);
 
-      if (token) {
-        setInitialRoute('Contacts');
-      } else {
-        setInitialRoute('Home');
-      }
+      // if (token) {
+      //   setInitialRoute('Contacts');
+      // } else {
+      //   setInitialRoute('Home');
+      // }
+      setInitialRoute('Home');
     };
 
     checkUserLoggedIn();
