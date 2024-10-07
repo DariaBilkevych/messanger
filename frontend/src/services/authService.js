@@ -30,22 +30,3 @@ export const logout = async () => {
 
   return response.data;
 };
-
-// export const refreshToken = async () => {
-//   const storedRefreshToken = await AsyncStorage.getItem(REFRESH_TOKEN_KEY);
-
-//   if (!storedRefreshToken) {
-//     throw new Error('Refresh Token is missing');
-//   }
-
-//   const response = await axiosNoAuthInstance.post('/auth/refresh-token', {
-//     token: storedRefreshToken,
-//   });
-
-//   const { accessToken, refreshToken } = response.data;
-
-//   await AsyncStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-//   await AsyncStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-
-//   return response.data;
-// };
