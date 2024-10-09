@@ -1,20 +1,14 @@
 import React from 'react';
 import { FlatList } from 'react-native';
 import MessageItem from './MessageItem';
+import moment from 'moment-timezone';
 
 const MessageList = ({ messages, receiverId }) => {
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const options = {
-      day: '2-digit',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    };
+    const date = moment(dateString).tz('Europe/Kyiv');
 
-    const formattedDate = date.toLocaleString('en-GB', options);
-    return formattedDate.replace(' at', ',');
+    const formattedDate = date.format('D MMM, HH:mm');
+    return formattedDate;
   };
 
   return (

@@ -8,16 +8,28 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     origin: ['http://192.168.0.104:8081'],
-    method: ['GET', 'POST'],
+    methods: ['GET', 'POST'],
   },
 });
+
+export const getReceiverSocketId = (receiverId) => {
+  return userSocketMap[receiverId];
+};
+
+const userSocketMap = {};
 
 io.on('connection', (socket) => {
   console.log('User connected', socket.id);
 
+  const userId = socket.handshake.query.userId;
+  if (userId != 'undefined') {
+    userSocketMap[userId] = socket.id;
+  }
+
   // used for listening events (both on client and server)
   socket.on('disconnect', () => {
     console.log('User disconnected', socket.id);
+    delete userSocketMap[userId];
   });
 });
 
