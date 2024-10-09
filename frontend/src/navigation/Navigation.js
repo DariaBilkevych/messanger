@@ -10,25 +10,20 @@ import ChatScreen from '../screens/ChatScreen';
 import { ACCESS_TOKEN_KEY } from '../utils/constants';
 import Loading from '../components/common/Loading';
 import { setNavigator } from '../services/navigationService';
-import { SocketContextProvider } from '../context/SocketContext';
+import { useAuth } from '../context/AuthContext';
 
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
   const [initialRoute, setInitialRoute] = useState(null);
+  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
-    const checkUserLoggedIn = async () => {
-      const token = await AsyncStorage.getItem(ACCESS_TOKEN_KEY);
-
-      if (token) {
-        setInitialRoute('Contacts');
-      } else {
-        setInitialRoute('Home');
-      }
-    };
-
-    checkUserLoggedIn();
+    if (isLoggedIn) {
+      setInitialRoute('Contacts');
+    } else {
+      setInitialRoute('Home');
+    }
   }, []);
 
   if (initialRoute === null) {
@@ -36,41 +31,39 @@ const Navigation = () => {
   }
 
   return (
-    <SocketContextProvider>
-      <NavigationContainer
-        ref={(navigator) => {
-          setNavigator(navigator);
-        }}
-      >
-        <Stack.Navigator initialRouteName={initialRoute}>
-          <Stack.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Sign Up"
-            component={SignUpScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Login"
-            component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Contacts"
-            component={ContactsScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Chat"
-            component={ChatScreen}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SocketContextProvider>
+    <NavigationContainer
+      ref={(navigator) => {
+        setNavigator(navigator);
+      }}
+    >
+      <Stack.Navigator initialRouteName={initialRoute}>
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Sign Up"
+          component={SignUpScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Contacts"
+          component={ContactsScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Chat"
+          component={ChatScreen}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 };
 

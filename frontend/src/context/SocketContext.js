@@ -1,7 +1,6 @@
 import { createContext, useEffect, useState, useContext } from 'react';
 import { io } from 'socket.io-client';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ACCESS_TOKEN_KEY } from '../utils/constants';
+import { useAuth } from './AuthContext';
 import { getUserData } from '../services/userService';
 
 export const SocketContext = createContext();
@@ -11,13 +10,12 @@ export const useSocketContext = () => {
 };
 
 export const SocketContextProvider = ({ children }) => {
+  const { isLoggedIn } = useAuth();
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     const connectSocket = async () => {
-      const token = await AsyncStorage.getItem(ACCESS_TOKEN_KEY);
-
-      if (token) {
+      if (isLoggedIn) {
         const userData = await getUserData();
         const userId = userData._id;
 
@@ -38,7 +36,7 @@ export const SocketContextProvider = ({ children }) => {
     };
 
     connectSocket();
-  }, []);
+  }, [isLoggedIn]);
 
   return (
     <SocketContext.Provider value={{ socket }}>
