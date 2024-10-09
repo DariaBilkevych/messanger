@@ -1,17 +1,15 @@
-export const setHttpOnlyCookie = (res, cookieName, cookieValue, maxAge) => {
+export const setHttpOnlyCookie = (res, cookieName, cookieValue) => {
   res.cookie(cookieName, cookieValue, {
     httpOnly: true,
     sameSite: 'Strict',
-    maxAge: maxAge,
     secure: process.env.NODE_ENV !== 'development',
   });
 };
 
-export const clearHttpOnlyCookie = (res, cookieName, maxAge) => {
+export const clearHttpOnlyCookie = (res, cookieName) => {
   res.clearCookie(cookieName, {
     httpOnly: true,
     sameSite: 'Strict',
-    maxAge: maxAge,
     secure: process.env.NODE_ENV !== 'development',
   });
 };

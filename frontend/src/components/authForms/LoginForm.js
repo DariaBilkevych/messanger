@@ -1,14 +1,49 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, TextInput, TouchableOpacity, Text } from 'react-native';
 import PhoneInput from 'react-native-phone-number-input';
 import Feather from 'react-native-vector-icons/Feather';
 import styles from './styles';
+import { login } from '../../services/authService';
+import { loginValidator } from '../../validators/loginValidator';
+import Toast from 'react-native-toast-message';
 
-const LoginForm = ({ onSubmit, errors, formData, setFormData }) => {
+const LoginForm = ({ navigation }) => {
+  const [formData, setFormData] = useState({
+    phoneNumber: '',
+    password: '',
+  });
+  const [errors, setErrors] = useState({});
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const phoneInputRef = useRef(null);
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
+  };
+
+  const handleSubmit = async () => {
+    setErrors({});
+
+    const newErrors = loginValidator(formData);
+    if (Object.keys(newErrors).length) {
+      setErrors(newErrors);
+      return;
+    }
+
+    try {
+      await login(formData);
+      setFormData({ phoneNumber: '', password: '' });
+      phoneInputRef.current?.setState({ number: '' });
+      navigation.navigate('Contacts');
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || 'Something went wrong';
+
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: errorMessage,
+      });
+    }
   };
 
   return (
@@ -19,11 +54,12 @@ const LoginForm = ({ onSubmit, errors, formData, setFormData }) => {
 
       <View className="border border-purple-300 p-3 mb-3 rounded-lg shadow-sm">
         <PhoneInput
+          ref={phoneInputRef}
           defaultValue={formData.phoneNumber}
           defaultCode="UA"
-          onChangeFormattedText={(text) => {
-            setFormData({ ...formData, phoneNumber: text });
-          }}
+          onChangeFormattedText={(text) =>
+            setFormData({ ...formData, phoneNumber: text })
+          }
           containerStyle={styles.phoneInputContainer}
           textContainerStyle={styles.phoneInputTextContainer}
           textInputStyle={styles.phoneInputText}
@@ -58,7 +94,7 @@ const LoginForm = ({ onSubmit, errors, formData, setFormData }) => {
       )}
 
       <TouchableOpacity
-        onPress={onSubmit}
+        onPress={handleSubmit}
         className="bg-purple-700 p-4 rounded-lg shadow-lg"
       >
         <Text className="text-white text-center text-lg font-semibold">
