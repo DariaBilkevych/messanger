@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, TouchableOpacity, Image, Text, View } from 'react-native';
 import { getMessages } from '../../services/chatService';
 import Loading from '../common/Loading';
+import moment from 'moment-timezone';
 
 const UserList = ({ users, onUserPress }) => {
   const [usersWithLastMessage, setUsersWithLastMessage] = useState([]);
@@ -15,9 +16,8 @@ const UserList = ({ users, onUserPress }) => {
   };
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    const options = { day: '2-digit', month: 'short' };
-    return date.toLocaleDateString('en-US', options);
+    const date = moment(dateString).tz('Europe/Kyiv');
+    return date.format('D MMM');
   };
 
   useEffect(() => {

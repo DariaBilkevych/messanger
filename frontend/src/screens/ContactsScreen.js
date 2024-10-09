@@ -82,10 +82,7 @@ const ContactsScreen = () => {
     };
 
     fetchData();
-
-    const unsubscribe = navigation.addListener('focus', fetchData);
-    return unsubscribe;
-  }, [navigation]);
+  }, []);
 
   useEffect(() => {
     handleSearch(searchQuery);

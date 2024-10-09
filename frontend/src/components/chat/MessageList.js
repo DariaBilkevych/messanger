@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 import { FlatList } from 'react-native';
 import MessageItem from './MessageItem';
 import moment from 'moment-timezone';
 
-const MessageList = ({ messages, receiverId }) => {
+const MessageList = forwardRef(({ messages, receiverId }, ref) => {
   const formatDate = (dateString) => {
     const date = moment(dateString).tz('Europe/Kyiv');
 
@@ -13,6 +13,7 @@ const MessageList = ({ messages, receiverId }) => {
 
   return (
     <FlatList
+      ref={ref}
       data={messages}
       renderItem={({ item }) => {
         const isCurrentUserMessage = item.senderId === receiverId;
@@ -27,8 +28,11 @@ const MessageList = ({ messages, receiverId }) => {
         );
       }}
       keyExtractor={(item) => item._id}
+      onContentSizeChange={() => {
+        ref.current.scrollToEnd({ animated: true });
+      }}
     />
   );
-};
+});
 
 export default MessageList;

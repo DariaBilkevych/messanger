@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, Text } from 'react-native';
 import { getMessages } from '../services/chatService';
 import ChatHeader from '../components/chat/ChatHeader';
@@ -11,6 +11,7 @@ const ChatScreen = ({ route }) => {
   const { receiverId, receiverName, receiverAvatar } = route.params;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
+  const messageListRef = useRef(null);
   const { socket } = useSocketContext();
 
   useEffect(() => {
@@ -49,7 +50,11 @@ const ChatScreen = ({ route }) => {
           <Text className="text-gray-500 text-lg">No messages here</Text>
         </View>
       ) : (
-        <MessageList messages={messages} receiverId={receiverId} />
+        <MessageList
+          messages={messages}
+          receiverId={receiverId}
+          ref={messageListRef}
+        />
       )}
       <MessageInput receiverId={receiverId} onMessageSent={handleMessageSent} />
     </View>
