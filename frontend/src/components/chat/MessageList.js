@@ -6,27 +6,27 @@ import moment from 'moment-timezone';
 const MessageList = forwardRef(({ messages, receiverId }, ref) => {
   const formatDate = (dateString) => {
     const date = moment(dateString).tz('Europe/Kyiv');
+    return date.format('D MMM, HH:mm');
+  };
 
-    const formattedDate = date.format('D MMM, HH:mm');
-    return formattedDate;
+  const renderMessageItem = ({ item }) => {
+    const isCurrentUserMessage = item.senderId === receiverId;
+    const formattedDate = formatDate(item.createdAt);
+
+    return (
+      <MessageItem
+        message={item.message}
+        isCurrentUserMessage={isCurrentUserMessage}
+        formattedDate={formattedDate}
+      />
+    );
   };
 
   return (
     <FlatList
       ref={ref}
       data={messages}
-      renderItem={({ item }) => {
-        const isCurrentUserMessage = item.senderId === receiverId;
-        const formattedDate = formatDate(item.createdAt);
-
-        return (
-          <MessageItem
-            message={item.message}
-            isCurrentUserMessage={isCurrentUserMessage}
-            formattedDate={formattedDate}
-          />
-        );
-      }}
+      renderItem={renderMessageItem}
       keyExtractor={(item) => item._id}
       onContentSizeChange={() => {
         ref.current.scrollToEnd({ animated: true });

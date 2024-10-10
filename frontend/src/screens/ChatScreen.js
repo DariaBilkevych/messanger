@@ -6,12 +6,14 @@ import MessageList from '../components/chat/MessageList';
 import MessageInput from '../components/chat/MessageInput';
 import Loading from '../components/common/Loading';
 import { useSocketContext } from '../context/SocketContext';
+import { useMessageContext } from '../context/MessageContext';
 
 const ChatScreen = ({ route }) => {
   const { receiverId, receiverName, receiverAvatar } = route.params;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const messageListRef = useRef(null);
+  const { updateLastMessage } = useMessageContext();
   const { socket } = useSocketContext();
 
   useEffect(() => {
@@ -30,8 +32,8 @@ const ChatScreen = ({ route }) => {
 
     if (socket) {
       socket.on('newMessage', (newMessage) => {
-        console.log('New message received:', newMessage);
         setMessages((prevMessages) => [...prevMessages, newMessage]);
+        updateLastMessage(newMessage.receiverId, newMessage.message);
       });
     }
 

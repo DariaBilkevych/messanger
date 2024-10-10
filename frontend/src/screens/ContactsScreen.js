@@ -54,6 +54,7 @@ const ContactsScreen = () => {
   };
 
   const handleUserPress = (user) => {
+    setSearchQuery('');
     navigation.navigate('Chat', {
       receiverId: user._id,
       receiverName: user.firstName + ' ' + user.lastName,

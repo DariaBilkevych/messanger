@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { FlatList, TouchableOpacity, Image, Text, View } from 'react-native';
-import { getMessages } from '../../services/chatService';
+import { useMessageContext } from '../../context/MessageContext';
 import Loading from '../common/Loading';
 import moment from 'moment-timezone';
 
 const UserList = ({ users, onUserPress }) => {
-  const [usersWithLastMessage, setUsersWithLastMessage] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { usersWithLastMessages, fetchLastMessages, loading } =
+    useMessageContext();
 
   const truncateMessage = (message, maxLength) => {
     if (message.length > maxLength) {
@@ -21,28 +21,9 @@ const UserList = ({ users, onUserPress }) => {
   };
 
   useEffect(() => {
-    const fetchLastMessages = async () => {
-      setLoading(true);
-      const updatedUsers = await Promise.all(
-        users.map(async (user) => {
-          const messages = await getMessages(user._id);
-          const lastMessage =
-            messages.length > 0
-              ? messages[messages.length - 1]
-              : { message: 'No messages here', createdAt: null };
-
-          return {
-            ...user,
-            lastMessage: lastMessage.message,
-            lastMessageDate: lastMessage.createdAt,
-          };
-        })
-      );
-      setUsersWithLastMessage(updatedUsers);
-      setLoading(false);
-    };
-
-    fetchLastMessages();
+    if (users.length > 0) {
+      fetchLastMessages(users);
+    }
   }, [users]);
 
   if (loading) {
@@ -51,7 +32,7 @@ const UserList = ({ users, onUserPress }) => {
 
   return (
     <FlatList
-      data={usersWithLastMessage}
+      data={usersWithLastMessages}
       keyExtractor={(user) => user._id}
       renderItem={({ item: user }) => (
         <TouchableOpacity
