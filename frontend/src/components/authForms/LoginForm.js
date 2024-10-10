@@ -6,7 +6,6 @@ import styles from './styles';
 import { login } from '../../services/authService';
 import { loginValidator } from '../../validators/loginValidator';
 import Toast from 'react-native-toast-message';
-import { useAuth } from '../../context/AuthContext';
 
 const LoginForm = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -16,7 +15,6 @@ const LoginForm = ({ navigation }) => {
   const [errors, setErrors] = useState({});
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const phoneInputRef = useRef(null);
-  const { setIsLoggedIn } = useAuth();
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -32,7 +30,7 @@ const LoginForm = ({ navigation }) => {
     }
 
     try {
-      await login(formData, setIsLoggedIn);
+      await login(formData);
       setFormData({ phoneNumber: '', password: '' });
       phoneInputRef.current?.setState({ number: '' });
       navigation.navigate('Contacts');
