@@ -3,7 +3,7 @@ import { View, TextInput, TouchableOpacity } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { sendMessage } from '../../services/chatService';
 
-const MessageInput = ({ receiverId, onMessageSent }) => {
+const MessageInput = ({ receiverId }) => {
   const [message, setMessage] = useState('');
 
   const handleSend = async () => {
@@ -11,7 +11,6 @@ const MessageInput = ({ receiverId, onMessageSent }) => {
       try {
         await sendMessage(receiverId, message);
         setMessage('');
-        onMessageSent();
       } catch (error) {
         console.error('Failed to send message:', error);
       }

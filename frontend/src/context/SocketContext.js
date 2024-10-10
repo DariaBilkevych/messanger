@@ -17,7 +17,7 @@ export const SocketContextProvider = ({ children }) => {
     const connectSocket = async () => {
       if (isLoggedIn) {
         const userData = await getUserData();
-        const userId = userData._id;
+        const userId = userData.id;
 
         const socketInstance = io('http://192.168.0.104:5000', {
           query: { userId },

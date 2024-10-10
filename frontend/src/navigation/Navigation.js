@@ -10,20 +10,24 @@ import ChatScreen from '../screens/ChatScreen';
 import { ACCESS_TOKEN_KEY } from '../utils/constants';
 import Loading from '../components/common/Loading';
 import { setNavigator } from '../services/navigationService';
-import { useAuth } from '../context/AuthContext';
 
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
   const [initialRoute, setInitialRoute] = useState(null);
-  const { isLoggedIn } = useAuth();
 
   useEffect(() => {
-    if (isLoggedIn) {
-      setInitialRoute('Contacts');
-    } else {
-      setInitialRoute('Home');
-    }
+    const checkUserLoggedIn = async () => {
+      const token = await AsyncStorage.getItem(ACCESS_TOKEN_KEY);
+
+      if (token) {
+        setInitialRoute('Contacts');
+      } else {
+        setInitialRoute('Home');
+      }
+    };
+
+    checkUserLoggedIn();
   }, []);
 
   if (initialRoute === null) {

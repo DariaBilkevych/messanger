@@ -28,17 +28,15 @@ const ChatScreen = ({ route }) => {
 
     fetchMessages();
 
-    socket?.on('newMessage', (newMessage) => {
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-    });
+    if (socket) {
+      socket.on('newMessage', (newMessage) => {
+        console.log('New message received:', newMessage);
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+      });
+    }
 
     return () => socket?.off('newMessage');
-  }, [receiverId, socket, setMessages, messages]);
-
-  const handleMessageSent = async () => {
-    const data = await getMessages(receiverId);
-    setMessages(data);
-  };
+  }, [receiverId, socket, messages, setMessages]);
 
   return (
     <View className="flex-1 bg-white">
@@ -56,7 +54,7 @@ const ChatScreen = ({ route }) => {
           ref={messageListRef}
         />
       )}
-      <MessageInput receiverId={receiverId} onMessageSent={handleMessageSent} />
+      <MessageInput receiverId={receiverId} />
     </View>
   );
 };
