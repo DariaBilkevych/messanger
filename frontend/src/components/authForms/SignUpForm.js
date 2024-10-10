@@ -6,7 +6,6 @@ import styles from './styles';
 import Toast from 'react-native-toast-message';
 import { signUp } from '../../services/authService';
 import { signUpValidator } from '../../validators/signUpValidator';
-import { useAuth } from '../../context/AuthContext';
 
 const SignUpForm = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -18,7 +17,6 @@ const SignUpForm = ({ navigation }) => {
   const [errors, setErrors] = useState({});
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const phoneInputRef = React.useRef(null);
-  const { setIsLoggedIn } = useAuth();
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -34,7 +32,7 @@ const SignUpForm = ({ navigation }) => {
     }
 
     try {
-      await signUp(formData, setIsLoggedIn);
+      await signUp(formData);
       setFormData({
         firstName: '',
         lastName: '',
