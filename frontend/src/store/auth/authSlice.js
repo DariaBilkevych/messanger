@@ -19,7 +19,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(verifyAuthentication.fulfilled, (state, action) => {
-      state.isAuthenticated = action.payload; // Update authentication status
+      state.isAuthenticated = action.payload;
     });
   },
 });
@@ -28,7 +28,7 @@ export const verifyAuthentication = createAsyncThunk(
   'auth/verifyAuthentication',
   async () => {
     const token = await AsyncStorage.getItem(ACCESS_TOKEN_KEY);
-    return !!token; // Returns true if token exists, otherwise false
+    return !!token;
   }
 );
 

@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { io } from 'socket.io-client';
 import { getUserData } from '../../services/userService';
+import { SOCKET_URL } from '../../utils/constants';
 
 const initialState = {
   socket: null,
@@ -11,7 +12,6 @@ const socketSlice = createSlice({
   initialState,
   reducers: {
     setSocket(state, action) {
-      console.log('Socket set:', action.payload);
       state.socket = action.payload;
     },
     clearSocket(state) {
@@ -33,9 +33,7 @@ export const connectSocket = createAsyncThunk(
     const userData = await getUserData();
     const userId = userData.id;
 
-    console.log('Connecting socket for user:', userId);
-
-    const socketInstance = io('http://192.168.0.104:5000', {
+    const socketInstance = io(SOCKET_URL, {
       query: { userId },
     });
 

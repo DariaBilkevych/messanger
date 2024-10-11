@@ -14,7 +14,3 @@ export const store = configureStore({
       serializableCheck: false,
     }),
 });
-
-store.subscribe(() => {
-  console.log('Current state:', store.getState());
-});

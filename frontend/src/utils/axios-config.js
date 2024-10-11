@@ -59,8 +59,6 @@ axiosInstance.interceptors.response.use(
           'Authorization'
         ] = `Bearer ${accessToken}`;
 
-        console.log('Received access token:', accessToken);
-
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         if (refreshError.response) {
