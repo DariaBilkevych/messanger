@@ -12,12 +12,14 @@ import SearchInput from '../components/common/SearchInput';
 import UserList from '../components/user/UserList';
 import Loading from '../components/common/Loading';
 import UserHeader from '../components/common/UserHeader';
+import { useAuth } from '../context/AuthContext';
 
 const ContactsScreen = () => {
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const { setIsLoggedIn } = useAuth();
   const navigation = useNavigation();
 
   const fetchUserData = async () => {
@@ -51,9 +53,18 @@ const ContactsScreen = () => {
     }
   };
 
+  const handleUserPress = (user) => {
+    setSearchQuery('');
+    navigation.navigate('Chat', {
+      receiverId: user._id,
+      receiverName: user.firstName + ' ' + user.lastName,
+      receiverAvatar: user.avatar,
+    });
+  };
+
   const handleLogout = async () => {
     try {
-      await logout();
+      await logout(setIsLoggedIn);
       navigation.navigate('Login');
     } catch (error) {
       Toast.show({
@@ -72,10 +83,7 @@ const ContactsScreen = () => {
     };
 
     fetchData();
-
-    const unsubscribe = navigation.addListener('focus', fetchData);
-    return unsubscribe;
-  }, [navigation]);
+  }, []);
 
   useEffect(() => {
     handleSearch(searchQuery);
@@ -89,7 +97,7 @@ const ContactsScreen = () => {
     <View className="flex-1 px-4 bg-white">
       <UserHeader user={user} onLogout={handleLogout} />
       <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <UserList users={users} />
+      <UserList users={users} onUserPress={handleUserPress} />
     </View>
   );
 };
