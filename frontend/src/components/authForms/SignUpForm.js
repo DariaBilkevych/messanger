@@ -6,7 +6,9 @@ import styles from './styles';
 import Toast from 'react-native-toast-message';
 import { signUp } from '../../services/authService';
 import { signUpValidator } from '../../validators/signUpValidator';
-import { useAuth } from '../../context/AuthContext';
+import { useDispatch } from 'react-redux';
+import { authenticate } from '../../store/auth/authSlice';
+import { connectSocket } from '../../store/socket/socketSlice';
 
 const SignUpForm = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -18,7 +20,7 @@ const SignUpForm = ({ navigation }) => {
   const [errors, setErrors] = useState({});
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const phoneInputRef = React.useRef(null);
-  const { setIsLoggedIn } = useAuth();
+  const dispatch = useDispatch();
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -34,7 +36,9 @@ const SignUpForm = ({ navigation }) => {
     }
 
     try {
-      await signUp(formData, setIsLoggedIn);
+      await signUp(formData);
+      dispatch(authenticate());
+
       setFormData({
         firstName: '',
         lastName: '',

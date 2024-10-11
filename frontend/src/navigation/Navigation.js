@@ -7,28 +7,43 @@ import SignUpScreen from '../screens/SignUpScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ContactsScreen from '../screens/ContactsScreen';
 import ChatScreen from '../screens/ChatScreen';
-import { ACCESS_TOKEN_KEY } from '../utils/constants';
 import Loading from '../components/common/Loading';
 import { setNavigator } from '../services/navigationService';
+import { useDispatch, useSelector } from 'react-redux';
+import { authenticate, deauthenticate } from '../store/auth/authSlice';
+import { connectSocket, disconnectSocket } from '../store/socket/socketSlice';
+import { ACCESS_TOKEN_KEY } from '../utils/constants';
 
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
   const [initialRoute, setInitialRoute] = useState(null);
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   useEffect(() => {
     const checkUserLoggedIn = async () => {
       const token = await AsyncStorage.getItem(ACCESS_TOKEN_KEY);
 
       if (token) {
+        dispatch(authenticate());
         setInitialRoute('Contacts');
       } else {
+        dispatch(deauthenticate());
         setInitialRoute('Home');
       }
     };
 
     checkUserLoggedIn();
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(connectSocket());
+    } else {
+      dispatch(disconnectSocket());
+    }
+  }, [isAuthenticated]);
 
   if (initialRoute === null) {
     return <Loading />;
