@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { View, TextInput, TouchableOpacity } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { sendMessage } from '../../services/chatService';
-import { useMessageContext } from '../../context/MessageContext';
+import { updateLastMessage } from '../../store/message/messageSlice';
 
 const MessageInput = ({ receiverId }) => {
   const [message, setMessage] = useState('');
-  const { updateLastMessage } = useMessageContext();
+  const dispatch = useDispatch();
 
   const handleSend = async () => {
     if (message.trim()) {
       try {
         await sendMessage(receiverId, message);
-        updateLastMessage(receiverId, message);
+        dispatch(
+          updateLastMessage({ senderId: message.senderId, receiverId, message })
+        );
         setMessage('');
       } catch (error) {
         console.error('Failed to send message:', error);

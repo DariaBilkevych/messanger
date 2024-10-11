@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useDispatch } from 'react-redux';
 import { View, Text } from 'react-native';
 import { useSelector } from 'react-redux';
 import { getMessages } from '../services/chatService';
@@ -6,14 +7,14 @@ import ChatHeader from '../components/chat/ChatHeader';
 import MessageList from '../components/chat/MessageList';
 import MessageInput from '../components/chat/MessageInput';
 import Loading from '../components/common/Loading';
-import { useMessageContext } from '../context/MessageContext';
+import { updateLastMessage } from '../store/message/messageSlice';
 
 const ChatScreen = ({ route }) => {
   const { receiverId, receiverName, receiverAvatar } = route.params;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const messageListRef = useRef(null);
-  const { updateLastMessage } = useMessageContext();
+  const dispatch = useDispatch();
 
   const socket = useSelector((state) => state.socket.socket);
 
@@ -34,8 +35,13 @@ const ChatScreen = ({ route }) => {
     if (socket) {
       socket.on('newMessage', (newMessage) => {
         setMessages((prevMessages) => [...prevMessages, newMessage]);
-        console.log(newMessage);
-        updateLastMessage(newMessage.receiverId, newMessage.message);
+        dispatch(
+          updateLastMessage({
+            senderId: newMessage.senderId,
+            receiverId: newMessage.receiverId,
+            message: newMessage.message,
+          })
+        );
       });
     }
 
