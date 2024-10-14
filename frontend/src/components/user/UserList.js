@@ -3,7 +3,7 @@ import { FlatList, TouchableOpacity, Image, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchLastMessages } from '../../store/message/messageSlice';
 import Loading from '../common/Loading';
-import moment from 'moment-timezone';
+import { DateTime } from 'luxon';
 
 const UserList = ({ users, onUserPress }) => {
   const dispatch = useDispatch();
@@ -18,8 +18,8 @@ const UserList = ({ users, onUserPress }) => {
   };
 
   const formatDate = (dateString) => {
-    const date = moment(dateString).tz('Europe/Kyiv');
-    return date.format('D MMM');
+    const date = DateTime.fromISO(dateString, { zone: 'Europe/Kyiv' });
+    return date.toFormat('d MMM');
   };
 
   useEffect(() => {
