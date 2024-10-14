@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useDispatch } from 'react-redux';
 import { View, Text } from 'react-native';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { getMessages } from '../services/chatService';
 import ChatHeader from '../components/chat/ChatHeader';
 import MessageList from '../components/chat/MessageList';
@@ -14,9 +13,6 @@ const ChatScreen = ({ route }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const messageListRef = useRef(null);
-  const dispatch = useDispatch();
-
-  const socket = useSelector((state) => state.socket.socket);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -31,22 +27,7 @@ const ChatScreen = ({ route }) => {
     };
 
     fetchMessages();
-
-    if (socket) {
-      socket.on('newMessage', (newMessage) => {
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
-        dispatch(
-          updateLastMessage({
-            senderId: newMessage.senderId,
-            receiverId: newMessage.receiverId,
-            message: newMessage.message,
-          })
-        );
-      });
-    }
-
-    return () => socket?.off('newMessage');
-  }, [receiverId, socket, messages, setMessages, updateLastMessage]);
+  }, [receiverId, messages, setMessages, updateLastMessage]);
 
   return (
     <View className="flex-1 bg-white">

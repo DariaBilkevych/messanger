@@ -12,9 +12,10 @@ import SearchInput from '../components/common/SearchInput';
 import UserList from '../components/user/UserList';
 import Loading from '../components/common/Loading';
 import UserHeader from '../components/common/UserHeader';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { deauthenticate } from '../store/auth/authSlice';
 import { disconnectSocket } from '../store/socket/socketSlice';
+import { updateLastMessage } from '../store/message/messageSlice';
 
 const ContactsScreen = () => {
   const [user, setUser] = useState(null);
@@ -23,6 +24,8 @@ const ContactsScreen = () => {
   const [loading, setLoading] = useState(true);
   const navigation = useNavigation();
   const dispatch = useDispatch();
+
+  const socket = useSelector((state) => state.socket.socket);
 
   const fetchUserData = async () => {
     try {
@@ -93,6 +96,23 @@ const ContactsScreen = () => {
   useEffect(() => {
     handleSearch(searchQuery);
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('newMessage', (newMessage) => {
+        dispatch(
+          updateLastMessage({
+            senderId: newMessage.senderId,
+            receiverId: newMessage.receiverId,
+            message: newMessage.message,
+          })
+        );
+      });
+    }
+    return () => {
+      socket?.off('newMessage');
+    };
+  }, [socket, dispatch]);
 
   if (loading) {
     return <Loading />;

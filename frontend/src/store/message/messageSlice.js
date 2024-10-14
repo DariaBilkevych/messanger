@@ -11,15 +11,22 @@ const messageSlice = createSlice({
     updateLastMessage: (state, action) => {
       const { senderId, receiverId, message } = action.payload;
 
+      // Оновлюємо останнє повідомлення
       state.usersWithLastMessages = state.usersWithLastMessages.map((user) => {
         if (user._id === senderId || user._id === receiverId) {
           return {
             ...user,
             lastMessage: message,
-            lastMessageDate: new Date(),
+            lastMessageDate: new Date().toISOString(),
           };
         }
         return user;
+      });
+
+      state.usersWithLastMessages.sort((a, b) => {
+        if (!a.lastMessageDate) return 1;
+        if (!b.lastMessageDate) return -1;
+        return new Date(b.lastMessageDate) - new Date(a.lastMessageDate);
       });
     },
   },
@@ -38,6 +45,7 @@ const messageSlice = createSlice({
   },
 });
 
+// Функція для отримання останніх повідомлень
 export const fetchLastMessages = createAsyncThunk(
   'messages/fetchLastMessages',
   async (users) => {
@@ -56,7 +64,12 @@ export const fetchLastMessages = createAsyncThunk(
         };
       })
     );
-    return updatedUsers;
+
+    return updatedUsers.sort((a, b) => {
+      if (!a.lastMessageDate) return 1;
+      if (!b.lastMessageDate) return -1;
+      return new Date(b.lastMessageDate) - new Date(a.lastMessageDate);
+    });
   }
 );
 

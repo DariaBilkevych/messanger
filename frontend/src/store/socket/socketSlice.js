@@ -33,9 +33,13 @@ export const connectSocket = createAsyncThunk(
     const userData = await getUserData();
     const userId = userData.id;
 
-    const socketInstance = io(SOCKET_URL, {
-      query: { userId },
-    });
+    let socketInstance = getState().socket.socket;
+    if (!socketInstance) {
+      socketInstance = io(SOCKET_URL, {
+        query: { userId },
+      });
+      dispatch(setSocket(socketInstance));
+    }
 
     dispatch(setSocket(socketInstance));
 

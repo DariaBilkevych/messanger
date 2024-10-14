@@ -12,9 +12,13 @@ const MessageInput = ({ receiverId }) => {
   const handleSend = async () => {
     if (message.trim()) {
       try {
-        await sendMessage(receiverId, message);
+        const newMessage = await sendMessage(receiverId, message);
         dispatch(
-          updateLastMessage({ senderId: message.senderId, receiverId, message })
+          updateLastMessage({
+            senderId: newMessage.senderId,
+            receiverId,
+            message,
+          })
         );
         setMessage('');
       } catch (error) {
