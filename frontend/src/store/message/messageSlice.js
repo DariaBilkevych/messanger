@@ -11,7 +11,6 @@ const messageSlice = createSlice({
     updateLastMessage: (state, action) => {
       const { senderId, receiverId, message } = action.payload;
 
-      // Оновлюємо останнє повідомлення
       state.usersWithLastMessages = state.usersWithLastMessages.map((user) => {
         if (user._id === senderId || user._id === receiverId) {
           return {
@@ -45,7 +44,6 @@ const messageSlice = createSlice({
   },
 });
 
-// Функція для отримання останніх повідомлень
 export const fetchLastMessages = createAsyncThunk(
   'messages/fetchLastMessages',
   async (users) => {

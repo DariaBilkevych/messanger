@@ -8,7 +8,6 @@ import { loginValidator } from '../../validators/loginValidator';
 import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
 import { authenticate } from '../../store/auth/authSlice';
-import { connectSocket } from '../../store/socket/socketSlice';
 
 const LoginForm = ({ navigation }) => {
   const [formData, setFormData] = useState({

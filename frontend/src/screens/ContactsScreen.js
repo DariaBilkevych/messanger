@@ -73,7 +73,7 @@ const ContactsScreen = () => {
       dispatch(deauthenticate());
       dispatch(disconnectSocket());
 
-      navigation.navigate('Login');
+      navigation.replace('Login');
     } catch (error) {
       Toast.show({
         type: 'error',

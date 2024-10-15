@@ -1,12 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text } from 'react-native';
-import { useSelector, useDispatch } from 'react-redux';
 import { getMessages } from '../services/chatService';
 import ChatHeader from '../components/chat/ChatHeader';
 import MessageList from '../components/chat/MessageList';
 import MessageInput from '../components/chat/MessageInput';
 import Loading from '../components/common/Loading';
-import { updateLastMessage } from '../store/message/messageSlice';
 
 const ChatScreen = ({ route }) => {
   const { receiverId, receiverName, receiverAvatar } = route.params;
@@ -27,7 +25,7 @@ const ChatScreen = ({ route }) => {
     };
 
     fetchMessages();
-  }, [receiverId, messages, setMessages, updateLastMessage]);
+  }, [receiverId, messages, setMessages]);
 
   return (
     <View className="flex-1 bg-white">
