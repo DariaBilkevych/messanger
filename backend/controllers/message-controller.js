@@ -72,7 +72,11 @@ export const getMessages = async (req, res) => {
       return res.status(200).json([]);
     }
 
-    const messages = conversation.messages;
+    const messages = conversation.messages.map((msg) => ({
+      ...msg.toObject(),
+      messageType: msg.messageType,
+      fileData: msg.fileData,
+    }));
 
     res.status(200).json(messages);
   } catch (error) {

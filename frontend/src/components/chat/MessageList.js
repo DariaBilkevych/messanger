@@ -16,6 +16,8 @@ const MessageList = forwardRef(({ messages, receiverId }, ref) => {
     return (
       <MessageItem
         message={item.message}
+        messageType={item.messageType}
+        fileData={item.fileData}
         isCurrentUserMessage={isCurrentUserMessage}
         formattedDate={formattedDate}
       />

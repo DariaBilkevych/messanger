@@ -50,10 +50,16 @@ export const fetchLastMessages = createAsyncThunk(
     const updatedUsers = await Promise.all(
       users.map(async (user) => {
         const messages = await getMessages(user._id);
-        const lastMessage = messages[messages.length - 1] ?? {
+
+        let lastMessage = messages[messages.length - 1] ?? {
           message: 'No messages here',
           createdAt: null,
+          fileData: null,
         };
+
+        if (!lastMessage.message && lastMessage.fileData) {
+          lastMessage.message = 'Sent a file';
+        }
 
         return {
           ...user,
