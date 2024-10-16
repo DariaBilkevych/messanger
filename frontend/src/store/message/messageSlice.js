@@ -24,6 +24,21 @@ const messageSlice = createSlice({
 
       state.usersWithLastMessages = sortUsers(state.usersWithLastMessages);
     },
+    addUserWithLastMessage: (state, action) => {
+      const newUser = action.payload;
+      const userExists = state.usersWithLastMessages.find(
+        (user) => user._id === newUser._id
+      );
+      if (!userExists) {
+        state.usersWithLastMessages.push({
+          ...newUser,
+          lastMessage: 'No messages here',
+          lastMessageDate: null,
+        });
+      }
+
+      state.usersWithLastMessages = sortUsers(state.usersWithLastMessages);
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -74,5 +89,6 @@ const sortUsers = (users) => {
   });
 };
 
-export const { updateLastMessage } = messageSlice.actions;
+export const { updateLastMessage, addUserWithLastMessage } =
+  messageSlice.actions;
 export default messageSlice.reducer;

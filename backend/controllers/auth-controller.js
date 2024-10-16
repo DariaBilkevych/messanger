@@ -7,6 +7,7 @@ import {
   generateRefreshToken,
 } from '../utils/generateTokens.js';
 import { setHttpOnlyCookie, clearHttpOnlyCookie } from '../utils/cookies.js';
+import { io } from '../socket/socket.js';
 
 export const signup = async (req, res) => {
   try {
@@ -38,6 +39,13 @@ export const signup = async (req, res) => {
     await newUser.save();
 
     setHttpOnlyCookie(res, 'refreshToken', refreshToken);
+
+    io.emit('newUser', {
+      _id: newUser._id,
+      firstName: newUser.firstName,
+      lastName: newUser.lastName,
+      avatar: newUser.avatar,
+    });
 
     res.status(201).json({
       user: {

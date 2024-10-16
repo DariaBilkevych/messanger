@@ -15,7 +15,10 @@ import UserHeader from '../components/common/UserHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import { deauthenticate } from '../store/auth/authSlice';
 import { disconnectSocket } from '../store/socket/socketSlice';
-import { updateLastMessage } from '../store/message/messageSlice';
+import {
+  updateLastMessage,
+  addUserWithLastMessage,
+} from '../store/message/messageSlice';
 
 const ContactsScreen = () => {
   const [user, setUser] = useState(null);
@@ -99,6 +102,9 @@ const ContactsScreen = () => {
 
   useEffect(() => {
     if (socket) {
+      socket.on('newUser', (newUser) => {
+        dispatch(addUserWithLastMessage(newUser));
+      });
       socket.on('newMessage', (newMessage) => {
         dispatch(
           updateLastMessage({
@@ -110,6 +116,7 @@ const ContactsScreen = () => {
       });
     }
     return () => {
+      socket?.off('newUser');
       socket?.off('newMessage');
     };
   }, [socket, dispatch]);

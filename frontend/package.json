@@ -18,6 +18,7 @@
     "axios": "^1.7.7",
     "expo": "~51.0.28",
     "expo-status-bar": "~1.12.1",
+    "frontend": "file:",
     "luxon": "^3.5.0",
     "moment-timezone": "^0.5.46",
     "nativewind": "^2.0.11",
