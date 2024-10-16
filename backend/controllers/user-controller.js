@@ -23,9 +23,11 @@ export const getUserData = async (req, res) => {
 export const getUsersForSidebar = async (req, res) => {
   try {
     const loggedInUser = req.user._id;
-    const receivedUsers = await User.find({ _id: { $ne: loggedInUser } }).sort({
-      firstName: 1,
-    });
+    const receivedUsers = await User.find({ _id: { $ne: loggedInUser } })
+      .select('-password -refreshToken')
+      .sort({
+        firstName: 1,
+      });
 
     res.status(200).json(receivedUsers);
   } catch (error) {

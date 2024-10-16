@@ -22,11 +22,22 @@ const messageSlice = createSlice({
         return user;
       });
 
-      state.usersWithLastMessages.sort((a, b) => {
-        if (!a.lastMessageDate) return 1;
-        if (!b.lastMessageDate) return -1;
-        return new Date(b.lastMessageDate) - new Date(a.lastMessageDate);
-      });
+      state.usersWithLastMessages = sortUsers(state.usersWithLastMessages);
+    },
+    addUserWithLastMessage: (state, action) => {
+      const newUser = action.payload;
+      const userExists = state.usersWithLastMessages.find(
+        (user) => user._id === newUser._id
+      );
+      if (!userExists) {
+        state.usersWithLastMessages.push({
+          ...newUser,
+          lastMessage: 'No messages here',
+          lastMessageDate: null,
+        });
+      }
+
+      state.usersWithLastMessages = sortUsers(state.usersWithLastMessages);
     },
   },
   extraReducers: (builder) => {
@@ -35,7 +46,7 @@ const messageSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchLastMessages.fulfilled, (state, action) => {
-        state.usersWithLastMessages = action.payload;
+        state.usersWithLastMessages = sortUsers(action.payload);
         state.loading = false;
       })
       .addCase(fetchLastMessages.rejected, (state) => {
@@ -69,13 +80,21 @@ export const fetchLastMessages = createAsyncThunk(
       })
     );
 
-    return updatedUsers.sort((a, b) => {
-      if (!a.lastMessageDate) return 1;
-      if (!b.lastMessageDate) return -1;
-      return new Date(b.lastMessageDate) - new Date(a.lastMessageDate);
-    });
+    return sortUsers(updatedUsers);
   }
 );
 
-export const { updateLastMessage } = messageSlice.actions;
+const sortUsers = (users) => {
+  return users.sort((a, b) => {
+    if (!a.lastMessageDate && !b.lastMessageDate) {
+      return a.firstName.localeCompare(b.firstName);
+    }
+    if (!a.lastMessageDate) return 1;
+    if (!b.lastMessageDate) return -1;
+    return new Date(b.lastMessageDate) - new Date(a.lastMessageDate);
+  });
+};
+
+export const { updateLastMessage, addUserWithLastMessage } =
+  messageSlice.actions;
 export default messageSlice.reducer;

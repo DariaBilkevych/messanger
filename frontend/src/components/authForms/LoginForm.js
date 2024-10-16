@@ -36,9 +36,9 @@ const LoginForm = ({ navigation }) => {
       await login(formData);
       dispatch(authenticate());
 
+      navigation.navigate('Contacts');
       setFormData({ phoneNumber: '', password: '' });
       phoneInputRef.current?.setState({ number: '' });
-      navigation.navigate('Contacts');
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || 'Something went wrong';
