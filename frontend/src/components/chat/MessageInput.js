@@ -79,7 +79,6 @@ const MessageInput = ({ receiverId }) => {
       setFileData(base64Data);
       setFileName(fileName);
       setMessageType('file');
-      e;
       setModalVisible(true);
     } else {
       console.log('File picking was canceled.');
@@ -102,7 +101,8 @@ const MessageInput = ({ receiverId }) => {
           updateLastMessage({
             senderId: newMessage.senderId,
             receiverId,
-            message: fileData ? 'Sent a file' : message,
+            message: message,
+            messageType: finalMessageType,
           })
         );
 

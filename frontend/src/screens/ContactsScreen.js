@@ -111,6 +111,7 @@ const ContactsScreen = () => {
             senderId: newMessage.senderId,
             receiverId: newMessage.receiverId,
             message: newMessage.message,
+            messageType: newMessage.messageType,
           })
         );
       });

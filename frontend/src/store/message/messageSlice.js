@@ -9,13 +9,13 @@ const messageSlice = createSlice({
   },
   reducers: {
     updateLastMessage: (state, action) => {
-      const { senderId, receiverId, message } = action.payload;
+      const { senderId, receiverId, message, messageType } = action.payload;
 
       state.usersWithLastMessages = state.usersWithLastMessages.map((user) => {
         if (user._id === senderId || user._id === receiverId) {
           return {
             ...user,
-            lastMessage: message,
+            lastMessage: messageType !== 'text' ? 'Sent a file' : message,
             lastMessageDate: new Date().toISOString(),
           };
         }
@@ -65,10 +65,10 @@ export const fetchLastMessages = createAsyncThunk(
         let lastMessage = messages[messages.length - 1] ?? {
           message: 'No messages here',
           createdAt: null,
-          fileData: null,
+          messageType: 'text',
         };
 
-        if (!lastMessage.message && lastMessage.fileData) {
+        if (!lastMessage.message && lastMessage.messageType !== 'text') {
           lastMessage.message = 'Sent a file';
         }
 
