@@ -22,11 +22,7 @@ const messageSlice = createSlice({
         return user;
       });
 
-      state.usersWithLastMessages.sort((a, b) => {
-        if (!a.lastMessageDate) return 1;
-        if (!b.lastMessageDate) return -1;
-        return new Date(b.lastMessageDate) - new Date(a.lastMessageDate);
-      });
+      state.usersWithLastMessages = sortUsers(state.usersWithLastMessages);
     },
   },
   extraReducers: (builder) => {
@@ -35,7 +31,7 @@ const messageSlice = createSlice({
         state.loading = true;
       })
       .addCase(fetchLastMessages.fulfilled, (state, action) => {
-        state.usersWithLastMessages = action.payload;
+        state.usersWithLastMessages = sortUsers(action.payload);
         state.loading = false;
       })
       .addCase(fetchLastMessages.rejected, (state) => {
@@ -63,13 +59,20 @@ export const fetchLastMessages = createAsyncThunk(
       })
     );
 
-    return updatedUsers.sort((a, b) => {
-      if (!a.lastMessageDate) return 1;
-      if (!b.lastMessageDate) return -1;
-      return new Date(b.lastMessageDate) - new Date(a.lastMessageDate);
-    });
+    return sortUsers(updatedUsers);
   }
 );
+
+const sortUsers = (users) => {
+  return users.sort((a, b) => {
+    if (!a.lastMessageDate && !b.lastMessageDate) {
+      return a.firstName.localeCompare(b.firstName);
+    }
+    if (!a.lastMessageDate) return 1;
+    if (!b.lastMessageDate) return -1;
+    return new Date(b.lastMessageDate) - new Date(a.lastMessageDate);
+  });
+};
 
 export const { updateLastMessage } = messageSlice.actions;
 export default messageSlice.reducer;
