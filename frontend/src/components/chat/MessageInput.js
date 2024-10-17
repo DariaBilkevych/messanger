@@ -1,20 +1,16 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import {
-  View,
-  TextInput,
-  TouchableOpacity,
-  Alert,
-  Text,
-  Modal,
-} from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, Modal } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { sendMessage } from '../../services/chatService';
 import { updateLastMessage } from '../../store/message/messageSlice';
-import * as ImagePicker from 'expo-image-picker';
-import * as DocumentPicker from 'expo-document-picker';
-import * as FileSystem from 'expo-file-system';
-import * as ImageManipulator from 'expo-image-manipulator';
+import Toast from 'react-native-toast-message';
+import {
+  pickMedia,
+  readFileAsBase64,
+  resizeImage,
+  checkFileSize,
+} from '../../utils/fileUtils';
 
 const MessageInput = ({ receiverId }) => {
   const [message, setMessage] = useState('');
@@ -23,67 +19,6 @@ const MessageInput = ({ receiverId }) => {
   const [messageType, setMessageType] = useState('text');
   const [modalVisible, setModalVisible] = useState(false);
   const dispatch = useDispatch();
-
-  const pickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      const fileSize = result.assets[0].fileSize;
-      const maxSize = 5 * 1024 * 1024;
-
-      if (fileSize > maxSize) {
-        Alert.alert('File size exceeds the limit of 5 MB.');
-        return;
-      }
-
-      const uri = result.assets[0].uri;
-      const manipulatedResult = await ImageManipulator.manipulateAsync(
-        uri,
-        [{ resize: { width: 800 } }],
-        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
-      );
-
-      const base64Data = await FileSystem.readAsStringAsync(
-        manipulatedResult.uri,
-        {
-          encoding: FileSystem.EncodingType.Base64,
-        }
-      );
-
-      setFileData(base64Data);
-      setFileName(result.assets[0].filename || 'selected_image.jpg');
-      setMessageType('image');
-      setModalVisible(true);
-    } else {
-      console.log('Image picking was canceled.');
-    }
-  };
-
-  const pickFile = async () => {
-    const result = await DocumentPicker.getDocumentAsync({
-      type: '*/*',
-    });
-
-    if (!result.canceled) {
-      const fileUri = result.assets[0].uri;
-      const fileName = result.assets[0].name;
-
-      const base64Data = await FileSystem.readAsStringAsync(fileUri, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-
-      setFileData(base64Data);
-      setFileName(fileName);
-      setMessageType('file');
-      setModalVisible(true);
-    } else {
-      console.log('File picking was canceled.');
-    }
-  };
 
   const handleSend = async () => {
     if (message.trim() || fileData) {
@@ -111,8 +46,43 @@ const MessageInput = ({ receiverId }) => {
         setFileName(null);
         setMessageType('text');
       } catch (error) {
-        console.error('Failed to send message:', error);
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Could not send the message.',
+        });
       }
+    }
+  };
+
+  const pickImage = async () => {
+    const result = await pickMedia('image');
+    if (!result.canceled) {
+      const fileSize = result.assets[0].fileSize;
+      if (!checkFileSize(fileSize)) return;
+
+      const manipulatedResult = await resizeImage(result.assets[0].uri);
+      const base64Data = await readFileAsBase64(manipulatedResult.uri);
+
+      setFileData(base64Data);
+      setFileName(result.assets[0].fileName || 'selected_image.jpg');
+      setMessageType('image');
+      setModalVisible(true);
+    }
+  };
+
+  const pickFile = async () => {
+    const result = await pickMedia('file');
+    if (!result.canceled) {
+      const fileSize = result.assets[0].size;
+      if (!checkFileSize(fileSize)) return;
+
+      const base64Data = await readFileAsBase64(result.assets[0].uri);
+
+      setFileData(base64Data);
+      setFileName(result.assets[0].name);
+      setMessageType('file');
+      setModalVisible(true);
     }
   };
 

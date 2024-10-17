@@ -15,7 +15,7 @@ const messageSlice = createSlice({
         if (user._id === senderId || user._id === receiverId) {
           return {
             ...user,
-            lastMessage: messageType !== 'text' ? 'Sent a file' : message,
+            lastMessage: formatMessageByType(message, messageType),
             lastMessageDate: new Date().toISOString(),
           };
         }
@@ -68,9 +68,10 @@ export const fetchLastMessages = createAsyncThunk(
           messageType: 'text',
         };
 
-        if (!lastMessage.message && lastMessage.messageType !== 'text') {
-          lastMessage.message = 'Sent a file';
-        }
+        lastMessage.message = formatMessageByType(
+          lastMessage.message,
+          lastMessage.messageType
+        );
 
         return {
           ...user,
@@ -93,6 +94,15 @@ const sortUsers = (users) => {
     if (!b.lastMessageDate) return -1;
     return new Date(b.lastMessageDate) - new Date(a.lastMessageDate);
   });
+};
+
+const formatMessageByType = (message, messageType) => {
+  if (!message && messageType === 'file') {
+    return 'Sent a file';
+  } else if (!message && messageType === 'image') {
+    return 'Sent an image';
+  }
+  return message;
 };
 
 export const { updateLastMessage, addUserWithLastMessage } =
