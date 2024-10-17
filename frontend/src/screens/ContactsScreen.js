@@ -29,6 +29,9 @@ const ContactsScreen = () => {
   const dispatch = useDispatch();
 
   const socket = useSelector((state) => state.socket.socket);
+  const usersWithLastMessages = useSelector(
+    (state) => state.messages.usersWithLastMessages
+  );
 
   const fetchUserData = async () => {
     try {
@@ -102,22 +105,28 @@ const ContactsScreen = () => {
 
   useEffect(() => {
     if (socket) {
-      socket.on('newUser', (newUser) => {
-        dispatch(addUserWithLastMessage(newUser));
-      });
       socket.on('newMessage', (newMessage) => {
+        console.log('Received newMessage event:', newMessage);
         dispatch(
           updateLastMessage({
-            senderId: newMessage.senderId,
-            receiverId: newMessage.receiverId,
+            senderId: newMessage.senderId._id,
+            receiverId: newMessage.receiverId._id,
             message: newMessage.message,
           })
         );
       });
+      socket.on('addUser', (newUser) => {
+        const userExists = usersWithLastMessages.find(
+          (user) => user._id === newUser._id
+        );
+        if (!userExists) {
+          dispatch(addUserWithLastMessage(newUser));
+        }
+      });
     }
     return () => {
-      socket?.off('newUser');
       socket?.off('newMessage');
+      socket?.off('adduser');
     };
   }, [socket, dispatch]);
 

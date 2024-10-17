@@ -15,7 +15,7 @@ const MessageInput = ({ receiverId }) => {
         const newMessage = await sendMessage(receiverId, message);
         dispatch(
           updateLastMessage({
-            senderId: newMessage.senderId,
+            senderId: newMessage.senderId._id,
             receiverId,
             message,
           })
