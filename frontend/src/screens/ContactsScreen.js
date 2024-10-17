@@ -29,9 +29,6 @@ const ContactsScreen = () => {
   const dispatch = useDispatch();
 
   const socket = useSelector((state) => state.socket.socket);
-  const usersWithLastMessages = useSelector(
-    (state) => state.messages.usersWithLastMessages
-  );
 
   const fetchUserData = async () => {
     try {
@@ -116,12 +113,7 @@ const ContactsScreen = () => {
         );
       });
       socket.on('addUser', (newUser) => {
-        const userExists = usersWithLastMessages.find(
-          (user) => user._id === newUser._id
-        );
-        if (!userExists) {
-          dispatch(addUserWithLastMessage(newUser));
-        }
+        dispatch(addUserWithLastMessage(newUser));
       });
     }
     return () => {
