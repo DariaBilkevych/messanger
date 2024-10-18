@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import {
   getUserData,
   getUsersForSidebar,
@@ -25,9 +25,11 @@ const ContactsScreen = () => {
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const navigation = useNavigation();
-  const dispatch = useDispatch();
 
+  const navigation = useNavigation();
+  const isFocused = useIsFocused();
+
+  const dispatch = useDispatch();
   const socket = useSelector((state) => state.socket.socket);
 
   const fetchUserData = async () => {
@@ -97,28 +99,34 @@ const ContactsScreen = () => {
   }, []);
 
   useEffect(() => {
+    if (isFocused) {
+      fetchUsers();
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
     handleSearch(searchQuery);
   }, [searchQuery]);
 
   useEffect(() => {
     if (socket) {
-      socket.on('newUser', (newUser) => {
-        dispatch(addUserWithLastMessage(newUser));
-      });
       socket.on('newMessage', (newMessage) => {
         dispatch(
           updateLastMessage({
-            senderId: newMessage.senderId,
-            receiverId: newMessage.receiverId,
+            senderId: newMessage.senderId._id,
+            receiverId: newMessage.receiverId._id,
             message: newMessage.message,
             messageType: newMessage.messageType,
           })
         );
       });
+      socket.on('addUser', (newUser) => {
+        dispatch(addUserWithLastMessage(newUser));
+      });
     }
     return () => {
-      socket?.off('newUser');
       socket?.off('newMessage');
+      socket?.off('adduser');
     };
   }, [socket, dispatch]);
 

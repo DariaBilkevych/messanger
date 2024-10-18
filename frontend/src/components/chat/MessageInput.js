@@ -34,7 +34,7 @@ const MessageInput = ({ receiverId }) => {
 
         dispatch(
           updateLastMessage({
-            senderId: newMessage.senderId,
+            senderId: newMessage.senderId._id,
             receiverId,
             message: message,
             messageType: finalMessageType,

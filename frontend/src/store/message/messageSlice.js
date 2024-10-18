@@ -29,11 +29,12 @@ const messageSlice = createSlice({
       const userExists = state.usersWithLastMessages.find(
         (user) => user._id === newUser._id
       );
+
       if (!userExists) {
         state.usersWithLastMessages.push({
           ...newUser,
-          lastMessage: 'No messages here',
-          lastMessageDate: null,
+          lastMessage: newUser.lastMessage || 'No messages here',
+          lastMessageDate: new Date().toISOString() || null,
         });
       }
 

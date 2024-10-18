@@ -1,6 +1,7 @@
 import Conversation from '../models/conversation-model.js';
+import User from '../models/user-model.js';
 import Message from '../models/message-model.js';
-import { getReceiverSocketId } from '../socket/socket.js';
+import { getReceiverSocketId, getSenderSocketId } from '../socket/socket.js';
 import { io } from '../socket/socket.js';
 import { MAX_FILE_SIZE } from '../utils/constants.js';
 
@@ -44,10 +45,26 @@ export const sendMessage = async (req, res) => {
 
     await Promise.all([conversation.save(), newMessage.save()]);
 
+    const populatedMessage = await Message.findById(newMessage._id)
+      .populate('senderId', 'firstName lastName avatar')
+      .populate('receiverId', 'firstName lastName avatar');
+
     const receiverSocketId = getReceiverSocketId(receiverId);
+
     if (receiverSocketId) {
-      // used to send events to specific client
-      io.to(receiverSocketId).emit('newMessage', newMessage);
+      io.to(receiverSocketId).emit('newMessage', populatedMessage);
+
+      const senderSocketId = getSenderSocketId(senderId);
+
+      if (senderSocketId) {
+        io.to(receiverSocketId).emit('addUser', {
+          _id: senderId,
+          firstName: populatedMessage.senderId.firstName,
+          lastName: populatedMessage.senderId.lastName,
+          avatar: populatedMessage.senderId.avatar,
+          lastMessage: populatedMessage.message,
+        });
+      }
     }
 
     res.status(201).json(newMessage);
