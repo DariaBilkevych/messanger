@@ -37,7 +37,6 @@ export const sendMessage = async (req, res) => {
       .populate('receiverId', 'firstName lastName avatar');
 
     const receiverSocketId = getReceiverSocketId(receiverId);
-    console.log('Receiver socket ID:', receiverSocketId);
 
     if (receiverSocketId) {
       io.to(receiverSocketId).emit('newMessage', populatedMessage);
@@ -53,13 +52,6 @@ export const sendMessage = async (req, res) => {
           lastMessage: populatedMessage.message,
         });
       }
-      console.log('Sent addUser event:', {
-        _id: senderId,
-        firstName: populatedMessage.senderId.firstName,
-        lastName: populatedMessage.senderId.lastName,
-        avatar: populatedMessage.senderId.avatar,
-        lastMessage: populatedMessage.message,
-      });
     }
 
     res.status(201).json(newMessage);
