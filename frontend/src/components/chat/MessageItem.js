@@ -1,8 +1,16 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  Modal,
+  TouchableWithoutFeedback,
+} from 'react-native';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import Toast from 'react-native-toast-message';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const MessageItem = ({
   message,
@@ -11,6 +19,8 @@ const MessageItem = ({
   isCurrentUserMessage,
   formattedDate,
 }) => {
+  const [modalVisible, setModalVisible] = useState(false);
+
   const messageContainerStyle = isCurrentUserMessage
     ? 'bg-gray-200 mr-auto'
     : 'bg-purple-800 ml-auto';
@@ -37,17 +47,23 @@ const MessageItem = ({
     }
   };
 
+  const handleImagePress = () => {
+    setModalVisible(true);
+  };
+
   return (
     <View className="mb-4 px-4">
       <View className={`p-2 rounded-lg ${messageContainerStyle} max-w-[70%]`}>
         {messageType === 'text' ? (
           <Text className={`${messageTextStyle} text-base`}>{message}</Text>
         ) : messageType === 'image' ? (
-          <Image
-            source={{ uri: `data:image/jpeg;base64,${fileData}` }}
-            style={{ width: 200, height: 200 }}
-            resizeMode="contain"
-          />
+          <TouchableOpacity onPress={handleImagePress}>
+            <Image
+              source={{ uri: `data:image/jpeg;base64,${fileData}` }}
+              style={{ width: 200, height: 200 }}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
         ) : (
           <TouchableOpacity onPress={handleOpenFile}>
             <Text className={`${messageTextStyle} text-base underline`}>
@@ -57,6 +73,27 @@ const MessageItem = ({
         )}
       </View>
       <Text className={`${timestampStyle} text-xs mt-1`}>{formattedDate}</Text>
+      <Modal
+        transparent={true}
+        animationType="slide"
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+          <View className="flex-1 justify-center items-center bg-black">
+            <TouchableOpacity
+              className="absolute top-10 right-2 p-2"
+              onPress={() => setModalVisible(false)}
+            >
+              <MaterialIcons name="close" size={20} color="white" />
+            </TouchableOpacity>
+            <Image
+              source={{ uri: `data:image/jpeg;base64,${fileData}` }}
+              style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
+            />
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 };

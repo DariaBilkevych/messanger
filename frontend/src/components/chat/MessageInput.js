@@ -49,7 +49,7 @@ const MessageInput = ({ receiverId }) => {
         Toast.show({
           type: 'error',
           text1: 'Error',
-          text2: 'Could not send the message.',
+          text2: 'Could not send the message. Try another one, please.',
         });
       }
     }
