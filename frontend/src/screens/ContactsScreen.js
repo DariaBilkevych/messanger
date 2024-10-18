@@ -23,6 +23,8 @@ import {
 const ContactsScreen = () => {
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
+  const [lastUsers, setLastUsers] = useState([]);
+  const [initialLoad, setInitialLoad] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -44,7 +46,11 @@ const ContactsScreen = () => {
   const fetchUsers = async () => {
     try {
       const data = await getUsersForSidebar();
-      setUsers(data);
+      if (initialLoad || JSON.stringify(data) !== JSON.stringify(lastUsers)) {
+        setUsers(data);
+        setLastUsers(data);
+        setInitialLoad(false);
+      }
     } catch (error) {
       console.error('Failed to load users:', error);
     }
