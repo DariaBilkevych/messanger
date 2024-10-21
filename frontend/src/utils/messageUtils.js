@@ -8,3 +8,12 @@ export const sortUsers = (users) => {
     return new Date(b.lastMessageDate) - new Date(a.lastMessageDate);
   });
 };
+
+export const formatMessageByType = (message, messageType) => {
+  if (!message && messageType === 'file') {
+    return 'Sent a file';
+  } else if (!message && messageType === 'image') {
+    return 'Sent an image';
+  }
+  return message;
+};
