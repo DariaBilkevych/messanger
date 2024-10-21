@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { fetchLastMessages } from '../../utils/messageThunks';
-import { sortUsers } from '../../utils/messageUtils';
+import { sortUsers, formatMessageByType } from '../../utils/messageUtils';
 
 const messageSlice = createSlice({
   name: 'messages',
