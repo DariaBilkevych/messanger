@@ -40,13 +40,6 @@ export const signup = async (req, res) => {
 
     setHttpOnlyCookie(res, 'refreshToken', refreshToken);
 
-    // io.emit('newUser', {
-    //   _id: newUser._id,
-    //   firstName: newUser.firstName,
-    //   lastName: newUser.lastName,
-    //   avatar: newUser.avatar,
-    // });
-
     res.status(201).json({
       user: {
         id: newUser._id,

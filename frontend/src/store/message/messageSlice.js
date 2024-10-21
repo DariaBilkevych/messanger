@@ -1,5 +1,6 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { getMessages } from '../../services/chatService';
+import { createSlice } from '@reduxjs/toolkit';
+import { fetchLastMessages } from '../../utils/messageThunks';
+import { sortUsers } from '../../utils/messageUtils';
 
 const messageSlice = createSlice({
   name: 'messages',
@@ -55,56 +56,6 @@ const messageSlice = createSlice({
       });
   },
 });
-
-export const fetchLastMessages = createAsyncThunk(
-  'messages/fetchLastMessages',
-  async (users) => {
-    const updatedUsers = await Promise.all(
-      users.map(async (user) => {
-        const messages = await getMessages(user._id);
-
-        let lastMessage = messages[messages.length - 1] ?? {
-          message: 'No messages here',
-          createdAt: null,
-          messageType: 'text',
-        };
-
-        lastMessage.message = formatMessageByType(
-          lastMessage.message,
-          lastMessage.messageType
-        );
-
-        return {
-          ...user,
-          lastMessage: lastMessage.message,
-          lastMessageDate: lastMessage.createdAt,
-        };
-      })
-    );
-
-    return sortUsers(updatedUsers);
-  }
-);
-
-const sortUsers = (users) => {
-  return users.sort((a, b) => {
-    if (!a.lastMessageDate && !b.lastMessageDate) {
-      return a.firstName.localeCompare(b.firstName);
-    }
-    if (!a.lastMessageDate) return 1;
-    if (!b.lastMessageDate) return -1;
-    return new Date(b.lastMessageDate) - new Date(a.lastMessageDate);
-  });
-};
-
-const formatMessageByType = (message, messageType) => {
-  if (!message && messageType === 'file') {
-    return 'Sent a file';
-  } else if (!message && messageType === 'image') {
-    return 'Sent an image';
-  }
-  return message;
-};
 
 export const { updateLastMessage, addUserWithLastMessage } =
   messageSlice.actions;
