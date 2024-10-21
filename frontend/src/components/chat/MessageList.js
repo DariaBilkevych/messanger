@@ -1,12 +1,12 @@
 import React, { forwardRef } from 'react';
 import { FlatList } from 'react-native';
 import MessageItem from './MessageItem';
-import moment from 'moment-timezone';
+import { DateTime } from 'luxon';
 
 const MessageList = forwardRef(({ messages, receiverId }, ref) => {
   const formatDate = (dateString) => {
-    const date = moment(dateString).tz('Europe/Kyiv');
-    return date.format('D MMM, HH:mm');
+    const date = DateTime.fromISO(dateString, { zone: 'Europe/Kyiv' });
+    return date.toFormat('d MMM, HH:mm');
   };
 
   const renderMessageItem = ({ item }) => {

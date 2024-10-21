@@ -7,6 +7,7 @@ import {
   generateRefreshToken,
 } from '../utils/generateTokens.js';
 import { setHttpOnlyCookie, clearHttpOnlyCookie } from '../utils/cookies.js';
+import { io } from '../socket/socket.js';
 
 export const signup = async (req, res) => {
   try {

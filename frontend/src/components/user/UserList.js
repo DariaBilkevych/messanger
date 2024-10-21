@@ -1,30 +1,30 @@
 import React, { useEffect } from 'react';
 import { FlatList, TouchableOpacity, Image, Text, View } from 'react-native';
-import { useMessageContext } from '../../context/MessageContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchLastMessages } from '../../store/message/messageSlice';
 import Loading from '../common/Loading';
-import moment from 'moment-timezone';
+import { DateTime } from 'luxon';
 
 const UserList = ({ users, onUserPress }) => {
-  const { usersWithLastMessages, fetchLastMessages, loading } =
-    useMessageContext();
+  const dispatch = useDispatch();
+  const { usersWithLastMessages, loading } = useSelector(
+    (state) => state.messages
+  );
 
   const truncateMessage = (message, maxLength) => {
-    if (message.length > maxLength) {
-      return message.substring(0, maxLength) + '...';
-    }
-    return message;
+    return message.length > maxLength
+      ? message.substring(0, maxLength) + '...'
+      : message;
   };
 
   const formatDate = (dateString) => {
-    const date = moment(dateString).tz('Europe/Kyiv');
-    return date.format('D MMM');
+    const date = DateTime.fromISO(dateString, { zone: 'Europe/Kyiv' });
+    return date.toFormat('d MMM');
   };
 
   useEffect(() => {
-    if (users.length > 0) {
-      fetchLastMessages(users);
-    }
-  }, [users]);
+    dispatch(fetchLastMessages(users));
+  }, [users, dispatch]);
 
   if (loading) {
     return <Loading />;
@@ -59,9 +59,11 @@ const UserList = ({ users, onUserPress }) => {
           )}
         </TouchableOpacity>
       )}
-      ListEmptyComponent={() => (
-        <Text className="text-center text-purple-900">No users found</Text>
-      )}
+      ListEmptyComponent={() =>
+        !usersWithLastMessages.length && (
+          <Text className="text-center text-purple-900">No users found</Text>
+        )
+      }
     />
   );
 };

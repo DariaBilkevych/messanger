@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import {
   getUserData,
   getUsersForSidebar,
@@ -12,15 +12,27 @@ import SearchInput from '../components/common/SearchInput';
 import UserList from '../components/user/UserList';
 import Loading from '../components/common/Loading';
 import UserHeader from '../components/common/UserHeader';
-import { useAuth } from '../context/AuthContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { deauthenticate } from '../store/auth/authSlice';
+import { disconnectSocket } from '../store/socket/socketSlice';
+import {
+  updateLastMessage,
+  addUserWithLastMessage,
+} from '../store/message/messageSlice';
 
 const ContactsScreen = () => {
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
+  const [lastUsers, setLastUsers] = useState([]);
+  const [initialLoad, setInitialLoad] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const { setIsLoggedIn } = useAuth();
+
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
+
+  const dispatch = useDispatch();
+  const socket = useSelector((state) => state.socket.socket);
 
   const fetchUserData = async () => {
     try {
@@ -34,7 +46,11 @@ const ContactsScreen = () => {
   const fetchUsers = async () => {
     try {
       const data = await getUsersForSidebar();
-      setUsers(data);
+      if (initialLoad || JSON.stringify(data) !== JSON.stringify(lastUsers)) {
+        setUsers(data);
+        setLastUsers(data);
+        setInitialLoad(false);
+      }
     } catch (error) {
       console.error('Failed to load users:', error);
     }
@@ -64,8 +80,11 @@ const ContactsScreen = () => {
 
   const handleLogout = async () => {
     try {
-      await logout(setIsLoggedIn);
-      navigation.navigate('Login');
+      await logout();
+      dispatch(deauthenticate());
+      dispatch(disconnectSocket());
+
+      navigation.replace('Login');
     } catch (error) {
       Toast.show({
         type: 'error',
@@ -86,8 +105,35 @@ const ContactsScreen = () => {
   }, []);
 
   useEffect(() => {
+    if (isFocused) {
+      fetchUsers();
+    }
+  }, [isFocused]);
+
+  useEffect(() => {
     handleSearch(searchQuery);
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('newMessage', (newMessage) => {
+        dispatch(
+          updateLastMessage({
+            senderId: newMessage.senderId._id,
+            receiverId: newMessage.receiverId._id,
+            message: newMessage.message,
+          })
+        );
+      });
+      socket.on('addUser', (newUser) => {
+        dispatch(addUserWithLastMessage(newUser));
+      });
+    }
+    return () => {
+      socket?.off('newMessage');
+      socket?.off('adduser');
+    };
+  }, [socket, dispatch]);
 
   if (loading) {
     return <Loading />;

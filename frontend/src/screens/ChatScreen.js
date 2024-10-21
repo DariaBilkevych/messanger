@@ -5,16 +5,12 @@ import ChatHeader from '../components/chat/ChatHeader';
 import MessageList from '../components/chat/MessageList';
 import MessageInput from '../components/chat/MessageInput';
 import Loading from '../components/common/Loading';
-import { useSocketContext } from '../context/SocketContext';
-import { useMessageContext } from '../context/MessageContext';
 
 const ChatScreen = ({ route }) => {
   const { receiverId, receiverName, receiverAvatar } = route.params;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const messageListRef = useRef(null);
-  const { updateLastMessage } = useMessageContext();
-  const { socket } = useSocketContext();
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -29,16 +25,7 @@ const ChatScreen = ({ route }) => {
     };
 
     fetchMessages();
-
-    if (socket) {
-      socket.on('newMessage', (newMessage) => {
-        setMessages((prevMessages) => [...prevMessages, newMessage]);
-        updateLastMessage(newMessage.receiverId, newMessage.message);
-      });
-    }
-
-    return () => socket?.off('newMessage');
-  }, [receiverId, socket, messages, setMessages]);
+  }, [receiverId, messages, setMessages]);
 
   return (
     <View className="flex-1 bg-white">
