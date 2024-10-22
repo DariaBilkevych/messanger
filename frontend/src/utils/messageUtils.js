@@ -15,5 +15,11 @@ export const formatMessageByType = (message, messageType) => {
   } else if (!message && messageType === 'image') {
     return 'Sent an image';
   }
-  return message;
+
+  let formattedMessage = message
+    .split('\n')
+    .filter((line) => line.trim() !== '')
+    .join(' ');
+
+  return formattedMessage;
 };

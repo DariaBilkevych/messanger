@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import { FlatList } from 'react-native';
 import MessageItem from './MessageItem';
 import { DateTime } from 'luxon';
@@ -23,6 +23,12 @@ const MessageList = forwardRef(({ messages, receiverId }, ref) => {
       />
     );
   };
+
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.scrollToEnd({ animated: true });
+    }
+  }, [messages]);
 
   return (
     <FlatList

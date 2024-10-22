@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { View, TextInput, TouchableOpacity, Text, Modal } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { sendMessage } from '../../services/chatService';
-import { updateLastMessage } from '../../store/message/messageSlice';
 import Toast from 'react-native-toast-message';
 import {
   pickMedia,
@@ -11,9 +8,13 @@ import {
   resizeImage,
   checkFileSize,
 } from '../../utils/fileUtils';
+import { sendMessage } from '../../services/chatService';
+import { updateLastMessage } from '../../store/message/messageSlice';
+import { useDispatch } from 'react-redux';
 
 const MessageInput = ({ receiverId }) => {
   const [message, setMessage] = useState('');
+  const [inputHeight, setInputHeight] = useState(40);
   const [fileData, setFileData] = useState(null);
   const [fileName, setFileName] = useState(null);
   const [messageType, setMessageType] = useState('text');
@@ -45,6 +46,7 @@ const MessageInput = ({ receiverId }) => {
         setFileData(null);
         setFileName(null);
         setMessageType('text');
+        setInputHeight(40);
       } catch (error) {
         Toast.show({
           type: 'error',
@@ -103,7 +105,18 @@ const MessageInput = ({ receiverId }) => {
         value={message}
         onChangeText={setMessage}
         placeholder="Type a message..."
+        multiline={true}
+        textAlignVertical="top"
+        scrollEnabled={inputHeight >= 120}
+        onContentSizeChange={(e) => {
+          setInputHeight(
+            e.nativeEvent.contentSize.height > 120
+              ? 120
+              : e.nativeEvent.contentSize.height
+          );
+        }}
         className="flex-1 border border-gray-300 rounded-lg p-2"
+        style={{ height: inputHeight, maxHeight: 120 }}
       />
       <TouchableOpacity onPress={handleSend} className="ml-2">
         <Ionicons name="send" size={24} color="#553C9A" />
