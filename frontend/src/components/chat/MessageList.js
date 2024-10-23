@@ -24,12 +24,6 @@ const MessageList = forwardRef(({ messages, receiverId }, ref) => {
     );
   };
 
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.scrollToEnd({ animated: true });
-    }
-  }, [messages]);
-
   return (
     <FlatList
       ref={ref}
