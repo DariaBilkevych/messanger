@@ -1,5 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { View, TextInput, TouchableOpacity, Text } from 'react-native';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  ActivityIndicator,
+} from 'react-native';
 import PhoneInput from 'react-native-phone-number-input';
 import Feather from 'react-native-vector-icons/Feather';
 import styles from './styles';
@@ -16,6 +22,7 @@ const LoginForm = ({ navigation }) => {
   });
   const [errors, setErrors] = useState({});
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const phoneInputRef = useRef(null);
   const dispatch = useDispatch();
 
@@ -25,10 +32,12 @@ const LoginForm = ({ navigation }) => {
 
   const handleSubmit = async () => {
     setErrors({});
+    setLoading(true);
 
     const newErrors = loginValidator(formData);
     if (Object.keys(newErrors).length) {
       setErrors(newErrors);
+      setLoading(false);
       return;
     }
 
@@ -47,6 +56,8 @@ const LoginForm = ({ navigation }) => {
         text1: 'Error',
         text2: errorMessage,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -100,10 +111,15 @@ const LoginForm = ({ navigation }) => {
       <TouchableOpacity
         onPress={handleSubmit}
         className="bg-purple-700 p-4 rounded-lg shadow-lg"
+        disabled={loading}
       >
-        <Text className="text-white text-center text-lg font-semibold">
-          Log In
-        </Text>
+        {loading ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : (
+          <Text className="text-white text-center text-lg font-semibold">
+            Log In
+          </Text>
+        )}
       </TouchableOpacity>
     </View>
   );

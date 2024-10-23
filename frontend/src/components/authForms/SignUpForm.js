@@ -1,5 +1,11 @@
 import React, { useState } from 'react';
-import { View, TextInput, TouchableOpacity, Text } from 'react-native';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  ActivityIndicator,
+} from 'react-native';
 import PhoneInput from 'react-native-phone-number-input';
 import Feather from 'react-native-vector-icons/Feather';
 import styles from './styles';
@@ -8,7 +14,6 @@ import { signUp } from '../../services/authService';
 import { signUpValidator } from '../../validators/signUpValidator';
 import { useDispatch } from 'react-redux';
 import { authenticate } from '../../store/auth/authSlice';
-import { connectSocket } from '../../store/socket/socketSlice';
 
 const SignUpForm = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -19,6 +24,7 @@ const SignUpForm = ({ navigation }) => {
   });
   const [errors, setErrors] = useState({});
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const phoneInputRef = React.useRef(null);
   const dispatch = useDispatch();
 
@@ -28,10 +34,12 @@ const SignUpForm = ({ navigation }) => {
 
   const handleSignUp = async () => {
     setErrors({});
-    const newErrors = signUpValidator(formData);
+    setLoading(true);
 
+    const newErrors = signUpValidator(formData);
     if (Object.keys(newErrors).length) {
       setErrors(newErrors);
+      setLoading(false);
       return;
     }
 
@@ -55,6 +63,8 @@ const SignUpForm = ({ navigation }) => {
         text1: 'Error',
         text2: errorMessage,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -130,10 +140,15 @@ const SignUpForm = ({ navigation }) => {
       <TouchableOpacity
         onPress={handleSignUp}
         className="bg-purple-700 p-4 rounded-lg shadow-lg"
+        disabled={loading}
       >
-        <Text className="text-white text-center text-lg font-semibold">
-          Sign Up
-        </Text>
+        {loading ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : (
+          <Text className="text-white text-center text-lg font-semibold">
+            Sign Up
+          </Text>
+        )}
       </TouchableOpacity>
     </View>
   );

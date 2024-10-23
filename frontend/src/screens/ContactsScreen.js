@@ -27,6 +27,7 @@ const ContactsScreen = () => {
   const [initialLoad, setInitialLoad] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const navigation = useNavigation();
   const isFocused = useIsFocused();
@@ -79,11 +80,11 @@ const ContactsScreen = () => {
   };
 
   const handleLogout = async () => {
+    setIsLoggingOut(true);
     try {
       await logout();
       dispatch(deauthenticate());
       dispatch(disconnectSocket());
-
       navigation.replace('Login');
     } catch (error) {
       Toast.show({
@@ -91,6 +92,8 @@ const ContactsScreen = () => {
         text1: 'Error',
         text2: 'Failed to log out',
       });
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -132,7 +135,7 @@ const ContactsScreen = () => {
     }
     return () => {
       socket?.off('newMessage');
-      socket?.off('adduser');
+      socket?.off('addUser');
     };
   }, [socket, dispatch]);
 
@@ -142,7 +145,11 @@ const ContactsScreen = () => {
 
   return (
     <View className="flex-1 px-4 bg-white">
-      <UserHeader user={user} onLogout={handleLogout} />
+      <UserHeader
+        user={user}
+        onLogout={handleLogout}
+        isLoggingOut={isLoggingOut}
+      />
       <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       <UserList users={users} onUserPress={handleUserPress} />
     </View>
