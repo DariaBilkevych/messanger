@@ -42,7 +42,6 @@ const LoginForm = ({ navigation }) => {
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || 'Something went wrong';
-
       Toast.show({
         type: 'error',
         text1: 'Error',

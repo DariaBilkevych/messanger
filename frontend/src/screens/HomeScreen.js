@@ -1,8 +1,14 @@
 import { StatusBar } from 'expo-status-bar';
 import { Text, View, TouchableOpacity } from 'react-native';
 import { Svg, Path } from 'react-native-svg';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 
 const HomeScreen = ({ navigation }) => {
+  const { expoPushToken, notification } = usePushNotifications();
+  const data = JSON.stringify(notification, null, 2);
+
+  console.log(`Token: ${expoPushToken?.data}. Data: ${data}`);
+
   return (
     <View className="flex-1 bg-white relative">
       <View className="absolute top-0 right-0 w-full">
@@ -23,6 +29,12 @@ const HomeScreen = ({ navigation }) => {
         <Text className="text-3xl p-2 font-bold text-purple-600 mb-6 text-center">
           Welcome to the Messenger!
         </Text>
+
+        <View className="bg-gray-100 p-4 rounded border border-gray-300 mb-4">
+          <Text className="text-center text-lg text-purple-600">
+            Expo Push Token: {expoPushToken?.data || 'Token is not defined'}
+          </Text>
+        </View>
 
         <View className="flex-row justify-center space-x-4">
           <TouchableOpacity

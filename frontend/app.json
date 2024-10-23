@@ -19,7 +19,8 @@
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.dariabilkevych.frontend"
+      "package": "com.dariabilkevych.frontend",
+      "googleServicesFile": "./android/app/google-services.json"
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
