@@ -14,6 +14,7 @@ import { loginValidator } from '../../validators/loginValidator';
 import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
 import { authenticate } from '../../store/auth/authSlice';
+import { usePushNotifications } from '../../hooks/usePushNotifications';
 
 const LoginForm = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -25,6 +26,8 @@ const LoginForm = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const phoneInputRef = useRef(null);
   const dispatch = useDispatch();
+
+  const { expoPushToken } = usePushNotifications();
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -42,7 +45,7 @@ const LoginForm = ({ navigation }) => {
     }
 
     try {
-      await login(formData);
+      await login({ ...formData, expoPushToken });
       dispatch(authenticate());
 
       navigation.navigate('Contacts');

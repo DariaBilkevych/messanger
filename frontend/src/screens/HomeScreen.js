@@ -4,10 +4,10 @@ import { Svg, Path } from 'react-native-svg';
 import { usePushNotifications } from '../hooks/usePushNotifications';
 
 const HomeScreen = ({ navigation }) => {
-  const { expoPushToken, notification } = usePushNotifications();
-  const data = JSON.stringify(notification, null, 2);
+  // const { expoPushToken, notification } = usePushNotifications();
+  // const data = JSON.stringify(notification, null, 2);
 
-  console.log(`Token: ${expoPushToken?.data}. Data: ${data}`);
+  // console.log(`Token: ${expoPushToken?.data}. Data: ${data}`);
 
   return (
     <View className="flex-1 bg-white relative">
@@ -30,11 +30,11 @@ const HomeScreen = ({ navigation }) => {
           Welcome to the Messenger!
         </Text>
 
-        <View className="bg-gray-100 p-4 rounded border border-gray-300 mb-4">
+        {/* <View className="bg-gray-100 p-4 rounded border border-gray-300 mb-4">
           <Text className="text-center text-lg text-purple-600">
             Expo Push Token: {expoPushToken?.data || 'Token is not defined'}
           </Text>
-        </View>
+        </View> */}
 
         <View className="flex-row justify-center space-x-4">
           <TouchableOpacity

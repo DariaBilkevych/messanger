@@ -14,6 +14,7 @@ import { signUp } from '../../services/authService';
 import { signUpValidator } from '../../validators/signUpValidator';
 import { useDispatch } from 'react-redux';
 import { authenticate } from '../../store/auth/authSlice';
+import { usePushNotifications } from '../../hooks/usePushNotifications';
 
 const SignUpForm = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -27,6 +28,8 @@ const SignUpForm = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const phoneInputRef = React.useRef(null);
   const dispatch = useDispatch();
+
+  const { expoPushToken } = usePushNotifications();
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -44,7 +47,7 @@ const SignUpForm = ({ navigation }) => {
     }
 
     try {
-      await signUp(formData);
+      await signUp({ ...formData, expoPushToken });
       dispatch(authenticate());
 
       setFormData({
