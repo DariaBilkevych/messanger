@@ -4,12 +4,12 @@ import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from './constants';
 import { navigate } from '../services/navigationService';
 
 const axiosInstance = axios.create({
-  baseURL: 'https://messanger-i8ye.onrender.com/api',
+  baseURL: 'https://messanger-0059.onrender.com/api',
   withCredentials: true,
 });
 
 const axiosNoAuthInstance = axios.create({
-  baseURL: 'https://messanger-i8ye.onrender.com/api',
+  baseURL: 'https://messanger-0059.onrender.com/api',
   withCredentials: true,
 });
 
