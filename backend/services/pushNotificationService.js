@@ -27,6 +27,16 @@ export const sendPushNotification = async (receiver, populatedMessage) => {
         data: { message: populatedMessage },
       },
     ];
-    console.log(pushMessages);
+    console.log(
+      'Push Notification Object:',
+      JSON.stringify(pushMessages, null, 2)
+    );
+
+    try {
+      const tickets = await expo.sendPushNotificationsAsync(pushMessages);
+      console.log('Push notification tickets:', tickets);
+    } catch (error) {
+      console.error('Error sending push notification:', error);
+    }
   }
 };
