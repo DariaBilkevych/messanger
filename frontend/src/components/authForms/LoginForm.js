@@ -45,7 +45,7 @@ const LoginForm = ({ navigation }) => {
     }
 
     try {
-      await login({ ...formData, expoPushToken });
+      await login({ ...formData, expoPushToken: expoPushToken.data });
       dispatch(authenticate());
 
       navigation.navigate('Contacts');

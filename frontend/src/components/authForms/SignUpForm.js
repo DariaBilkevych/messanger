@@ -47,7 +47,7 @@ const SignUpForm = ({ navigation }) => {
     }
 
     try {
-      await signUp({ ...formData, expoPushToken });
+      await signUp({ ...formData, expoPushToken: expoPushToken.data });
       dispatch(authenticate());
 
       setFormData({

@@ -1,8 +1,8 @@
 import Conversation from '../models/conversation-model.js';
 import User from '../models/user-model.js';
 import Message from '../models/message-model.js';
-import { getReceiverSocketId, getSenderSocketId } from '../socket/socket.js';
-import { io } from '../socket/socket.js';
+import { sendMessageViaSocket } from '../services/socketService.js';
+import { sendPushNotification } from '../services/pushNotificationService.js';
 import { MAX_FILE_SIZE } from '../utils/constants.js';
 
 export const sendMessage = async (req, res) => {
@@ -13,7 +13,6 @@ export const sendMessage = async (req, res) => {
 
     if (messageType !== 'text' && fileData) {
       const fileSize = Buffer.byteLength(fileData, 'base64');
-
       if (fileSize > MAX_FILE_SIZE) {
         return res.status(400).json({
           message: 'File size exceeds the maximum limit of 5MB',
@@ -49,23 +48,10 @@ export const sendMessage = async (req, res) => {
       .populate('senderId', 'firstName lastName avatar')
       .populate('receiverId', 'firstName lastName avatar');
 
-    const receiverSocketId = getReceiverSocketId(receiverId);
+    sendMessageViaSocket(receiverId, senderId, populatedMessage);
 
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit('newMessage', populatedMessage);
-
-      const senderSocketId = getSenderSocketId(senderId);
-
-      if (senderSocketId) {
-        io.to(receiverSocketId).emit('addUser', {
-          _id: senderId,
-          firstName: populatedMessage.senderId.firstName,
-          lastName: populatedMessage.senderId.lastName,
-          avatar: populatedMessage.senderId.avatar,
-          lastMessage: populatedMessage.message,
-        });
-      }
-    }
+    const receiver = await User.findById(receiverId);
+    await sendPushNotification(receiver, populatedMessage);
 
     res.status(201).json(newMessage);
   } catch (error) {
