@@ -24,7 +24,7 @@ export const sendPushNotification = async (receiver, populatedMessage) => {
         to: receiver.expoPushToken,
         sound: 'default',
         body: messageBody,
-        data: { receiver: populatedMessage.receiverId },
+        data: { sender: populatedMessage.senderId },
       },
     ];
 

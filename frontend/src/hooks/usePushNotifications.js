@@ -3,8 +3,11 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 export const usePushNotifications = () => {
+  const navigation = useNavigation();
+
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
       shouldPlaySound: false,
@@ -71,7 +74,8 @@ export const usePushNotifications = () => {
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
         const data = response.notification.request.content.data;
-        if (data && data.receiver) {
+        console.log(data);
+        if (data && data.sender) {
           navigation.navigate('Chat', {
             receiverId: data._id,
             receiverName: data.firstName + ' ' + data.lastName,
