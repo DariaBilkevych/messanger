@@ -68,6 +68,14 @@ export const usePushNotifications = () => {
         console.log(response);
       });
 
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        const data = response.notification.request.content.data;
+        if (data && data.receiverId) {
+          navigation.navigate('Chat', { receiverId: data.receiverId });
+        }
+      });
+
     return () => {
       Notifications.removeNotificationSubscription(
         notificationListener.current
