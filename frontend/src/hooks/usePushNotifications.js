@@ -2,16 +2,17 @@ import { useState, useEffect, useRef } from 'react';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
+import { Platform, AppState } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
 export const usePushNotifications = () => {
   const navigation = useNavigation();
+  const [appState, setAppState] = useState(AppState.currentState);
 
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
-      shouldPlaySound: false,
-      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldShowAlert: appState !== 'active',
       shouldSetBadge: false,
     }),
   });
@@ -61,6 +62,10 @@ export const usePushNotifications = () => {
       setExpoPushToken(token);
     });
 
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      setAppState(nextAppState);
+    });
+
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
         setNotification(notification);
@@ -68,13 +73,7 @@ export const usePushNotifications = () => {
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
-      });
-
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        const data = response.notification.request.content.data;
-        console.log(data);
+        const { data } = response.notification.request.content;
         if (data && data.sender) {
           navigation.navigate('Chat', {
             receiverId: data._id,
@@ -89,6 +88,7 @@ export const usePushNotifications = () => {
         notificationListener.current
       );
       Notifications.removeNotificationSubscription(responseListener.current);
+      subscription.remove();
     };
   }, []);
 
