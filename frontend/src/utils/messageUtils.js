@@ -16,10 +16,7 @@ export const formatMessageByType = (message, messageType) => {
     return 'Sent an image';
   }
 
-  let formattedMessage = message
-    .split('\n')
-    .filter((line) => line.trim() !== '')
-    .join(' ');
+  const formattedMessage = message.replace(/\n+/g, ' ').trim();
 
   return formattedMessage;
 };
