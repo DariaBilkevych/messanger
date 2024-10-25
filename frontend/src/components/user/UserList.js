@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { FlatList, TouchableOpacity, Image, Text, View } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchLastMessages } from '../../store/message/messageSlice';
+import { fetchLastMessages } from '../../utils/messageThunks';
 import Loading from '../common/Loading';
 import { DateTime } from 'luxon';
 

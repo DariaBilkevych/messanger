@@ -3,12 +3,23 @@ import User from '../models/user-model.js';
 import Message from '../models/message-model.js';
 import { getReceiverSocketId, getSenderSocketId } from '../socket/socket.js';
 import { io } from '../socket/socket.js';
+import { MAX_FILE_SIZE } from '../utils/constants.js';
 
 export const sendMessage = async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message, messageType, fileData } = req.body;
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
+
+    if (messageType !== 'text' && fileData) {
+      const fileSize = Buffer.byteLength(fileData, 'base64');
+
+      if (fileSize > MAX_FILE_SIZE) {
+        return res.status(400).json({
+          message: 'File size exceeds the maximum limit of 5MB',
+        });
+      }
+    }
 
     let conversation = await Conversation.findOne({
       participants: { $all: [senderId, receiverId] },
@@ -23,7 +34,9 @@ export const sendMessage = async (req, res) => {
     const newMessage = new Message({
       senderId,
       receiverId,
-      message,
+      message: messageType === 'text' ? message : null,
+      messageType,
+      fileData: messageType !== 'text' ? fileData : null,
     });
 
     if (newMessage) {
@@ -76,7 +89,11 @@ export const getMessages = async (req, res) => {
       return res.status(200).json([]);
     }
 
-    const messages = conversation.messages;
+    const messages = conversation.messages.map((msg) => ({
+      ...msg.toObject(),
+      messageType: msg.messageType,
+      fileData: msg.fileData,
+    }));
 
     res.status(200).json(messages);
   } catch (error) {

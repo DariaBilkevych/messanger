@@ -1,7 +1,26 @@
-import React from 'react';
-import { View, Text } from 'react-native';
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  Modal,
+  TouchableWithoutFeedback,
+} from 'react-native';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import Toast from 'react-native-toast-message';
+import { MaterialIcons } from '@expo/vector-icons';
 
-const MessageItem = ({ message, isCurrentUserMessage, formattedDate }) => {
+const MessageItem = ({
+  message,
+  messageType,
+  fileData,
+  isCurrentUserMessage,
+  formattedDate,
+}) => {
+  const [modalVisible, setModalVisible] = useState(false);
+
   const messageContainerStyle = isCurrentUserMessage
     ? 'bg-gray-200 mr-auto'
     : 'bg-purple-800 ml-auto';
@@ -10,12 +29,71 @@ const MessageItem = ({ message, isCurrentUserMessage, formattedDate }) => {
     ? 'mr-auto text-gray-500'
     : 'ml-auto text-gray-500';
 
+  const handleOpenFile = async () => {
+    try {
+      const fileUri = `${FileSystem.documentDirectory}file.pdf`;
+
+      await FileSystem.writeAsStringAsync(fileUri, fileData, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+      await Sharing.shareAsync(fileUri);
+    } catch (error) {
+      console.error('Error opening file:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Could not open the file.',
+      });
+    }
+  };
+
+  const handleImagePress = () => {
+    setModalVisible(true);
+  };
+
   return (
     <View className="mb-4 px-4">
       <View className={`p-2 rounded-lg ${messageContainerStyle} max-w-[70%]`}>
-        <Text className={`${messageTextStyle} text-base`}>{message}</Text>
+        {messageType === 'text' ? (
+          <Text className={`${messageTextStyle} text-base`}>{message}</Text>
+        ) : messageType === 'image' ? (
+          <TouchableOpacity onPress={handleImagePress}>
+            <Image
+              source={{ uri: `data:image/jpeg;base64,${fileData}` }}
+              style={{ width: 200, height: 200 }}
+              resizeMode="contain"
+            />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={handleOpenFile}>
+            <Text className={`${messageTextStyle} text-base underline`}>
+              Download File
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
       <Text className={`${timestampStyle} text-xs mt-1`}>{formattedDate}</Text>
+      <Modal
+        transparent={true}
+        animationType="slide"
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
+          <View className="flex-1 justify-center items-center bg-black">
+            <TouchableOpacity
+              className="absolute top-10 right-2 p-2"
+              onPress={() => setModalVisible(false)}
+            >
+              <MaterialIcons name="close" size={20} color="white" />
+            </TouchableOpacity>
+            <Image
+              source={{ uri: `data:image/jpeg;base64,${fileData}` }}
+              style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
+            />
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 };

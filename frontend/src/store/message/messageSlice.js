@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { fetchLastMessages } from '../../utils/messageThunks';
-import { sortUsers } from '../../utils/messageUtils';
+import { sortUsers, formatMessageByType } from '../../utils/messageUtils';
 
 const messageSlice = createSlice({
   name: 'messages',
@@ -10,13 +10,13 @@ const messageSlice = createSlice({
   },
   reducers: {
     updateLastMessage: (state, action) => {
-      const { senderId, receiverId, message } = action.payload;
+      const { senderId, receiverId, message, messageType } = action.payload;
 
       state.usersWithLastMessages = state.usersWithLastMessages.map((user) => {
         if (user._id === senderId || user._id === receiverId) {
           return {
             ...user,
-            lastMessage: message,
+            lastMessage: formatMessageByType(message, messageType),
             lastMessageDate: new Date().toISOString(),
           };
         }

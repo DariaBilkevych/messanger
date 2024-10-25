@@ -1,4 +1,4 @@
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect } from 'react';
 import { FlatList } from 'react-native';
 import MessageItem from './MessageItem';
 import { DateTime } from 'luxon';
@@ -16,6 +16,8 @@ const MessageList = forwardRef(({ messages, receiverId }, ref) => {
     return (
       <MessageItem
         message={item.message}
+        messageType={item.messageType}
+        fileData={item.fileData}
         isCurrentUserMessage={isCurrentUserMessage}
         formattedDate={formattedDate}
       />
