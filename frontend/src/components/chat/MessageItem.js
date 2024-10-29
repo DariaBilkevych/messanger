@@ -8,7 +8,7 @@ import {
   TouchableWithoutFeedback,
 } from 'react-native';
 import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
+import * as WebBrowser from 'expo-web-browser';
 import Toast from 'react-native-toast-message';
 import { MaterialIcons } from '@expo/vector-icons';
 
@@ -31,12 +31,17 @@ const MessageItem = ({
 
   const handleOpenFile = async () => {
     try {
-      const fileUri = `${FileSystem.documentDirectory}file.pdf`;
+      // Вказуємо шлях для тимчасового файлу
+      const fileUri = `${FileSystem.cacheDirectory}file.pdf`;
 
+      // Зберігаємо base64 як файл
       await FileSystem.writeAsStringAsync(fileUri, fileData, {
         encoding: FileSystem.EncodingType.Base64,
       });
-      await Sharing.shareAsync(fileUri);
+
+      console.log(fileUri);
+      // Відкриваємо PDF-файл у браузері
+      await WebBrowser.openBrowserAsync(fileUri);
     } catch (error) {
       console.error('Error opening file:', error);
       Toast.show({
@@ -67,7 +72,7 @@ const MessageItem = ({
         ) : (
           <TouchableOpacity onPress={handleOpenFile}>
             <Text className={`${messageTextStyle} text-base underline`}>
-              Download File
+              Preview File
             </Text>
           </TouchableOpacity>
         )}

@@ -3,20 +3,28 @@ import User from '../models/user-model.js';
 import Message from '../models/message-model.js';
 import { sendMessageViaSocket } from '../services/socketService.js';
 import { sendPushNotification } from '../services/pushNotificationService.js';
-import { MAX_FILE_SIZE } from '../utils/constants.js';
+
+import { cloudinary } from '../utils/cloudinary.js';
+import { upload } from '../middelwares/multer.js';
 
 export const sendMessage = async (req, res) => {
   try {
-    const { message, messageType, fileData } = req.body;
+    const { messageType } = req.body;
     const { id: receiverId } = req.params;
     const senderId = req.user._id;
 
-    if (messageType !== 'text' && fileData) {
-      const fileSize = Buffer.byteLength(fileData, 'base64');
-      if (fileSize > MAX_FILE_SIZE) {
-        return res.status(400).json({
-          message: 'File size exceeds the maximum limit of 5MB',
+    let fileUri = null;
+
+    if (messageType !== 'text') {
+      const file = req.file;
+
+      if (file) {
+        const result = await cloudinary.uploader.upload(file.path, {
+          resource_type: 'auto',
         });
+        fileUri = result.secure_url;
+      } else {
+        return res.status(400).json({ message: 'No file provided' });
       }
     }
 
@@ -33,9 +41,9 @@ export const sendMessage = async (req, res) => {
     const newMessage = new Message({
       senderId,
       receiverId,
-      message: messageType === 'text' ? message : null,
+      message: messageType === 'text' ? req.body.message : null,
       messageType,
-      fileData: messageType !== 'text' ? fileData : null,
+      src: messageType !== 'text' ? fileUri : null,
     });
 
     if (newMessage) {
