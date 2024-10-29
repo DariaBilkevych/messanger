@@ -7,7 +7,6 @@ import {
   Modal,
   TouchableWithoutFeedback,
 } from 'react-native';
-import * as FileSystem from 'expo-file-system';
 import * as WebBrowser from 'expo-web-browser';
 import Toast from 'react-native-toast-message';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -31,17 +30,7 @@ const MessageItem = ({
 
   const handleOpenFile = async () => {
     try {
-      // Вказуємо шлях для тимчасового файлу
-      const fileUri = `${FileSystem.cacheDirectory}file.pdf`;
-
-      // Зберігаємо base64 як файл
-      await FileSystem.writeAsStringAsync(fileUri, fileData, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-
-      console.log(fileUri);
-      // Відкриваємо PDF-файл у браузері
-      await WebBrowser.openBrowserAsync(fileUri);
+      await WebBrowser.openBrowserAsync(fileData);
     } catch (error) {
       console.error('Error opening file:', error);
       Toast.show({
@@ -64,7 +53,7 @@ const MessageItem = ({
         ) : messageType === 'image' ? (
           <TouchableOpacity onPress={handleImagePress}>
             <Image
-              source={{ uri: `data:image/jpeg;base64,${fileData}` }}
+              source={{ uri: fileData }}
               style={{ width: 200, height: 200 }}
               resizeMode="contain"
             />
@@ -85,7 +74,7 @@ const MessageItem = ({
         onRequestClose={() => setModalVisible(false)}
       >
         <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-          <View className="flex-1 justify-center items-center bg-black">
+          <View className="flex-1 justify-center items-center bg-black bg-opacity-70">
             <TouchableOpacity
               className="absolute top-10 right-2 p-2"
               onPress={() => setModalVisible(false)}
@@ -93,7 +82,7 @@ const MessageItem = ({
               <MaterialIcons name="close" size={20} color="white" />
             </TouchableOpacity>
             <Image
-              source={{ uri: `data:image/jpeg;base64,${fileData}` }}
+              source={{ uri: fileData }}
               style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
             />
           </View>

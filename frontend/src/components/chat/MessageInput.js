@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, Modal } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Toast from 'react-native-toast-message';
-import {
-  pickMedia,
-  readFileAsBase64,
-  resizeImage,
-  checkFileSize,
-} from '../../utils/fileUtils';
+import { pickMedia, resizeImage, checkFileSize } from '../../utils/fileUtils';
 import { sendMessage } from '../../services/chatService';
 import { updateLastMessage } from '../../store/message/messageSlice';
 import { useDispatch } from 'react-redux';
@@ -25,6 +20,8 @@ const MessageInput = ({ receiverId }) => {
     if (message.trim() || fileData) {
       try {
         const finalMessageType = fileData ? messageType : 'text';
+
+        console.log(fileData);
 
         const newMessage = await sendMessage(
           receiverId,
@@ -63,10 +60,9 @@ const MessageInput = ({ receiverId }) => {
       const fileSize = result.assets[0].fileSize;
       if (!checkFileSize(fileSize)) return;
 
-      const manipulatedResult = await resizeImage(result.assets[0].uri);
-      const base64Data = await readFileAsBase64(manipulatedResult.uri);
+      const resizedImage = await resizeImage(result.assets[0].uri);
 
-      setFileData(base64Data);
+      setFileData(resizedImage.uri);
       setFileName(result.assets[0].fileName || 'selected_image.jpg');
       setMessageType('image');
       setModalVisible(true);
@@ -79,9 +75,7 @@ const MessageInput = ({ receiverId }) => {
       const fileSize = result.assets[0].size;
       if (!checkFileSize(fileSize)) return;
 
-      const base64Data = await readFileAsBase64(result.assets[0].uri);
-
-      setFileData(base64Data);
+      setFileData(result.assets[0].uri);
       setFileName(result.assets[0].name);
       setMessageType('file');
       setModalVisible(true);
