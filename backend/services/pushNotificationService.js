@@ -3,20 +3,21 @@ const expo = new Expo();
 
 export const sendPushNotification = async (receiver, populatedMessage) => {
   if (receiver.expoPushToken && Expo.isExpoPushToken(receiver.expoPushToken)) {
+    const senderFullName = `${populatedMessage.senderId.firstName} ${populatedMessage.senderId.lastName}`;
     let messageBody;
 
     switch (populatedMessage.messageType) {
       case 'text':
-        messageBody = `${populatedMessage.senderId.firstName} ${populatedMessage.senderId.lastName}: ${populatedMessage.message}`;
+        messageBody = `${senderFullName}: ${populatedMessage.message}`;
         break;
       case 'image':
-        messageBody = `${populatedMessage.senderId.firstName} ${populatedMessage.senderId.lastName} sent an image.`;
+        messageBody = `${senderFullName} sent an image.`;
         break;
       case 'file':
-        messageBody = `${populatedMessage.senderId.firstName} ${populatedMessage.senderId.lastName} sent a file.`;
+        messageBody = `${senderFullName} sent a file.`;
         break;
       default:
-        messageBody = `${populatedMessage.senderId.firstName} ${populatedMessage.senderId.lastName} sent a message.`;
+        messageBody = `${senderFullName} sent a message.`;
     }
 
     const pushMessages = [

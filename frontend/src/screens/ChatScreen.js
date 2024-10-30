@@ -5,12 +5,17 @@ import ChatHeader from '../components/chat/ChatHeader';
 import MessageList from '../components/chat/MessageList';
 import MessageInput from '../components/chat/MessageInput';
 import Loading from '../components/common/Loading';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateLastMessage } from '../store/message/messageSlice';
 
 const ChatScreen = ({ route }) => {
   const { receiverId, receiverName, receiverAvatar } = route.params;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const messageListRef = useRef(null);
+
+  const dispatch = useDispatch();
+  const socket = useSelector((state) => state.socket.socket);
 
   useEffect(() => {
     const fetchMessages = async () => {
@@ -25,6 +30,22 @@ const ChatScreen = ({ route }) => {
     };
 
     fetchMessages();
+
+    if (socket) {
+      socket.on('newMessage', (newMessage) => {
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
+        dispatch(
+          updateLastMessage({
+            senderId: newMessage.senderId._id,
+            receiverId: newMessage.receiverId._id,
+            message: newMessage.message,
+            messageType: newMessage.messageType,
+          })
+        );
+      });
+    }
+
+    return () => socket?.off('newMessage');
   }, [receiverId, messages, setMessages]);
 
   return (
