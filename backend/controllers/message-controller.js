@@ -22,6 +22,7 @@ export const sendMessage = async (req, res) => {
 
         const result = await cloudinary.uploader.upload(file.path, {
           resource_type: resourceType,
+          ...(messageType === 'file' && { pages: true }),
         });
 
         fileUri = result.secure_url;

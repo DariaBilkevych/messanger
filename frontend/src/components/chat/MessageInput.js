@@ -14,6 +14,7 @@ const MessageInput = ({ receiverId }) => {
   const [fileName, setFileName] = useState(null);
   const [messageType, setMessageType] = useState('text');
   const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const dispatch = useDispatch();
 
   const handleSend = async () => {
@@ -34,6 +35,12 @@ const MessageInput = ({ receiverId }) => {
           type: 'application/octet-stream',
         };
       }
+
+      setLoading(true);
+      Toast.show({
+        type: 'info',
+        text1: 'Uploading...',
+      });
 
       const newMessage = await sendMessage(
         receiverId,
@@ -56,20 +63,17 @@ const MessageInput = ({ receiverId }) => {
       setFileName(null);
       setMessageType('text');
       setInputHeight(40);
-
-      Toast.show({
-        type: 'success',
-        text1: 'Message sent successfully!',
-      });
     } catch (error) {
       console.log('Error:', error);
       console.log('Error response:', error.response.data);
 
       Toast.show({
         type: 'error',
-        text1: 'Failed to send message',
+        text1: 'Try another one, please.',
         text2: error.message,
       });
+    } finally {
+      setLoading(false);
     }
   };
 

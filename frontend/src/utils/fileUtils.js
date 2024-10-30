@@ -10,7 +10,7 @@ export const checkFileSize = (fileSize) => {
     Toast.show({
       type: 'error',
       text1: 'Error',
-      text2: 'File size exceeds the limit of 2 MB.',
+      text2: 'File size exceeds the limit of 5 MB.',
     });
     return false;
   }

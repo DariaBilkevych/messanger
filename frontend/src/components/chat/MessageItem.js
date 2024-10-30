@@ -10,6 +10,7 @@ import {
 import * as WebBrowser from 'expo-web-browser';
 import Toast from 'react-native-toast-message';
 import { MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 
 const MessageItem = ({
   message,
@@ -59,10 +60,14 @@ const MessageItem = ({
             />
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity onPress={handleOpenFile}>
-            <Text className={`${messageTextStyle} text-base underline`}>
-              Preview File
-            </Text>
+          <TouchableOpacity
+            onPress={handleOpenFile}
+            className="flex-row items-center p-2"
+          >
+            <FontAwesome name="file-pdf-o" size={24} color="#E63946" />
+            <View className="ml-2">
+              <Text className={`${messageTextStyle} text-base`}>Document</Text>
+            </View>
           </TouchableOpacity>
         )}
       </View>
