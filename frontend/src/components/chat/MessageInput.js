@@ -10,47 +10,66 @@ import { useDispatch } from 'react-redux';
 const MessageInput = ({ receiverId }) => {
   const [message, setMessage] = useState('');
   const [inputHeight, setInputHeight] = useState(40);
-  const [fileData, setFileData] = useState(null);
+  const [fileUri, setFileUri] = useState(null);
   const [fileName, setFileName] = useState(null);
   const [messageType, setMessageType] = useState('text');
   const [modalVisible, setModalVisible] = useState(false);
   const dispatch = useDispatch();
 
   const handleSend = async () => {
-    if (message.trim() || fileData) {
-      try {
-        const finalMessageType = fileData ? messageType : 'text';
+    try {
+      const finalMessageType = fileUri ? messageType : 'text';
 
-        console.log(fileData);
-
-        const newMessage = await sendMessage(
-          receiverId,
-          message,
-          finalMessageType,
-          fileData
-        );
-
-        dispatch(
-          updateLastMessage({
-            senderId: newMessage.senderId._id,
-            receiverId,
-            message: message,
-            messageType: finalMessageType,
-          })
-        );
-
-        setMessage('');
-        setFileData(null);
-        setFileName(null);
-        setMessageType('text');
-        setInputHeight(40);
-      } catch (error) {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Could not send the message. Try another one, please.',
-        });
+      let fileObject = null;
+      if (finalMessageType === 'image' && fileUri) {
+        fileObject = {
+          uri: fileUri,
+          name: fileName || 'image.jpg',
+          type: 'image/jpeg',
+        };
+      } else if (finalMessageType === 'file' && fileUri) {
+        fileObject = {
+          uri: fileUri,
+          name: fileName || 'file.txt',
+          type: 'application/octet-stream',
+        };
       }
+
+      const newMessage = await sendMessage(
+        receiverId,
+        message,
+        finalMessageType,
+        fileObject
+      );
+
+      dispatch(
+        updateLastMessage({
+          senderId: newMessage.senderId._id,
+          receiverId,
+          message: message,
+          messageType: finalMessageType,
+        })
+      );
+
+      setMessage('');
+      setFileUri(null);
+      setFileName(null);
+      setMessageType('text');
+      setInputHeight(40);
+
+      Toast.show({
+        type: 'success',
+        text1: 'Message sent successfully!',
+      });
+    } catch (error) {
+      console.log('Error:', error);
+      console.log('Error response:', error.response.data);
+
+      Toast.show({
+        type: 'error',
+        text1: 'Failed to send message',
+        text2: error.message,
+      });
     }
   };
 
@@ -62,7 +81,7 @@ const MessageInput = ({ receiverId }) => {
 
       const resizedImage = await resizeImage(result.assets[0].uri);
 
-      setFileData(resizedImage.uri);
+      setFileUri(resizedImage.uri);
       setFileName(result.assets[0].fileName || 'selected_image.jpg');
       setMessageType('image');
       setModalVisible(true);
@@ -75,7 +94,7 @@ const MessageInput = ({ receiverId }) => {
       const fileSize = result.assets[0].size;
       if (!checkFileSize(fileSize)) return;
 
-      setFileData(result.assets[0].uri);
+      setFileUri(result.assets[0].uri);
       setFileName(result.assets[0].name);
       setMessageType('file');
       setModalVisible(true);

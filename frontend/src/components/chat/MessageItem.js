@@ -14,7 +14,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 const MessageItem = ({
   message,
   messageType,
-  fileData,
+  fileUri,
   isCurrentUserMessage,
   formattedDate,
 }) => {
@@ -30,7 +30,7 @@ const MessageItem = ({
 
   const handleOpenFile = async () => {
     try {
-      await WebBrowser.openBrowserAsync(fileData);
+      await WebBrowser.openBrowserAsync(fileUri);
     } catch (error) {
       console.error('Error opening file:', error);
       Toast.show({
@@ -53,7 +53,7 @@ const MessageItem = ({
         ) : messageType === 'image' ? (
           <TouchableOpacity onPress={handleImagePress}>
             <Image
-              source={{ uri: fileData }}
+              source={{ uri: fileUri }}
               style={{ width: 200, height: 200 }}
               resizeMode="contain"
             />
@@ -82,7 +82,7 @@ const MessageItem = ({
               <MaterialIcons name="close" size={20} color="white" />
             </TouchableOpacity>
             <Image
-              source={{ uri: fileData }}
+              source={{ uri: fileUri }}
               style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
             />
           </View>

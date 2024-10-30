@@ -5,7 +5,6 @@ import { sendMessageViaSocket } from '../services/socketService.js';
 import { sendPushNotification } from '../services/pushNotificationService.js';
 
 import { cloudinary } from '../utils/cloudinary.js';
-import { upload } from '../middelwares/multer.js';
 
 export const sendMessage = async (req, res) => {
   try {
@@ -19,9 +18,12 @@ export const sendMessage = async (req, res) => {
       const file = req.file;
 
       if (file) {
+        const resourceType = messageType === 'file' ? 'raw' : 'image';
+
         const result = await cloudinary.uploader.upload(file.path, {
-          resource_type: 'auto',
+          resource_type: resourceType,
         });
+
         fileUri = result.secure_url;
       } else {
         return res.status(400).json({ message: 'No file provided' });
