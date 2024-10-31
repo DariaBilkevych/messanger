@@ -19,10 +19,15 @@ const MessageInput = ({ receiverId }) => {
   const [fileName, setFileName] = useState(null);
   const [messageType, setMessageType] = useState('text');
   const [modalVisible, setModalVisible] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const dispatch = useDispatch();
 
   const handleSend = async () => {
+    if (isSending) return;
+
     if (message.trim() || fileData) {
+      setIsSending(true);
+
       try {
         const finalMessageType = fileData ? messageType : 'text';
 
@@ -53,6 +58,8 @@ const MessageInput = ({ receiverId }) => {
           text1: 'Error',
           text2: 'Could not send the message. Try another one, please.',
         });
+      } finally {
+        setIsSending(false);
       }
     }
   };
@@ -118,8 +125,17 @@ const MessageInput = ({ receiverId }) => {
         className="flex-1 border border-gray-300 rounded-lg p-2"
         style={{ height: inputHeight, maxHeight: 120 }}
       />
-      <TouchableOpacity onPress={handleSend} className="ml-2">
-        <Ionicons name="send" size={24} color="#553C9A" />
+      <TouchableOpacity
+        onPress={handleSend}
+        className="ml-2"
+        disabled={isSending}
+        style={{ opacity: isSending ? 0.5 : 1 }}
+      >
+        <Ionicons
+          name="send"
+          size={24}
+          color={isSending ? '#D3D3D3' : '#553C9A'}
+        />
       </TouchableOpacity>
 
       <Modal
