@@ -94,11 +94,10 @@ export const login = async (req, res) => {
       refreshToken,
     });
   } catch (error) {
+    console.log(error);
     res
       .status(500)
       .json({ message: 'Something went wrong', error: error.message });
-
-    console.log(error.message);
   }
 };
 
