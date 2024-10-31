@@ -15,65 +15,52 @@ const MessageInput = ({ receiverId }) => {
   const [messageType, setMessageType] = useState('text');
   const [modalVisible, setModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const dispatch = useDispatch();
 
   const handleSend = async () => {
-    try {
-      const finalMessageType = fileUri ? messageType : 'text';
+    if (isSending) return;
 
-      let fileObject = null;
-      if (finalMessageType === 'image' && fileUri) {
-        fileObject = {
-          uri: fileUri,
-          name: fileName || 'image.jpg',
-          type: 'image/jpeg',
-        };
-      } else if (finalMessageType === 'file' && fileUri) {
-        fileObject = {
-          uri: fileUri,
-          name: fileName || 'file.txt',
-          type: 'application/octet-stream',
-        };
-      }
+    if (message.trim() || fileData) {
+      setIsSending(true);
 
-      setLoading(true);
-      Toast.show({
-        type: 'info',
-        text1: 'Uploading...',
-      });
+      try {
+        const finalMessageType = fileData ? messageType : 'text';
 
-      const newMessage = await sendMessage(
-        receiverId,
-        message,
-        finalMessageType,
-        fileObject
-      );
-
-      dispatch(
-        updateLastMessage({
-          senderId: newMessage.senderId._id,
+        const newMessage = await sendMessage(
           receiverId,
-          message: message,
-          messageType: finalMessageType,
-        })
-      );
+          message,
+          finalMessageType,
+          fileObject
+        );
 
-      setMessage('');
-      setFileUri(null);
-      setFileName(null);
-      setMessageType('text');
-      setInputHeight(40);
-    } catch (error) {
-      console.log('Error:', error);
-      console.log('Error response:', error.response.data);
+        dispatch(
+          updateLastMessage({
+            senderId: newMessage.senderId._id,
+            receiverId,
+            message: message,
+            messageType: finalMessageType,
+          })
+        );
 
-      Toast.show({
-        type: 'error',
-        text1: 'Try another one, please.',
-        text2: error.message,
-      });
-    } finally {
-      setLoading(false);
+        setMessage('');
+        setFileUri(null);
+        setFileName(null);
+        setMessageType('text');
+        setInputHeight(40);
+      } catch (error) {
+        console.log('Error:', error);
+        console.log('Error response:', error.response.data);
+
+        Toast.show({
+          type: 'error',
+          text1: 'Try another one, please.',
+          text2: error.message,
+        });
+      } finally {
+        setIsSending(false);
+        setLoading(false);
+      }
     }
   };
 
@@ -135,8 +122,17 @@ const MessageInput = ({ receiverId }) => {
         className="flex-1 border border-gray-300 rounded-lg p-2"
         style={{ height: inputHeight, maxHeight: 120 }}
       />
-      <TouchableOpacity onPress={handleSend} className="ml-2">
-        <Ionicons name="send" size={24} color="#553C9A" />
+      <TouchableOpacity
+        onPress={handleSend}
+        className="ml-2"
+        disabled={isSending}
+        style={{ opacity: isSending ? 0.5 : 1 }}
+      >
+        <Ionicons
+          name="send"
+          size={24}
+          color={isSending ? '#D3D3D3' : '#553C9A'}
+        />
       </TouchableOpacity>
 
       <Modal
