@@ -27,6 +27,27 @@ const MessageInput = ({ receiverId }) => {
       try {
         const finalMessageType = fileData ? messageType : 'text';
 
+        let fileObject = null;
+        if (finalMessageType === 'image' && fileUri) {
+          fileObject = {
+            uri: fileUri,
+            name: fileName || 'image.jpg',
+            type: 'image/jpeg',
+          };
+        } else if (finalMessageType === 'file' && fileUri) {
+          fileObject = {
+            uri: fileUri,
+            name: fileName || 'file.txt',
+            type: 'application/octet-stream',
+          };
+        }
+
+        setLoading(true);
+        Toast.show({
+          type: 'info',
+          text1: 'Uploading...',
+        });
+
         const newMessage = await sendMessage(
           receiverId,
           message,
@@ -49,9 +70,6 @@ const MessageInput = ({ receiverId }) => {
         setMessageType('text');
         setInputHeight(40);
       } catch (error) {
-        console.log('Error:', error);
-        console.log('Error response:', error.response.data);
-
         Toast.show({
           type: 'error',
           text1: 'Try another one, please.',
