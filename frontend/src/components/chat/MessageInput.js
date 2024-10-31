@@ -14,18 +14,18 @@ const MessageInput = ({ receiverId }) => {
   const [fileName, setFileName] = useState(null);
   const [messageType, setMessageType] = useState('text');
   const [modalVisible, setModalVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const dispatch = useDispatch();
 
   const handleSend = async () => {
     if (isSending) return;
 
-    if (message.trim() || fileData) {
+    if (message.trim() || fileUri) {
       setIsSending(true);
 
       try {
-        const finalMessageType = fileData ? messageType : 'text';
+        const finalMessageType = fileUri ? messageType : 'text';
 
         let fileObject = null;
         if (finalMessageType === 'image' && fileUri) {
@@ -42,11 +42,13 @@ const MessageInput = ({ receiverId }) => {
           };
         }
 
-        setLoading(true);
-        Toast.show({
-          type: 'info',
-          text1: 'Uploading...',
-        });
+        if (finalMessageType !== 'text') {
+          setUploading(true);
+          Toast.show({
+            type: 'info',
+            text1: 'Uploading...',
+          });
+        }
 
         const newMessage = await sendMessage(
           receiverId,
@@ -77,7 +79,7 @@ const MessageInput = ({ receiverId }) => {
         });
       } finally {
         setIsSending(false);
-        setLoading(false);
+        setUploading(false);
       }
     }
   };
