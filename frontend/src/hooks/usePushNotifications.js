@@ -12,7 +12,7 @@ export const usePushNotifications = () => {
     handleNotification: async () => ({
       shouldPlaySound: true,
       shouldShowAlert: appState !== 'active',
-      shouldSetBadge: false,
+      shouldSetBadge: true,
     }),
   });
 
@@ -50,15 +50,34 @@ export const usePushNotifications = () => {
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
         lightColor: '#FF231F7C',
+        sound: 'default',
+        showBadge: true,
+        lockscreenVisibility: Notifications.AndroidVisibility.PUBLIC,
       });
     }
 
     return token;
   };
 
+  const handleNotificationNavigation = (notification) => {
+    const { data } = notification?.request?.content;
+    if (data?.sender) {
+      const { _id, firstName, lastName, avatar } = data.sender;
+      navigate('Chat', {
+        receiverId: _id,
+        receiverName: `${firstName} ${lastName}`,
+        receiverAvatar: avatar,
+      });
+    }
+  };
+
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) => {
       setExpoPushToken(token);
+    });
+
+    Notifications.getLastNotificationResponseAsync().then((response) => {
+      handleNotificationNavigation(response?.notification);
     });
 
     const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -72,16 +91,7 @@ export const usePushNotifications = () => {
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        const { data } = response.notification.request.content;
-
-        if (data?.sender) {
-          const { _id, firstName, lastName, avatar } = data.sender;
-          navigate('Chat', {
-            receiverId: _id,
-            receiverName: `${firstName} ${lastName}`,
-            receiverAvatar: avatar,
-          });
-        }
+        handleNotificationNavigation(response.notification);
       });
 
     return () => {

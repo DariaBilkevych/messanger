@@ -6,7 +6,10 @@ import MessageList from '../components/chat/MessageList';
 import MessageInput from '../components/chat/MessageInput';
 import Loading from '../components/common/Loading';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateLastMessage } from '../store/message/messageSlice';
+import {
+  updateLastMessage,
+  addUserWithLastMessage,
+} from '../store/message/messageSlice';
 
 const ChatScreen = ({ route }) => {
   const { receiverId, receiverName, receiverAvatar } = route.params;
@@ -43,10 +46,16 @@ const ChatScreen = ({ route }) => {
           })
         );
       });
+      socket.on('addUser', (newUser) => {
+        dispatch(addUserWithLastMessage(newUser));
+      });
     }
 
-    return () => socket?.off('newMessage');
-  }, [receiverId, messages, setMessages]);
+    return () => {
+      socket?.off('newMessage');
+      socket?.off('addUser');
+    };
+  }, [receiverId, messages, setMessages, socket, dispatch]);
 
   return (
     <View className="flex-1 bg-white">
