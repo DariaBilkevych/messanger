@@ -110,11 +110,6 @@ const LoginForm = ({ navigation }) => {
       {errors.password && (
         <Text className="text-red-500 text-xs mb-2">{errors.password}</Text>
       )}
-      <View className="bg-gray-100 p-4 rounded border border-gray-300 mb-4">
-        <Text className="text-center text-lg text-purple-600">
-          Expo Push Token: {expoPushToken?.data || 'Token is not defined'}
-        </Text>
-      </View>
 
       <TouchableOpacity
         onPress={handleSubmit}
