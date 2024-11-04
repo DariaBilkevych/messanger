@@ -2,12 +2,7 @@ import React, { useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, Modal } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Toast from 'react-native-toast-message';
-import {
-  pickMedia,
-  readFileAsBase64,
-  resizeImage,
-  checkFileSize,
-} from '../../utils/fileUtils';
+import { pickMedia, resizeImage, checkFileSize } from '../../utils/fileUtils';
 import { sendMessage } from '../../services/chatService';
 import { updateLastMessage } from '../../store/message/messageSlice';
 import { useDispatch } from 'react-redux';
@@ -15,27 +10,51 @@ import { useDispatch } from 'react-redux';
 const MessageInput = ({ receiverId }) => {
   const [message, setMessage] = useState('');
   const [inputHeight, setInputHeight] = useState(40);
-  const [fileData, setFileData] = useState(null);
+  const [fileUri, setFileUri] = useState(null);
   const [fileName, setFileName] = useState(null);
   const [messageType, setMessageType] = useState('text');
   const [modalVisible, setModalVisible] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const dispatch = useDispatch();
 
   const handleSend = async () => {
     if (isSending) return;
 
-    if (message.trim() || fileData) {
+    if (message.trim() || fileUri) {
       setIsSending(true);
 
       try {
-        const finalMessageType = fileData ? messageType : 'text';
+        const finalMessageType = fileUri ? messageType : 'text';
+
+        let fileObject = null;
+        if (finalMessageType === 'image' && fileUri) {
+          fileObject = {
+            uri: fileUri,
+            name: fileName || 'image.jpg',
+            type: 'image/jpeg',
+          };
+        } else if (finalMessageType === 'file' && fileUri) {
+          fileObject = {
+            uri: fileUri,
+            name: fileName || 'file.txt',
+            type: 'application/octet-stream',
+          };
+        }
+
+        if (finalMessageType !== 'text') {
+          setUploading(true);
+          Toast.show({
+            type: 'info',
+            text1: 'Uploading...',
+          });
+        }
 
         const newMessage = await sendMessage(
           receiverId,
           message,
           finalMessageType,
-          fileData
+          fileObject
         );
 
         dispatch(
@@ -48,18 +67,19 @@ const MessageInput = ({ receiverId }) => {
         );
 
         setMessage('');
-        setFileData(null);
+        setFileUri(null);
         setFileName(null);
         setMessageType('text');
         setInputHeight(40);
       } catch (error) {
         Toast.show({
           type: 'error',
-          text1: 'Error',
-          text2: 'Could not send the message. Try another one, please.',
+          text1: 'Try another one, please.',
+          text2: error.message,
         });
       } finally {
         setIsSending(false);
+        setUploading(false);
       }
     }
   };
@@ -70,10 +90,9 @@ const MessageInput = ({ receiverId }) => {
       const fileSize = result.assets[0].fileSize;
       if (!checkFileSize(fileSize)) return;
 
-      const manipulatedResult = await resizeImage(result.assets[0].uri);
-      const base64Data = await readFileAsBase64(manipulatedResult.uri);
+      const resizedImage = await resizeImage(result.assets[0].uri);
 
-      setFileData(base64Data);
+      setFileUri(resizedImage.uri);
       setFileName(result.assets[0].fileName || 'selected_image.jpg');
       setMessageType('image');
       setModalVisible(true);
@@ -86,9 +105,7 @@ const MessageInput = ({ receiverId }) => {
       const fileSize = result.assets[0].size;
       if (!checkFileSize(fileSize)) return;
 
-      const base64Data = await readFileAsBase64(result.assets[0].uri);
-
-      setFileData(base64Data);
+      setFileUri(result.assets[0].uri);
       setFileName(result.assets[0].name);
       setMessageType('file');
       setModalVisible(true);

@@ -7,15 +7,15 @@ import {
   Modal,
   TouchableWithoutFeedback,
 } from 'react-native';
-import * as FileSystem from 'expo-file-system';
-import * as Sharing from 'expo-sharing';
+import * as WebBrowser from 'expo-web-browser';
 import Toast from 'react-native-toast-message';
 import { MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 
 const MessageItem = ({
   message,
   messageType,
-  fileData,
+  fileUri,
   isCurrentUserMessage,
   formattedDate,
 }) => {
@@ -31,12 +31,7 @@ const MessageItem = ({
 
   const handleOpenFile = async () => {
     try {
-      const fileUri = `${FileSystem.documentDirectory}file.pdf`;
-
-      await FileSystem.writeAsStringAsync(fileUri, fileData, {
-        encoding: FileSystem.EncodingType.Base64,
-      });
-      await Sharing.shareAsync(fileUri);
+      await WebBrowser.openBrowserAsync(fileUri);
     } catch (error) {
       console.error('Error opening file:', error);
       Toast.show({
@@ -59,16 +54,20 @@ const MessageItem = ({
         ) : messageType === 'image' ? (
           <TouchableOpacity onPress={handleImagePress}>
             <Image
-              source={{ uri: `data:image/jpeg;base64,${fileData}` }}
+              source={{ uri: fileUri }}
               style={{ width: 200, height: 200 }}
               resizeMode="contain"
             />
           </TouchableOpacity>
         ) : (
-          <TouchableOpacity onPress={handleOpenFile}>
-            <Text className={`${messageTextStyle} text-base underline`}>
-              Download File
-            </Text>
+          <TouchableOpacity
+            onPress={handleOpenFile}
+            className="flex-row items-center p-2"
+          >
+            <FontAwesome name="file-pdf-o" size={24} color="#E63946" />
+            <View className="ml-2">
+              <Text className={`${messageTextStyle} text-base`}>Document</Text>
+            </View>
           </TouchableOpacity>
         )}
       </View>
@@ -80,7 +79,7 @@ const MessageItem = ({
         onRequestClose={() => setModalVisible(false)}
       >
         <TouchableWithoutFeedback onPress={() => setModalVisible(false)}>
-          <View className="flex-1 justify-center items-center bg-black">
+          <View className="flex-1 justify-center items-center bg-black bg-opacity-70">
             <TouchableOpacity
               className="absolute top-10 right-2 p-2"
               onPress={() => setModalVisible(false)}
@@ -88,7 +87,7 @@ const MessageItem = ({
               <MaterialIcons name="close" size={20} color="white" />
             </TouchableOpacity>
             <Image
-              source={{ uri: `data:image/jpeg;base64,${fileData}` }}
+              source={{ uri: fileUri }}
               style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
             />
           </View>

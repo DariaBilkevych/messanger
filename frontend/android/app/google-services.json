@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "170426585075",
-    "project_id": "expopushnotifications-44234",
-    "storage_bucket": "expopushnotifications-44234.appspot.com"
+    "project_number": "769499331884",
+    "project_id": "exponotifications-aaca7",
+    "storage_bucket": "exponotifications-aaca7.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:170426585075:android:8244c3e9551fdb10f44c86",
+        "mobilesdk_app_id": "1:769499331884:android:3708b4a382f4e3aceec089",
         "android_client_info": {
           "package_name": "com.dariabilkevych.frontend"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDmcrSS3aYZRkfMpEXkPpxnDj45YqzJerU"
+          "current_key": "AIzaSyAPfsvwU8S7d9bMut6by0Yt1t-R0I2qHnI"
         }
       ],
       "services": {

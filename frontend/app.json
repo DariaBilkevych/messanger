@@ -30,6 +30,7 @@
         "projectId": "2f5af5a4-3e0d-4479-9d4e-acd98d66dde4"
       }
     },
-    "owner": "dariabilkevych"
+    "owner": "dariabilkevych",
+    "plugins": [ [ "expo-build-properties", { "android": { "usesCleartextTraffic": true } } ] ] 
   }
 }
