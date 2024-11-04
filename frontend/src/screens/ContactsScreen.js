@@ -19,8 +19,11 @@ import {
   updateLastMessage,
   addUserWithLastMessage,
 } from '../store/message/messageSlice';
+import { usePushNotifications } from '../hooks/usePushNotifications';
 
 const ContactsScreen = () => {
+  usePushNotifications();
+
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [lastUsers, setLastUsers] = useState([]);
@@ -119,7 +122,6 @@ const ContactsScreen = () => {
 
   useEffect(() => {
     if (socket) {
-      console.log('HERE');
       socket.on('newMessage', (newMessage) => {
         console.log(newMessage);
         dispatch(
