@@ -50,7 +50,11 @@ const Navigation = () => {
   }
 
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      ref={(navigator) => {
+        setNavigator(navigator);
+      }}
+    >
       <Stack.Navigator initialRouteName={initialRoute}>
         {!isAuthenticated ? (
           <>

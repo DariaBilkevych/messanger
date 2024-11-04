@@ -1,8 +1,14 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
-const UserHeader = ({ user, onLogout }) => (
+const UserHeader = ({ user, onLogout, isLoggingOut }) => (
   <View className="flex-row items-center justify-between mb-4 pt-14">
     <View className="flex-row items-center">
       <Image
@@ -14,8 +20,12 @@ const UserHeader = ({ user, onLogout }) => (
         {user.firstName} {user.lastName}
       </Text>
     </View>
-    <TouchableOpacity onPress={onLogout}>
-      <Feather name="log-out" size={20} color="#FF3E3E" />
+    <TouchableOpacity onPress={onLogout} disabled={isLoggingOut}>
+      {isLoggingOut ? (
+        <ActivityIndicator size="small" color="#FF3E3E" />
+      ) : (
+        <Feather name="log-out" size={20} color="#FF3E3E" />
+      )}
     </TouchableOpacity>
   </View>
 );

@@ -18,10 +18,18 @@
       "adaptiveIcon": {
         "foregroundImage": "./src/assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.dariabilkevych.frontend",
+      "googleServicesFile": "./android/app/google-services.json"
     },
     "web": {
       "favicon": "./src/assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2f5af5a4-3e0d-4479-9d4e-acd98d66dde4"
+      }
+    },
+    "owner": "dariabilkevych"
   }
 }

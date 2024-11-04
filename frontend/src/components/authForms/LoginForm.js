@@ -1,5 +1,11 @@
 import React, { useState, useRef } from 'react';
-import { View, TextInput, TouchableOpacity, Text } from 'react-native';
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  Text,
+  ActivityIndicator,
+} from 'react-native';
 import PhoneInput from 'react-native-phone-number-input';
 import Feather from 'react-native-vector-icons/Feather';
 import styles from './styles';
@@ -8,6 +14,7 @@ import { loginValidator } from '../../validators/loginValidator';
 import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
 import { authenticate } from '../../store/auth/authSlice';
+import { usePushNotifications } from '../../hooks/usePushNotifications';
 
 const LoginForm = ({ navigation }) => {
   const [formData, setFormData] = useState({
@@ -16,8 +23,11 @@ const LoginForm = ({ navigation }) => {
   });
   const [errors, setErrors] = useState({});
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const phoneInputRef = useRef(null);
   const dispatch = useDispatch();
+
+  const { expoPushToken } = usePushNotifications();
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -25,15 +35,17 @@ const LoginForm = ({ navigation }) => {
 
   const handleSubmit = async () => {
     setErrors({});
+    setLoading(true);
 
     const newErrors = loginValidator(formData);
     if (Object.keys(newErrors).length) {
       setErrors(newErrors);
+      setLoading(false);
       return;
     }
 
     try {
-      await login(formData);
+      await login({ ...formData, expoPushToken: expoPushToken.data });
       dispatch(authenticate());
 
       navigation.navigate('Contacts');
@@ -42,12 +54,13 @@ const LoginForm = ({ navigation }) => {
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || 'Something went wrong';
-
       Toast.show({
         type: 'error',
         text1: 'Error',
         text2: errorMessage,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -101,10 +114,15 @@ const LoginForm = ({ navigation }) => {
       <TouchableOpacity
         onPress={handleSubmit}
         className="bg-purple-700 p-4 rounded-lg shadow-lg"
+        disabled={loading}
       >
-        <Text className="text-white text-center text-lg font-semibold">
-          Log In
-        </Text>
+        {loading ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : (
+          <Text className="text-white text-center text-lg font-semibold">
+            Log In
+          </Text>
+        )}
       </TouchableOpacity>
     </View>
   );

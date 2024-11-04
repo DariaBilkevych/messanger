@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "170426585075",
+    "project_id": "expopushnotifications-44234",
+    "storage_bucket": "expopushnotifications-44234.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:170426585075:android:8244c3e9551fdb10f44c86",
+        "android_client_info": {
+          "package_name": "com.dariabilkevych.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDmcrSS3aYZRkfMpEXkPpxnDj45YqzJerU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

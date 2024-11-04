@@ -7,7 +7,6 @@ import {
   generateRefreshToken,
 } from '../utils/generateTokens.js';
 import { setHttpOnlyCookie, clearHttpOnlyCookie } from '../utils/cookies.js';
-import { io } from '../socket/socket.js';
 
 export const signup = async (req, res) => {
   try {
@@ -16,7 +15,8 @@ export const signup = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { firstName, lastName, phoneNumber, password } = req.body;
+    const { firstName, lastName, phoneNumber, password, expoPushToken } =
+      req.body;
 
     const existingUser = await User.findOne({ phoneNumber });
     if (existingUser) {
@@ -30,6 +30,7 @@ export const signup = async (req, res) => {
       phoneNumber,
       password,
       avatar,
+      expoPushToken,
     });
 
     const accessToken = generateAccessToken(newUser._id);
@@ -47,6 +48,7 @@ export const signup = async (req, res) => {
         lastName: newUser.lastName,
         phoneNumber: newUser.phoneNumber,
         avatar: newUser.avatar,
+        expoPushToken: newUser.expoPushToken,
       },
       accessToken,
       refreshToken,
@@ -65,7 +67,7 @@ export const login = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { phoneNumber, password } = req.body;
+    const { phoneNumber, password, expoPushToken } = req.body;
 
     const user = await User.findOne({ phoneNumber });
     if (!user) {
@@ -81,6 +83,7 @@ export const login = async (req, res) => {
     const refreshToken = generateRefreshToken(user._id);
 
     user.refreshToken = refreshToken;
+    user.expoPushToken = expoPushToken;
     await user.save();
 
     setHttpOnlyCookie(res, 'refreshToken', refreshToken);
@@ -117,6 +120,7 @@ export const logout = async (req, res) => {
       return res.status(400).json({ message: 'User not found' });
     }
 
+    user.expoPushToken = '';
     user.refreshToken = '';
     await user.save();
 
