@@ -23,16 +23,12 @@ const UserList = ({ users, onUserPress }) => {
   };
 
   useEffect(() => {
-    console.log('From console log:', users);
     dispatch(fetchLastMessages(users));
   }, [users, dispatch]);
 
   if (loading) {
     return <Loading />;
   }
-
-  console.log('Users in UserList:', users); // Log the users received
-  console.log('Users with last messagein UserList:', usersWithLastMessages); // Log the users received
 
   return (
     <FlatList
