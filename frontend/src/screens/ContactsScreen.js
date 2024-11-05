@@ -142,7 +142,11 @@ const ContactsScreen = () => {
 
   return (
     <View className="flex-1 px-4 bg-white">
-      <UserHeader user={user} onLogout={handleLogout} />
+      <UserHeader
+        user={user}
+        onLogout={handleLogout}
+        isLoggingOut={isLoggingOut}
+      />
       <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
       {isSearching ? (
         <Loading />
