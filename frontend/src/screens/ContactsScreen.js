@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import {
   getUserData,
   getUsersForSidebar,
@@ -20,20 +20,19 @@ import {
   addUserWithLastMessage,
 } from '../store/message/messageSlice';
 import { usePushNotifications } from '../hooks/usePushNotifications';
+import { useDebounce } from '../hooks/useDebounce';
 
 const ContactsScreen = () => {
   usePushNotifications();
 
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
-  const [lastUsers, setLastUsers] = useState([]);
-  const [initialLoad, setInitialLoad] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const debouncedSearchQuery = useDebounce(searchQuery, 700);
 
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
 
   const dispatch = useDispatch();
   const socket = useSelector((state) => state.socket.socket);
@@ -50,11 +49,7 @@ const ContactsScreen = () => {
   const fetchUsers = async () => {
     try {
       const data = await getUsersForSidebar();
-      if (initialLoad || JSON.stringify(data) !== JSON.stringify(lastUsers)) {
-        setUsers(data);
-        setLastUsers(data);
-        setInitialLoad(false);
-      }
+      setUsers(data);
     } catch (error) {
       console.error('Failed to load users:', error);
     }
@@ -77,7 +72,7 @@ const ContactsScreen = () => {
     setSearchQuery('');
     navigation.navigate('Chat', {
       receiverId: user._id,
-      receiverName: user.firstName + ' ' + user.lastName,
+      receiverName: `${user.firstName} ${user.lastName}`,
       receiverAvatar: user.avatar,
     });
   };
@@ -104,21 +99,15 @@ const ContactsScreen = () => {
     const fetchData = async () => {
       await fetchUserData();
       await fetchUsers();
-      setLoading(false);
+      setInitialLoading(false);
     };
 
     fetchData();
   }, []);
 
   useEffect(() => {
-    if (isFocused) {
-      fetchUsers();
-    }
-  }, [isFocused]);
-
-  useEffect(() => {
-    handleSearch(searchQuery);
-  }, [searchQuery]);
+    handleSearch(debouncedSearchQuery);
+  }, [debouncedSearchQuery]);
 
   useEffect(() => {
     if (socket) {
@@ -143,19 +132,19 @@ const ContactsScreen = () => {
     };
   }, [socket, dispatch]);
 
-  if (loading) {
+  if (initialLoading) {
     return <Loading />;
   }
 
   return (
     <View className="flex-1 px-4 bg-white">
-      <UserHeader
-        user={user}
-        onLogout={handleLogout}
-        isLoggingOut={isLoggingOut}
-      />
+      <UserHeader user={user} onLogout={handleLogout} />
       <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <UserList users={users} onUserPress={handleUserPress} />
+      <UserList
+        users={users}
+        onUserPress={handleUserPress}
+        searchQuery={searchQuery}
+      />
     </View>
   );
 };
