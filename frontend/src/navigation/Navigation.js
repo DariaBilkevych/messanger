@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { authenticate, deauthenticate } from '../store/auth/authSlice';
 import { connectSocket, disconnectSocket } from '../store/socket/socketSlice';
 import { ACCESS_TOKEN_KEY } from '../utils/constants';
+import TabNavigator from './TabNavigator';
 
 const Stack = createNativeStackNavigator();
 
@@ -72,7 +73,7 @@ const Navigation = () => {
           </>
         ) : (
           <>
-            <Stack.Screen
+            {/* <Stack.Screen
               name="Contacts"
               component={ContactsScreen}
               options={{ headerShown: false }}
@@ -80,6 +81,11 @@ const Navigation = () => {
             <Stack.Screen
               name="Chat"
               component={ChatScreen}
+              options={{ headerShown: false }}
+            /> */}
+            <Stack.Screen
+              name="Main"
+              component={TabNavigator}
               options={{ headerShown: false }}
             />
           </>
