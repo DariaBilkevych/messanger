@@ -59,6 +59,7 @@ const UserList = ({ users, onUserPress }) => {
           )}
         </TouchableOpacity>
       )}
+      scrollEnabled={false}
       ListEmptyComponent={() =>
         !usersWithLastMessages.length && (
           <Text className="text-center text-purple-900">No users found</Text>

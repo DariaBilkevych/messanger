@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { View, ScrollView, RefreshControl } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import {
   getUserData,
@@ -30,11 +30,11 @@ const ContactsScreen = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [initialLoading, setInitialLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const debouncedSearchQuery = useDebounce(searchQuery, 700);
   const [isSearching, setIsSearching] = useState(false);
 
   const navigation = useNavigation();
-
   const dispatch = useDispatch();
   const socket = useSelector((state) => state.socket.socket);
 
@@ -99,6 +99,14 @@ const ContactsScreen = () => {
     }
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchUserData();
+    await fetchUsers();
+    setSearchQuery('');
+    setRefreshing(false);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       await fetchUserData();
@@ -141,23 +149,33 @@ const ContactsScreen = () => {
   }
 
   return (
-    <View className="flex-1 px-4 bg-white">
-      <UserHeader
-        user={user}
-        onLogout={handleLogout}
-        isLoggingOut={isLoggingOut}
-      />
-      <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      {isSearching ? (
-        <Loading />
-      ) : (
-        <UserList
-          users={users}
-          onUserPress={handleUserPress}
-          searchQuery={searchQuery}
+    <ScrollView
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+      contentContainerStyle={{ flexGrow: 1 }}
+    >
+      <View className="flex-1 px-4 bg-white">
+        <UserHeader
+          user={user}
+          onLogout={handleLogout}
+          isLoggingOut={isLoggingOut}
         />
-      )}
-    </View>
+        <SearchInput
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+        />
+        {isSearching ? (
+          <Loading />
+        ) : (
+          <UserList
+            users={users}
+            onUserPress={handleUserPress}
+            searchQuery={searchQuery}
+          />
+        )}
+      </View>
+    </ScrollView>
   );
 };
 
