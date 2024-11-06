@@ -124,7 +124,6 @@ const ContactsScreen = () => {
   useEffect(() => {
     if (socket) {
       socket.on('newMessage', (newMessage) => {
-        console.log(newMessage);
         dispatch(
           updateLastMessage({
             senderId: newMessage.senderId._id,
@@ -149,22 +148,19 @@ const ContactsScreen = () => {
   }
 
   return (
-    <ScrollView
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-      contentContainerStyle={{ flexGrow: 1 }}
-    >
-      <View className="flex-1 px-4 bg-white">
-        <UserHeader
-          user={user}
-          onLogout={handleLogout}
-          isLoggingOut={isLoggingOut}
-        />
-        <SearchInput
-          searchQuery={searchQuery}
-          setSearchQuery={setSearchQuery}
-        />
+    <View className="flex-1 px-4 bg-white">
+      <UserHeader
+        user={user}
+        onLogout={handleLogout}
+        isLoggingOut={isLoggingOut}
+      />
+      <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
         {isSearching ? (
           <Loading />
         ) : (
@@ -174,8 +170,8 @@ const ContactsScreen = () => {
             searchQuery={searchQuery}
           />
         )}
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
