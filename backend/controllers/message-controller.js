@@ -21,6 +21,7 @@ export const sendMessage = async (req, res) => {
         const resourceType = messageType === 'file' ? 'raw' : 'image';
 
         const result = await cloudinary.uploader.upload(file.path, {
+          folder: 'messages',
           resource_type: resourceType,
           ...(messageType === 'file' && { pages: true }),
         });
