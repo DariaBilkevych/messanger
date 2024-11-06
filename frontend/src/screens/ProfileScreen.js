@@ -2,9 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUser, updateUserProfile } from '../store/auth/authSlice';
-import { updateName, updateAvatar } from '../services/userService';
+import {
+  updateName,
+  updateAvatar,
+  updatePassword,
+} from '../services/userService';
 import Loading from '../components/common/Loading';
 import { pickMedia } from '../utils/fileUtils';
+import Toast from 'react-native-toast-message';
 
 const ProfileScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -12,6 +17,10 @@ const ProfileScreen = ({ navigation }) => {
   const [editingName, setEditingName] = useState(false);
   const [newFirstName, setNewFirstName] = useState('');
   const [newLastName, setNewLastName] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
@@ -58,6 +67,37 @@ const ProfileScreen = ({ navigation }) => {
     setNewFirstName(user.firstName);
     setNewLastName(user.lastName);
     setEditingName(false);
+  };
+
+  const handlePasswordUpdate = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      setPasswordError('All fields must be filled');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError('New password and confirm password do not match');
+      return;
+    }
+
+    try {
+      await updatePassword(currentPassword, newPassword, confirmPassword);
+      Toast.show({
+        type: 'success',
+        text1: 'Password updated successfully',
+      });
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setPasswordError('');
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || 'Something went wrong';
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: errorMessage,
+      });
+    }
   };
 
   useEffect(() => {
@@ -136,13 +176,47 @@ const ProfileScreen = ({ navigation }) => {
         </View>
       </View>
 
-      <View className="border border-gray-200 rounded-lg p-2 bg-white">
+      <View className="border border-gray-200 rounded-lg p-2 bg-white mb-6">
         <Text className="text-xs text-gray-500 mb-1">Phone Number</Text>
         <TextInput
           value={user.phoneNumber}
           editable={false}
           className="text-sm text-gray-700"
         />
+      </View>
+
+      <View className="border border-gray-200 rounded-lg p-2 bg-white mb-6">
+        <Text className="text-xs text-gray-500 mb-1">Change Password</Text>
+        <TextInput
+          value={currentPassword}
+          onChangeText={setCurrentPassword}
+          placeholder="Current Password"
+          secureTextEntry
+          className="text-sm text-gray-700 border-b border-gray-200 p-2 mb-2"
+        />
+        <TextInput
+          value={newPassword}
+          onChangeText={setNewPassword}
+          placeholder="New Password"
+          secureTextEntry
+          className="text-sm text-gray-700 border-b border-gray-200 p-2 mb-2"
+        />
+        <TextInput
+          value={confirmPassword}
+          onChangeText={setConfirmPassword}
+          placeholder="Confirm New Password"
+          secureTextEntry
+          className="text-sm text-gray-700 border-b border-gray-200 p-2 mb-2"
+        />
+        {passwordError ? (
+          <Text className="text-red-500 text-xs mb-2">{passwordError}</Text>
+        ) : null}
+        <TouchableOpacity
+          onPress={handlePasswordUpdate}
+          className="bg-blue-500 p-2 rounded-md"
+        >
+          <Text className="text-center text-white">Update Password</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
