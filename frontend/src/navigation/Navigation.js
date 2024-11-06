@@ -5,7 +5,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import HomeScreen from '../screens/HomeScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import LoginScreen from '../screens/LoginScreen';
-import ContactsScreen from '../screens/ContactsScreen';
 import ChatScreen from '../screens/ChatScreen';
 import Loading from '../components/common/Loading';
 import { navigationRef } from '../services/navigationService';
@@ -73,19 +72,14 @@ const Navigation = () => {
           </>
         ) : (
           <>
-            {/* <Stack.Screen
-              name="Contacts"
-              component={ContactsScreen}
+            <Stack.Screen
+              name="Main"
+              component={TabNavigator}
               options={{ headerShown: false }}
             />
             <Stack.Screen
               name="Chat"
               component={ChatScreen}
-              options={{ headerShown: false }}
-            /> */}
-            <Stack.Screen
-              name="Main"
-              component={TabNavigator}
               options={{ headerShown: false }}
             />
           </>
