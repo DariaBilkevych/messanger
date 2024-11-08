@@ -13,8 +13,6 @@ const ChatScreen = ({ route }) => {
   const [loading, setLoading] = useState(true);
   const messageListRef = useRef(null);
 
-  const { notification } = usePushNotifications();
-
   useEffect(() => {
     const fetchMessages = async () => {
       try {
@@ -28,7 +26,7 @@ const ChatScreen = ({ route }) => {
     };
 
     fetchMessages();
-  }, [receiverId, messages, setMessages, notification]);
+  }, [receiverId, messages, setMessages]);
 
   return (
     <View className="flex-1 bg-white">
