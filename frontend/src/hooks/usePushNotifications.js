@@ -57,6 +57,8 @@ export const usePushNotifications = () => {
   };
 
   const handleNotificationNavigation = (notification) => {
+    if (appState === 'active') return;
+
     const { data } = notification?.request?.content;
     if (data?.sender) {
       const { _id, firstName, lastName, avatar } = data.sender;

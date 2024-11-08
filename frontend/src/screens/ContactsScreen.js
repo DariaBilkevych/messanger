@@ -27,6 +27,7 @@ const ContactsScreen = () => {
 
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [initialLoading, setInitialLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -51,6 +52,7 @@ const ContactsScreen = () => {
     try {
       const data = await getUsersForSidebar();
       setUsers(data);
+      setAllUsers(data);
     } catch (error) {
       console.error('Failed to load users:', error);
     }
@@ -58,6 +60,7 @@ const ContactsScreen = () => {
 
   const handleSearch = async (query) => {
     setIsSearching(true);
+    setSearchQuery(query);
 
     try {
       if (query) {
@@ -175,8 +178,9 @@ const ContactsScreen = () => {
         ) : (
           <UserList
             users={users}
+            allUsers={allUsers}
             onUserPress={handleUserPress}
-            searchQuery={searchQuery}
+            searchQuery={debouncedSearchQuery}
             isSearching={isSearching}
           />
         )}

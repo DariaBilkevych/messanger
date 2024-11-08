@@ -5,7 +5,13 @@ import { fetchLastMessages } from '../../utils/messageThunks';
 import Loading from '../common/Loading';
 import { DateTime } from 'luxon';
 
-const UserList = ({ users, onUserPress, searchQuery, isSearching }) => {
+const UserList = ({
+  users,
+  allUsers,
+  onUserPress,
+  searchQuery,
+  isSearching,
+}) => {
   const dispatch = useDispatch();
   const { usersWithLastMessages, loading } = useSelector(
     (state) => state.messages
@@ -24,9 +30,9 @@ const UserList = ({ users, onUserPress, searchQuery, isSearching }) => {
 
   useEffect(() => {
     if (!searchQuery) {
-      dispatch(fetchLastMessages(users));
+      dispatch(fetchLastMessages(allUsers));
     }
-  }, [users, searchQuery, dispatch]);
+  }, [allUsers, searchQuery, dispatch]);
 
   if (loading) {
     return <Loading />;
