@@ -13,7 +13,8 @@ import Toast from 'react-native-toast-message';
 
 const ProfileScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
-  const [fileUri, setFileUri] = useState(null);
+  const [avatarUri, setAvatarUri] = useState(null);
+  const [avaratName, setAvatarName] = useState(null);
   const [editingName, setEditingName] = useState(false);
   const [newFirstName, setNewFirstName] = useState('');
   const [newLastName, setNewLastName] = useState('');
@@ -52,14 +53,43 @@ const ProfileScreen = ({ navigation }) => {
     setEditingName(false);
   };
 
+  const handleAvatarUpdate = async () => {
+    try {
+      let avatarObject = null;
+
+      if (avatarUri) {
+        avatarObject = {
+          uri: avatarUri,
+          name: avaratName || 'image.jpg',
+          type: 'image/jpeg',
+        };
+      }
+
+      const updatedUser = await updateAvatar(avatarObject);
+      dispatch(updateUserProfile({ avatar: updatedUser.avatar }));
+
+      setAvatarUri(null);
+      setAvatarName(null);
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || 'Something went wrong';
+      Toast.show({
+        type: 'error',
+        text1: 'Try another one, please.',
+        text2: errorMessage,
+      });
+    }
+  };
+
   const pickAvatar = async () => {
     const result = await pickMedia('image');
     if (!result.canceled) {
       const selectedFile = result.assets[0];
-      setFileUri(selectedFile.uri);
+      console.log(selectedFile);
+      setAvatarUri(selectedFile.uri);
+      setAvatarName(result.assets[0].fileName || 'selected_image.jpg');
 
-      const updatedUser = await updateAvatar(selectedFile);
-      dispatch(updateUserProfile({ avatar: updatedUser.avatar }));
+      await handleAvatarUpdate();
     }
   };
 

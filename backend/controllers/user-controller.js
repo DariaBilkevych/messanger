@@ -1,6 +1,8 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/user-model.js';
 
+import { cloudinary } from '../utils/cloudinary.js';
+
 export const getUserData = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);

@@ -30,11 +30,9 @@ export const updateName = async (firstName, lastName) => {
 export const updateAvatar = async (avatarFile) => {
   const formData = new FormData();
 
-  formData.append('avatar', {
-    uri: avatarFile.uri,
-    type: avatarFile.type,
-    name: avatarFile.fileName,
-  });
+  if (avatarFile) {
+    formData.append('avatar', avatarFile);
+  }
 
   const response = await axiosInstance.put('/users/update-avatar', formData, {
     headers: {
