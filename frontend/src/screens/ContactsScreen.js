@@ -26,8 +26,8 @@ const ContactsScreen = () => {
   const [initialLoading, setInitialLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
-  const debouncedSearchQuery = useDebounce(searchQuery, 700);
   const [isSearching, setIsSearching] = useState(false);
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
@@ -45,6 +45,8 @@ const ContactsScreen = () => {
 
   const handleSearch = async (query) => {
     setIsSearching(true);
+    setSearchQuery(query);
+
     try {
       if (query) {
         const data = await searchUsers(query);
@@ -105,6 +107,14 @@ const ContactsScreen = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (searchQuery) {
+      setIsSearching(true);
+    } else {
+      setIsSearching(false);
+    }
+  }, [searchQuery]);
+
+  useEffect(() => {
     handleSearch(debouncedSearchQuery);
   }, [debouncedSearchQuery]);
 
@@ -156,6 +166,7 @@ const ContactsScreen = () => {
             users={users}
             onUserPress={handleUserPress}
             searchQuery={searchQuery}
+            isSearching={isSearching}
           />
         )}
       </ScrollView>

@@ -7,6 +7,7 @@ import { navigate } from '../services/navigationService';
 
 export const usePushNotifications = () => {
   const [appState, setAppState] = useState(AppState.currentState);
+  const [notificationData, setNotificationData] = useState(null);
 
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -17,7 +18,6 @@ export const usePushNotifications = () => {
   });
 
   const [expoPushToken, setExpoPushToken] = useState(null);
-  const [notification, setNotification] = useState(null);
   const notificationListener = useRef();
   const responseListener = useRef();
 
@@ -74,21 +74,31 @@ export const usePushNotifications = () => {
     });
 
     Notifications.getLastNotificationResponseAsync().then((response) => {
-      handleNotificationNavigation(response?.notification);
+      if (appState !== 'active') {
+        setNotificationData(response?.notification);
+      }
     });
 
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       setAppState(nextAppState);
+      if (nextAppState === 'active' && notificationData) {
+        handleNotificationNavigation(notificationData);
+        setNotificationData(null);
+      }
     });
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
+        setNotificationData(notification);
       });
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        handleNotificationNavigation(response.notification);
+        if (appState !== 'active') {
+          setNotificationData(response.notification);
+        } else {
+          handleNotificationNavigation(response.notification);
+        }
       });
 
     return () => {
@@ -98,10 +108,10 @@ export const usePushNotifications = () => {
       Notifications.removeNotificationSubscription(responseListener.current);
       subscription.remove();
     };
-  }, []);
+  }, [appState, notificationData]);
 
   return {
     expoPushToken,
-    notification,
+    notificationData,
   };
 };
