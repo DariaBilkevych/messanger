@@ -32,13 +32,12 @@ export const updateAvatar = async (avatarFile) => {
 
   if (avatarFile) {
     formData.append('avatar', avatarFile);
+  } else {
+    console.error('No avatar file selected');
+    return;
   }
 
-  const response = await axiosInstance.put('/users/update-avatar', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
+  const response = await axiosInstance.put('/users/update-avatar', formData);
 
   return response.data;
 };

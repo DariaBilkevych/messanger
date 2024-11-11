@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Image, TouchableOpacity } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import Icon from 'react-native-vector-icons/Ionicons';
 import { fetchUser, updateUserProfile } from '../store/auth/authSlice';
 import {
   updateName,
@@ -15,6 +16,7 @@ const ProfileScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [avatarUri, setAvatarUri] = useState(null);
   const [avaratName, setAvatarName] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [editingName, setEditingName] = useState(false);
   const [newFirstName, setNewFirstName] = useState('');
   const [newLastName, setNewLastName] = useState('');
@@ -22,6 +24,7 @@ const ProfileScreen = ({ navigation }) => {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordError, setPasswordError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
@@ -41,17 +44,49 @@ const ProfileScreen = ({ navigation }) => {
     fetchData();
   }, [dispatch]);
 
+  const handleNameEdit = () => {
+    setNewFirstName(user.firstName);
+    setNewLastName(user.lastName);
+    setEditingName(true);
+  };
+
   const handleNameUpdate = async () => {
     if (!newFirstName || !newLastName) {
-      alert('Name fields cannot be empty');
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Name fields cannot be empty',
+      });
       return;
     }
+
     await updateName(newFirstName, newLastName);
     dispatch(
       updateUserProfile({ firstName: newFirstName, lastName: newLastName })
     );
+
+    Toast.show({
+      type: 'success',
+      text1: 'Name updated successfully',
+    });
+
     setEditingName(false);
   };
+
+  const pickAvatar = async () => {
+    const result = await pickMedia('image');
+    if (!result.canceled) {
+      const selectedFile = result.assets[0];
+      setAvatarUri(selectedFile.uri);
+      setAvatarName(result.assets[0].fileName || 'selected_image.jpg');
+    }
+  };
+
+  useEffect(() => {
+    if (avatarUri) {
+      handleAvatarUpdate();
+    }
+  }, [avatarUri]);
 
   const handleAvatarUpdate = async () => {
     try {
@@ -64,6 +99,12 @@ const ProfileScreen = ({ navigation }) => {
           type: 'image/jpeg',
         };
       }
+
+      setUploading(true);
+      Toast.show({
+        type: 'info',
+        text1: 'Uploading...',
+      });
 
       const updatedUser = await updateAvatar(avatarObject);
       dispatch(updateUserProfile({ avatar: updatedUser.avatar }));
@@ -81,18 +122,6 @@ const ProfileScreen = ({ navigation }) => {
     }
   };
 
-  const pickAvatar = async () => {
-    const result = await pickMedia('image');
-    if (!result.canceled) {
-      const selectedFile = result.assets[0];
-      console.log(selectedFile);
-      setAvatarUri(selectedFile.uri);
-      setAvatarName(result.assets[0].fileName || 'selected_image.jpg');
-
-      await handleAvatarUpdate();
-    }
-  };
-
   const handleCancelEditing = () => {
     setNewFirstName(user.firstName);
     setNewLastName(user.lastName);
@@ -102,10 +131,12 @@ const ProfileScreen = ({ navigation }) => {
   const handlePasswordUpdate = async () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
       setPasswordError('All fields must be filled');
+      clearPasswordFields();
       return;
     }
     if (newPassword !== confirmPassword) {
       setPasswordError('New password and confirm password do not match');
+      clearPasswordFields();
       return;
     }
 
@@ -115,9 +146,7 @@ const ProfileScreen = ({ navigation }) => {
         type: 'success',
         text1: 'Password updated successfully',
       });
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
+      clearPasswordFields();
       setPasswordError('');
     } catch (error) {
       const errorMessage =
@@ -127,7 +156,14 @@ const ProfileScreen = ({ navigation }) => {
         text1: 'Error',
         text2: errorMessage,
       });
+      clearPasswordFields();
     }
+  };
+
+  const clearPasswordFields = () => {
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
   };
 
   useEffect(() => {
@@ -179,7 +215,7 @@ const ProfileScreen = ({ navigation }) => {
         </View>
         <View>
           <TouchableOpacity
-            onPress={() => setEditingName(true)}
+            onPress={handleNameEdit}
             className="border-t border-b border-gray-200 rounded-md p-2"
           >
             {editingName ? (
@@ -217,27 +253,54 @@ const ProfileScreen = ({ navigation }) => {
 
       <View className="border border-gray-200 rounded-lg p-2 bg-white mb-6">
         <Text className="text-xs text-gray-500 mb-1">Change Password</Text>
-        <TextInput
-          value={currentPassword}
-          onChangeText={setCurrentPassword}
-          placeholder="Current Password"
-          secureTextEntry
-          className="text-sm text-gray-700 border-b border-gray-200 p-2 mb-2"
-        />
-        <TextInput
-          value={newPassword}
-          onChangeText={setNewPassword}
-          placeholder="New Password"
-          secureTextEntry
-          className="text-sm text-gray-700 border-b border-gray-200 p-2 mb-2"
-        />
-        <TextInput
-          value={confirmPassword}
-          onChangeText={setConfirmPassword}
-          placeholder="Confirm New Password"
-          secureTextEntry
-          className="text-sm text-gray-700 border-b border-gray-200 p-2 mb-2"
-        />
+        <View className="flex-row items-center">
+          <TextInput
+            value={currentPassword}
+            onChangeText={setCurrentPassword}
+            placeholder="Current Password"
+            secureTextEntry={!showPassword}
+            className="text-sm text-gray-700 border-b border-gray-200 p-2 mb-2 flex-1"
+          />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <Icon
+              name={showPassword ? 'eye' : 'eye-off'}
+              size={20}
+              color="gray"
+            />
+          </TouchableOpacity>
+        </View>
+        <View className="flex-row items-center">
+          <TextInput
+            value={newPassword}
+            onChangeText={setNewPassword}
+            placeholder="New Password"
+            secureTextEntry={!showPassword}
+            className="text-sm text-gray-700 border-b border-gray-200 p-2 mb-2 flex-1"
+          />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <Icon
+              name={showPassword ? 'eye' : 'eye-off'}
+              size={20}
+              color="gray"
+            />
+          </TouchableOpacity>
+        </View>
+        <View className="flex-row items-center">
+          <TextInput
+            value={confirmPassword}
+            onChangeText={setConfirmPassword}
+            placeholder="Confirm New Password"
+            secureTextEntry={!showPassword}
+            className="text-sm text-gray-700 border-b border-gray-200 p-2 mb-2 flex-1"
+          />
+          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+            <Icon
+              name={showPassword ? 'eye' : 'eye-off'}
+              size={20}
+              color="gray"
+            />
+          </TouchableOpacity>
+        </View>
         {passwordError ? (
           <Text className="text-red-500 text-xs mb-2">{passwordError}</Text>
         ) : null}
