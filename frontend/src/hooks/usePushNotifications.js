@@ -8,6 +8,7 @@ import { navigate } from '../services/navigationService';
 export const usePushNotifications = () => {
   const [appState, setAppState] = useState(AppState.currentState);
   const [notificationData, setNotificationData] = useState(null);
+  const [hasHandleNotification, setHasHandleNotification] = useState(false);
 
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -81,23 +82,34 @@ export const usePushNotifications = () => {
 
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       setAppState(nextAppState);
-      if (nextAppState === 'active' && notificationData) {
+      if (
+        nextAppState === 'active' &&
+        notificationData &&
+        !hasHandleNotification
+      ) {
         handleNotificationNavigation(notificationData);
+        setHasHandleNotification(true);
         setNotificationData(null);
+        console.log('H1: ', notificationData);
       }
     });
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
         setNotificationData(notification);
+        setHasHandleNotification(false);
       });
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
         if (appState !== 'active') {
           setNotificationData(response.notification);
+          setHasHandleNotification(false);
         } else {
           handleNotificationNavigation(response.notification);
+          setHasHandleNotification(true);
+          setNotificationData(null);
+          console.log('H2: ', notificationData);
         }
       });
 
@@ -108,7 +120,7 @@ export const usePushNotifications = () => {
       Notifications.removeNotificationSubscription(responseListener.current);
       subscription.remove();
     };
-  }, [appState, notificationData]);
+  }, [appState, notificationData, hasHandleNotification]);
 
   return {
     expoPushToken,
