@@ -1,15 +1,9 @@
-import React, { useEffect } from 'react';
 import { FlatList, TouchableOpacity, Image, Text, View } from 'react-native';
-import { useDispatch, useSelector } from 'react-redux';
-import { fetchLastMessages } from '../../utils/messageThunks';
-import Loading from '../common/Loading';
+import { useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 
-const UserList = ({ users, onUserPress, searchQuery, isSearching }) => {
-  const dispatch = useDispatch();
-  const { usersWithLastMessages, loading } = useSelector(
-    (state) => state.messages
-  );
+const UserList = ({ users, onUserPress, searchQuery }) => {
+  const { usersWithLastMessages } = useSelector((state) => state.messages);
 
   const truncateMessage = (message, maxLength) => {
     return message.length > maxLength
@@ -21,18 +15,6 @@ const UserList = ({ users, onUserPress, searchQuery, isSearching }) => {
     const date = DateTime.fromISO(dateString, { zone: 'Europe/Kyiv' });
     return date.toFormat('d MMM');
   };
-
-  useEffect(() => {
-    if (!searchQuery) {
-      console.log('Users from fetch:', users);
-      dispatch(fetchLastMessages(users));
-    }
-  }, [users, searchQuery, dispatch]);
-
-  if (loading) {
-    console.log('Loader');
-    return <Loading />;
-  }
 
   const renderItem = ({ item: user }) => (
     <TouchableOpacity
@@ -80,7 +62,6 @@ const UserList = ({ users, onUserPress, searchQuery, isSearching }) => {
 
   return (
     <>
-      {isSearching && <Loading />}
       <FlatList
         data={searchQuery ? users : usersWithLastMessages}
         keyExtractor={(user) => user._id}
