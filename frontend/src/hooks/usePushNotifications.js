@@ -7,8 +7,6 @@ import { navigate } from '../services/navigationService';
 
 export const usePushNotifications = () => {
   const [appState, setAppState] = useState(AppState.currentState);
-  const [notificationData, setNotificationData] = useState(null);
-  const [hasHandleNotification, setHasHandleNotification] = useState(false);
 
   Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -19,6 +17,7 @@ export const usePushNotifications = () => {
   });
 
   const [expoPushToken, setExpoPushToken] = useState(null);
+  const [notification, setNotification] = useState(null);
   const notificationListener = useRef();
   const responseListener = useRef();
 
@@ -75,45 +74,21 @@ export const usePushNotifications = () => {
     });
 
     Notifications.getLastNotificationResponseAsync().then((response) => {
-      if (appState !== 'active') {
-        setNotificationData(response?.notification);
-        setHasHandleNotification(false);
-      } else {
-        handleNotificationNavigation(response?.notification);
-        setHasHandleNotification(true);
-        setNotificationData(null);
-      }
+      handleNotificationNavigation(response?.notification);
     });
 
     const subscription = AppState.addEventListener('change', (nextAppState) => {
       setAppState(nextAppState);
-      if (
-        nextAppState === 'active' &&
-        notificationData &&
-        !hasHandleNotification
-      ) {
-        handleNotificationNavigation(notificationData);
-        setHasHandleNotification(true);
-        setNotificationData(null);
-      }
     });
 
     notificationListener.current =
       Notifications.addNotificationReceivedListener((notification) => {
-        setNotificationData(notification);
-        setHasHandleNotification(false);
+        setNotification(notification);
       });
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        if (appState !== 'active') {
-          setNotificationData(response.notification);
-          setHasHandleNotification(false);
-        } else {
-          handleNotificationNavigation(response.notification);
-          setHasHandleNotification(true);
-          setNotificationData(null);
-        }
+        handleNotificationNavigation(response.notification);
       });
 
     return () => {
@@ -123,10 +98,10 @@ export const usePushNotifications = () => {
       Notifications.removeNotificationSubscription(responseListener.current);
       subscription.remove();
     };
-  }, [appState, notificationData, hasHandleNotification]);
+  }, []);
 
   return {
     expoPushToken,
-    notificationData,
+    notification,
   };
 };
