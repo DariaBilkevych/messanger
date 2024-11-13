@@ -77,6 +77,11 @@ export const usePushNotifications = () => {
     Notifications.getLastNotificationResponseAsync().then((response) => {
       if (appState !== 'active') {
         setNotificationData(response?.notification);
+        setHasHandleNotification(false);
+      } else {
+        handleNotificationNavigation(response?.notification);
+        setHasHandleNotification(true);
+        setNotificationData(null);
       }
     });
 
@@ -90,7 +95,6 @@ export const usePushNotifications = () => {
         handleNotificationNavigation(notificationData);
         setHasHandleNotification(true);
         setNotificationData(null);
-        console.log('H1: ', notificationData);
       }
     });
 
@@ -109,7 +113,6 @@ export const usePushNotifications = () => {
           handleNotificationNavigation(response.notification);
           setHasHandleNotification(true);
           setNotificationData(null);
-          console.log('H2: ', notificationData);
         }
       });
 

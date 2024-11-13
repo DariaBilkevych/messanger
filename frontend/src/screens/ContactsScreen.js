@@ -17,6 +17,7 @@ import {
 } from '../store/message/messageSlice';
 import { usePushNotifications } from '../hooks/usePushNotifications';
 import { useDebounce } from '../hooks/useDebounce';
+import { fetchLastMessages } from '../utils/messageThunks';
 
 const ContactsScreen = () => {
   usePushNotifications();
@@ -27,6 +28,8 @@ const ContactsScreen = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(true);
+  const [isFetchingAllUsers, setIsFetchingAllUsers] = useState(false);
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const navigation = useNavigation();
@@ -36,10 +39,13 @@ const ContactsScreen = () => {
 
   const fetchUsers = async () => {
     try {
+      setIsFetchingAllUsers(true);
       const data = await getUsersForSidebar();
       setUsers(data);
     } catch (error) {
       console.error('Failed to load users:', error);
+    } finally {
+      setIsFetchingAllUsers(false);
     }
   };
 
@@ -107,11 +113,7 @@ const ContactsScreen = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (searchQuery) {
-      setIsSearching(true);
-    } else {
-      setIsSearching(false);
-    }
+    setIsSearching(true);
   }, [searchQuery]);
 
   useEffect(() => {
@@ -141,6 +143,15 @@ const ContactsScreen = () => {
     };
   }, [socket, dispatch]);
 
+  useEffect(() => {
+    if (!searchQuery) {
+      setLoadingMessages(true);
+      dispatch(fetchLastMessages(users)).finally(() =>
+        setLoadingMessages(false)
+      );
+    }
+  }, [users, searchQuery, dispatch]);
+
   if (initialLoading) {
     return <Loading />;
   }
@@ -159,14 +170,13 @@ const ContactsScreen = () => {
         }
         contentContainerStyle={{ flexGrow: 1 }}
       >
-        {isSearching ? (
+        {isSearching || loadingMessages || isFetchingAllUsers ? (
           <Loading />
         ) : (
           <UserList
             users={users}
             onUserPress={handleUserPress}
             searchQuery={searchQuery}
-            isSearching={isSearching}
           />
         )}
       </ScrollView>
