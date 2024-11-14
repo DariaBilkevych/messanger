@@ -15,13 +15,10 @@ import {
   updateLastMessage,
   addUserWithLastMessage,
 } from '../store/message/messageSlice';
-import { usePushNotifications } from '../hooks/usePushNotifications';
 import { useDebounce } from '../hooks/useDebounce';
 import { fetchLastMessages } from '../utils/messageThunks';
 
 const ContactsScreen = () => {
-  usePushNotifications();
-
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [initialLoading, setInitialLoading] = useState(true);
