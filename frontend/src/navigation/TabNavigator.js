@@ -5,15 +5,21 @@ import ProfileScreen from '../screens/ProfileScreen';
 import { Ionicons } from '@expo/vector-icons';
 
 const Tab = createBottomTabNavigator();
+
 const TabNavigator = () => {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator
+      screenOptions={{
+        tabBarActiveTintColor: '#7A1FA1',
+        tabBarInactiveTintColor: '#B0B0B0',
+      }}
+    >
       <Tab.Screen
-        name="Contacts"
+        name="Chats"
         component={ContactsScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="chatbubble-outline" size={size} color={color} />
+            <Ionicons name="chatbubbles-outline" size={size} color={color} />
           ),
           headerShown: false,
         }}
