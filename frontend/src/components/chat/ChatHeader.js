@@ -10,9 +10,23 @@ import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const ChatHeader = ({ receiverName, receiverAvatar }) => {
+const ChatHeader = ({
+  receiverName,
+  receiverAvatar,
+  receiverId,
+  receiverPhone,
+}) => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+
+  const handleProfilePress = () => {
+    navigation.navigate('UserProfile', {
+      receiverName,
+      receiverAvatar,
+      receiverId,
+      receiverPhone,
+    });
+  };
 
   return (
     <SafeAreaView style={{ paddingTop: insets.top }}>
@@ -23,12 +37,12 @@ const ChatHeader = ({ receiverName, receiverAvatar }) => {
         <View className="flex-row items-center">
           <Text className="text-md font-semibold">{receiverName}</Text>
         </View>
-        <View className="flex-row items-center">
+        <TouchableOpacity onPress={handleProfilePress}>
           <Image
             source={{ uri: receiverAvatar }}
             className="w-9 h-9 rounded-full mr-2"
           />
-        </View>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

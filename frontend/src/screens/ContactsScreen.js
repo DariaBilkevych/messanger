@@ -70,6 +70,7 @@ const ContactsScreen = () => {
       receiverId: user._id,
       receiverName: `${user.firstName} ${user.lastName}`,
       receiverAvatar: user.avatar,
+      receiverPhone: user.phoneNumber,
     });
   };
 

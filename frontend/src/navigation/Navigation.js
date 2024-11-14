@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import HomeScreen from '../screens/HomeScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ChatScreen from '../screens/ChatScreen';
+import UserProfileScreen from '../screens/UserProfileScreen';
 import Loading from '../components/common/Loading';
 import { navigationRef } from '../services/navigationService';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,6 +17,7 @@ import { connectSocket, disconnectSocket } from '../store/socket/socketSlice';
 import { ACCESS_TOKEN_KEY } from '../utils/constants';
 import TabNavigator from './TabNavigator';
 import { usePushNotifications } from '../hooks/usePushNotifications';
+import { useNavigation } from '@react-navigation/native';
 
 const Stack = createNativeStackNavigator();
 
@@ -84,6 +88,24 @@ const Navigation = () => {
               name="Chat"
               component={ChatScreen}
               options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="UserProfile"
+              component={UserProfileScreen}
+              options={{
+                headerLeft: () => {
+                  const navigation = useNavigation();
+                  return (
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                      <Ionicons name="chevron-back" size={24} color="black" />
+                    </TouchableOpacity>
+                  );
+                },
+                headerStyle: {
+                  backgroundColor: 'white',
+                },
+                headerTintColor: 'black',
+              }}
             />
           </>
         )}
