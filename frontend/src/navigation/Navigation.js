@@ -13,12 +13,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { authenticate, deauthenticate } from '../store/auth/authSlice';
 import { connectSocket, disconnectSocket } from '../store/socket/socketSlice';
 import { ACCESS_TOKEN_KEY } from '../utils/constants';
-import { usePushNotifications } from '../hooks/usePushNotifications';
+// import { usePushNotifications } from '../hooks/usePushNotifications';
 
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
-  usePushNotifications();
+  // usePushNotifications();
 
   const [initialRoute, setInitialRoute] = useState(null);
   const dispatch = useDispatch();

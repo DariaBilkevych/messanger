@@ -3,6 +3,7 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { Platform, AppState } from 'react-native';
+import { navigate } from '../services/navigationService';
 
 export const usePushNotifications = () => {
   const [appState, setAppState] = useState(AppState.currentState);
@@ -55,9 +56,25 @@ export const usePushNotifications = () => {
     return token;
   };
 
+  const handleNotificationNavigation = (notification) => {
+    const { data } = notification?.request?.content;
+    if (data?.sender) {
+      const { _id, firstName, lastName, avatar } = data.sender;
+      navigate('Chat', {
+        receiverId: _id,
+        receiverName: `${firstName} ${lastName}`,
+        receiverAvatar: avatar,
+      });
+    }
+  };
+
   useEffect(() => {
     registerForPushNotificationsAsync().then((token) => {
       setExpoPushToken(token);
+    });
+
+    Notifications.getLastNotificationResponseAsync().then((response) => {
+      handleNotificationNavigation(response?.notification);
     });
 
     const subscription = AppState.addEventListener('change', (nextAppState) => {
@@ -71,7 +88,7 @@ export const usePushNotifications = () => {
 
     responseListener.current =
       Notifications.addNotificationResponseReceivedListener((response) => {
-        // Handle navigation here if needed in the background
+        handleNotificationNavigation(response.notification);
       });
 
     return () => {
