@@ -1,4 +1,5 @@
 import { FlatList, TouchableOpacity, Image, Text, View } from 'react-native';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 
@@ -18,7 +19,7 @@ const UserList = ({ users, onUserPress, searchQuery }) => {
   };
 
   const isUserOnline = (userId) => {
-    return onlineUsers.some((user) => user.id === userId);
+    return onlineUsers.some((onlineUserId) => onlineUserId === userId);
   };
 
   const renderItem = ({ item: user }) => (
@@ -44,14 +45,14 @@ const UserList = ({ users, onUserPress, searchQuery }) => {
       className="border-b border-purple-200 py-4 flex-row items-center"
       onPress={() => onUserPress(user)}
     >
-      <View className="relative">
+      <View className="relative mr-3">
         <Image
           source={{ uri: user.avatar }}
-          className="w-10 h-10 rounded-full mr-3"
+          className="w-10 h-10 rounded-full"
           resizeMode="cover"
         />
         {isUserOnline(user._id) && (
-          <View className="absolute bottom-0 right-0 bg-green-500 w-3 h-3 rounded-full border-2 border-white" />
+          <View className="absolute top-0 right-0 bg-green-500 w-3 h-3 rounded-full border-2 border-white shadow-md" />
         )}
       </View>
       <View className="flex-1">
@@ -63,7 +64,7 @@ const UserList = ({ users, onUserPress, searchQuery }) => {
         </Text>
       </View>
       {user.lastMessageDate && (
-        <Text className="text-gray-400">
+        <Text className="text-gray-400 text-sm">
           {formatDate(user.lastMessageDate)}
         </Text>
       )}
