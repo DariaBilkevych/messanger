@@ -4,6 +4,7 @@ import { DateTime } from 'luxon';
 
 const UserList = ({ users, onUserPress, searchQuery }) => {
   const { usersWithLastMessages } = useSelector((state) => state.messages);
+  const { onlineUsers } = useSelector((state) => state.socket);
 
   const truncateMessage = (message, maxLength) => {
     return message.length > maxLength
@@ -14,6 +15,10 @@ const UserList = ({ users, onUserPress, searchQuery }) => {
   const formatDate = (dateString) => {
     const date = DateTime.fromISO(dateString, { zone: 'Europe/Kyiv' });
     return date.toFormat('d MMM');
+  };
+
+  const isUserOnline = (userId) => {
+    return onlineUsers.some((user) => user.id === userId);
   };
 
   const renderItem = ({ item: user }) => (
@@ -39,11 +44,16 @@ const UserList = ({ users, onUserPress, searchQuery }) => {
       className="border-b border-purple-200 py-4 flex-row items-center"
       onPress={() => onUserPress(user)}
     >
-      <Image
-        source={{ uri: user.avatar }}
-        className="w-10 h-10 rounded-full mr-3"
-        resizeMode="cover"
-      />
+      <View className="relative">
+        <Image
+          source={{ uri: user.avatar }}
+          className="w-10 h-10 rounded-full mr-3"
+          resizeMode="cover"
+        />
+        {isUserOnline(user._id) && (
+          <View className="absolute bottom-0 right-0 bg-green-500 w-3 h-3 rounded-full border-2 border-white" />
+        )}
+      </View>
       <View className="flex-1">
         <Text className="text-lg text-purple-900">
           {user.firstName} {user.lastName}

@@ -7,7 +7,7 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: ['http://192.168.0.101:8081'],
+    origin: ['http://192.168.0.104:8081'],
     methods: ['GET', 'POST'],
   },
 });
@@ -30,10 +30,13 @@ io.on('connection', (socket) => {
     userSocketMap[userId] = socket.id;
   }
 
+  io.emit('getOnlineUsers', Object.keys(userSocketMap));
+
   // used for listening events (both on client and server)
   socket.on('disconnect', () => {
     console.log('User disconnected', socket.id);
     delete userSocketMap[userId];
+    io.emit('getOnlineUsers', Object.keys(userSocketMap));
   });
 });
 
