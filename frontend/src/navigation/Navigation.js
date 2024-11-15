@@ -8,15 +8,18 @@ import LoginScreen from '../screens/LoginScreen';
 import ContactsScreen from '../screens/ContactsScreen';
 import ChatScreen from '../screens/ChatScreen';
 import Loading from '../components/common/Loading';
-import { setNavigator } from '../services/navigationService';
+import { navigationRef } from '../services/navigationService';
 import { useDispatch, useSelector } from 'react-redux';
 import { authenticate, deauthenticate } from '../store/auth/authSlice';
 import { connectSocket, disconnectSocket } from '../store/socket/socketSlice';
 import { ACCESS_TOKEN_KEY } from '../utils/constants';
+// import { usePushNotifications } from '../hooks/usePushNotifications';
 
 const Stack = createNativeStackNavigator();
 
 const Navigation = () => {
+  // usePushNotifications();
+
   const [initialRoute, setInitialRoute] = useState(null);
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -50,11 +53,7 @@ const Navigation = () => {
   }
 
   return (
-    <NavigationContainer
-      ref={(navigator) => {
-        setNavigator(navigator);
-      }}
-    >
+    <NavigationContainer ref={navigationRef}>
       <Stack.Navigator initialRouteName={initialRoute}>
         {!isAuthenticated ? (
           <>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
-import { useNavigation, useIsFocused } from '@react-navigation/native';
+import { View, ScrollView, RefreshControl } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import {
   getUserData,
   getUsersForSidebar,
@@ -19,19 +19,22 @@ import {
   updateLastMessage,
   addUserWithLastMessage,
 } from '../store/message/messageSlice';
+import { useDebounce } from '../hooks/useDebounce';
+import { fetchLastMessages } from '../utils/messageThunks';
 
 const ContactsScreen = () => {
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
-  const [lastUsers, setLastUsers] = useState([]);
-  const [initialLoad, setInitialLoad] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(true);
+  const [isFetchingAllUsers, setIsFetchingAllUsers] = useState(false);
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const navigation = useNavigation();
-  const isFocused = useIsFocused();
-
   const dispatch = useDispatch();
   const socket = useSelector((state) => state.socket.socket);
 
@@ -46,18 +49,20 @@ const ContactsScreen = () => {
 
   const fetchUsers = async () => {
     try {
+      setIsFetchingAllUsers(true);
       const data = await getUsersForSidebar();
-      if (initialLoad || JSON.stringify(data) !== JSON.stringify(lastUsers)) {
-        setUsers(data);
-        setLastUsers(data);
-        setInitialLoad(false);
-      }
+      setUsers(data);
     } catch (error) {
       console.error('Failed to load users:', error);
+    } finally {
+      setIsFetchingAllUsers(false);
     }
   };
 
   const handleSearch = async (query) => {
+    setIsSearching(true);
+    setSearchQuery(query);
+
     try {
       if (query) {
         const data = await searchUsers(query);
@@ -67,6 +72,8 @@ const ContactsScreen = () => {
       }
     } catch (error) {
       console.error('Failed to search users:', error);
+    } finally {
+      setIsSearching(false);
     }
   };
 
@@ -74,7 +81,7 @@ const ContactsScreen = () => {
     setSearchQuery('');
     navigation.navigate('Chat', {
       receiverId: user._id,
-      receiverName: user.firstName + ' ' + user.lastName,
+      receiverName: `${user.firstName} ${user.lastName}`,
       receiverAvatar: user.avatar,
     });
   };
@@ -97,25 +104,31 @@ const ContactsScreen = () => {
     }
   };
 
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchUserData();
+    await fetchUsers();
+    setSearchQuery('');
+    setRefreshing(false);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       await fetchUserData();
       await fetchUsers();
-      setLoading(false);
+      setInitialLoading(false);
     };
 
     fetchData();
   }, []);
 
   useEffect(() => {
-    if (isFocused) {
-      fetchUsers();
-    }
-  }, [isFocused]);
+    setIsSearching(true);
+  }, [searchQuery]);
 
   useEffect(() => {
-    handleSearch(searchQuery);
-  }, [searchQuery]);
+    handleSearch(debouncedSearchQuery);
+  }, [debouncedSearchQuery]);
 
   useEffect(() => {
     if (socket) {
@@ -139,7 +152,16 @@ const ContactsScreen = () => {
     };
   }, [socket, dispatch]);
 
-  if (loading) {
+  useEffect(() => {
+    if (!searchQuery) {
+      setLoadingMessages(true);
+      dispatch(fetchLastMessages(users)).finally(() =>
+        setLoadingMessages(false)
+      );
+    }
+  }, [users, searchQuery, dispatch]);
+
+  if (initialLoading) {
     return <Loading />;
   }
 
@@ -151,7 +173,22 @@ const ContactsScreen = () => {
         isLoggingOut={isLoggingOut}
       />
       <SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
-      <UserList users={users} onUserPress={handleUserPress} />
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        contentContainerStyle={{ flexGrow: 1 }}
+      >
+        {isSearching || loadingMessages || isFetchingAllUsers ? (
+          <Loading />
+        ) : (
+          <UserList
+            users={users}
+            onUserPress={handleUserPress}
+            searchQuery={searchQuery}
+          />
+        )}
+      </ScrollView>
     </View>
   );
 };

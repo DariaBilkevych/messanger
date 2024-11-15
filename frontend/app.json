@@ -31,6 +31,6 @@
       }
     },
     "owner": "dariabilkevych",
-    "plugins": [ [ "expo-build-properties", { "android": { "usesCleartextTraffic": true } } ] ] 
+    "plugins": [ [ "expo-build-properties", { "android": { "usesCleartextTraffic": true } } ] ]
   }
 }

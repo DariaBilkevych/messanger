@@ -15,6 +15,7 @@ const MessageList = forwardRef(({ messages, receiverId }, ref) => {
 
     return (
       <MessageItem
+        key={item._id}
         message={item.message}
         messageType={item.messageType}
         fileUri={item.src}
@@ -31,7 +32,9 @@ const MessageList = forwardRef(({ messages, receiverId }, ref) => {
       renderItem={renderMessageItem}
       keyExtractor={(item) => item._id}
       onContentSizeChange={() => {
-        ref.current.scrollToEnd({ animated: true });
+        setTimeout(() => {
+          ref.current.scrollToEnd({ animated: true });
+        }, 300);
       }}
     />
   );
