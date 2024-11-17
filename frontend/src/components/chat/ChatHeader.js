@@ -30,7 +30,7 @@ const ChatHeader = ({
 
   return (
     <SafeAreaView style={{ paddingTop: insets.top }}>
-      <View className="flex-row items-center p-2 border-b border-purple-200 mb-5 justify-between">
+      <View className="flex-row items-center p-2 border-b border-purple-200 justify-between">
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="chevron-back" size={24} color="black" />
         </TouchableOpacity>

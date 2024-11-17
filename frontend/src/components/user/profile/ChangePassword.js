@@ -9,6 +9,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import { updatePassword } from '../../../services/userService';
 import Toast from 'react-native-toast-message';
+import { validatePassword } from '../../../validators/profileValidator';
 
 const ChangePassword = () => {
   const [currentPassword, setCurrentPassword] = useState('');
@@ -21,20 +22,20 @@ const ChangePassword = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  const [currentPasswordError, setCurrentPasswordError] = useState('');
+
   const handlePasswordUpdate = async () => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      setPasswordError('All fields must be filled');
-      clearPasswordFields('all');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      setPasswordError('New password and confirm password do not match');
-      clearPasswordFields('newConfirm');
-      return;
-    }
-    if (newPassword.length < 8) {
-      setPasswordError('New password must be at least 8 characters long');
-      clearPasswordFields('newConfirm');
+    setPasswordError('');
+    setCurrentPasswordError('');
+
+    const errors = validatePassword(
+      currentPassword,
+      newPassword,
+      confirmPassword
+    );
+
+    if (Object.keys(errors).length > 0) {
+      setPasswordError(errors.password);
       return;
     }
 
@@ -51,11 +52,7 @@ const ChangePassword = () => {
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || 'Something went wrong';
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: errorMessage,
-      });
+      setCurrentPasswordError(errorMessage);
       clearPasswordFields('current');
     } finally {
       setLoading(false);
@@ -97,6 +94,12 @@ const ChangePassword = () => {
           />
         </TouchableOpacity>
       </View>
+
+      {currentPasswordError ? (
+        <Text className="text-red-500 text-xs mb-2">
+          {currentPasswordError}
+        </Text>
+      ) : null}
 
       <View className="flex-row items-center">
         <TextInput

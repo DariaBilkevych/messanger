@@ -1,12 +1,14 @@
-import React, { forwardRef, useEffect } from 'react';
+import React, { forwardRef } from 'react';
 import { FlatList } from 'react-native';
 import MessageItem from './MessageItem';
 import { DateTime } from 'luxon';
 
 const MessageList = forwardRef(({ messages, receiverId }, ref) => {
   const formatDate = (dateString) => {
-    const date = DateTime.fromISO(dateString, { zone: 'Europe/Kyiv' });
-    return date.toFormat('d MMM, HH:mm');
+    const date = new Date(dateString);
+    return DateTime.fromJSDate(date, { zone: 'Europe/Kyiv' }).toFormat(
+      'd MMM, HH:mm'
+    );
   };
 
   const renderMessageItem = ({ item }) => {
@@ -31,6 +33,7 @@ const MessageList = forwardRef(({ messages, receiverId }, ref) => {
       data={messages}
       renderItem={renderMessageItem}
       keyExtractor={(item) => item._id}
+      contentContainerStyle={{ marginTop: 16 }}
       onContentSizeChange={() => {
         setTimeout(() => {
           ref.current.scrollToEnd({ animated: true });

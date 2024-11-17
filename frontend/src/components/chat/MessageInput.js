@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, TextInput, TouchableOpacity, Text, Modal } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Toast from 'react-native-toast-message';
@@ -95,7 +95,10 @@ const MessageInput = ({ receiverId }) => {
       setFileUri(resizedImage.uri);
       setFileName(result.assets[0].fileName || 'selected_image.jpg');
       setMessageType('image');
-      setModalVisible(true);
+
+      setTimeout(() => {
+        setModalVisible(true);
+      }, 500);
     }
   };
 

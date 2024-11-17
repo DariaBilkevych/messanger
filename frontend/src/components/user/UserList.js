@@ -14,9 +14,13 @@ const UserList = ({ users, onUserPress, searchQuery }) => {
   };
 
   const formatDate = (dateString) => {
-    const date = DateTime.fromISO(dateString, { zone: 'Europe/Kyiv' });
-    return date.toFormat('d MMM');
+    const date = new Date(dateString);
+    return DateTime.fromJSDate(date, { zone: 'Europe/Kyiv' }).toFormat('d MMM');
   };
+
+  useEffect(() => {
+    isUserOnline();
+  }, [onlineUsers]);
 
   const isUserOnline = (userId) => {
     return onlineUsers.some((onlineUserId) => onlineUserId === userId);

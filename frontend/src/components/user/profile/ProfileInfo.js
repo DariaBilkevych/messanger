@@ -12,6 +12,8 @@ import { updateUserProfile } from '../../../store/auth/authSlice';
 import { updateName, updateAvatar } from '../../../services/userService';
 import { pickMedia } from '../../../utils/fileUtils';
 import Toast from 'react-native-toast-message';
+import Icon from 'react-native-vector-icons/Ionicons';
+import { validateName } from '../../../validators/profileValidator';
 
 const ProfileInfo = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -23,6 +25,7 @@ const ProfileInfo = ({ navigation }) => {
   const [editingName, setEditingName] = useState(false);
   const [newFirstName, setNewFirstName] = useState('');
   const [newLastName, setNewLastName] = useState('');
+  const [nameError, setNameError] = useState('');
 
   useEffect(() => {
     if (editingName) {
@@ -59,14 +62,14 @@ const ProfileInfo = ({ navigation }) => {
   };
 
   const handleNameUpdate = async () => {
-    if (!newFirstName || !newLastName) {
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'Name fields cannot be empty',
-      });
+    const errors = validateName(newFirstName, newLastName);
+
+    if (errors.name) {
+      setNameError(errors.name);
       return;
     }
+
+    setNameError('');
 
     await updateName(newFirstName, newLastName);
     dispatch(
@@ -80,6 +83,7 @@ const ProfileInfo = ({ navigation }) => {
     setNewFirstName(user.firstName);
     setNewLastName(user.lastName);
     setEditingName(false);
+    setNameError('');
   };
 
   const pickAvatar = async () => {
@@ -170,11 +174,19 @@ const ProfileInfo = ({ navigation }) => {
               />
             </View>
           ) : (
-            <Text className="text-sm text-gray-700">
-              {user.firstName} {user.lastName}
-            </Text>
+            <View className="flex-row justify-between items-center">
+              <Text className="text-sm text-gray-700">
+                {user.firstName} {user.lastName}
+              </Text>
+              <TouchableOpacity onPress={handleNameEdit}>
+                <Icon name="pencil" size={16} color="gray" />
+              </TouchableOpacity>
+            </View>
           )}
         </TouchableOpacity>
+        {nameError ? (
+          <Text className="text-xs text-red-500 mt-2 px-2">{nameError}</Text>
+        ) : null}
       </View>
     </View>
   );
