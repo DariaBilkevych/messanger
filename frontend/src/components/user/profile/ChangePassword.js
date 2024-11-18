@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   TextInput,
@@ -11,7 +11,7 @@ import { updatePassword } from '../../../services/userService';
 import Toast from 'react-native-toast-message';
 import { validatePassword } from '../../../validators/profileValidator';
 
-const ChangePassword = () => {
+const ChangePassword = ({ navigation }) => {
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -23,6 +23,20 @@ const ChangePassword = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const [currentPasswordError, setCurrentPasswordError] = useState('');
+
+  useEffect(() => {
+    const resetForm = () => {
+      clearPasswordFields('all');
+      setPasswordError('');
+      setCurrentPasswordError('');
+    };
+
+    const unsubscribe = navigation.addListener('blur', resetForm);
+
+    return () => {
+      unsubscribe();
+    };
+  }, [navigation]);
 
   const handlePasswordUpdate = async () => {
     setPasswordError('');
@@ -36,6 +50,13 @@ const ChangePassword = () => {
 
     if (Object.keys(errors).length > 0) {
       setPasswordError(errors.password);
+
+      if (
+        errors.password === 'New password and confirm password do not match'
+      ) {
+        clearPasswordFields('newConfirm');
+      }
+
       return;
     }
 

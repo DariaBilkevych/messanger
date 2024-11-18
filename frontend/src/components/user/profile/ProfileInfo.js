@@ -47,6 +47,19 @@ const ProfileInfo = ({ navigation }) => {
         headerRight: null,
       });
     }
+
+    const resetNameFields = () => {
+      setNewFirstName('');
+      setNewLastName('');
+      setNameError('');
+      setEditingName(false);
+    };
+
+    const unsubscribe = navigation.addListener('blur', resetNameFields);
+
+    return () => {
+      unsubscribe();
+    };
   }, [editingName, newFirstName, newLastName, navigation]);
 
   useEffect(() => {

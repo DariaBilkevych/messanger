@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUser } from '../store/auth/authSlice';
 import Loading from '../components/common/Loading';
@@ -32,20 +39,26 @@ const ProfileScreen = ({ navigation }) => {
   }
 
   return (
-    <View className="flex-1 bg-gray-100 p-6">
-      <ProfileInfo navigation={navigation} />
+    <KeyboardAvoidingView
+      className="flex-1 bg-gray-100 p-6"
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+    >
+      <ScrollView>
+        <ProfileInfo navigation={navigation} />
 
-      <View className="border border-gray-200 rounded-lg p-2 bg-white mb-6">
-        <Text className="text-xs text-gray-500 mb-1">Phone Number</Text>
-        <TextInput
-          value={user.phoneNumber}
-          editable={false}
-          className="text-sm text-gray-700"
-        />
-      </View>
+        <View className="border border-gray-200 rounded-lg p-2 bg-white mb-6">
+          <Text className="text-xs text-gray-500 mb-1">Phone Number</Text>
+          <TextInput
+            value={user.phoneNumber}
+            editable={false}
+            className="text-sm text-gray-700"
+          />
+        </View>
 
-      <ChangePassword />
-    </View>
+        <ChangePassword navigation={navigation} />
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 

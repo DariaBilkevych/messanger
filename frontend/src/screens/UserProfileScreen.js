@@ -23,14 +23,6 @@ const UserProfileScreen = ({ route }) => {
           {receiverPhone}
         </Text>
       </View>
-
-      <View className="p-4 mx-4 bg-white rounded-lg shadow-md mb-4">
-        <Text className="text-lg text-gray-800 mb-2 font-semibold">Bio:</Text>
-        <Text className="text-gray-600 text-sm">
-          This is a short description about the user. You can add more
-          information here like their job title, location, or hobbies.
-        </Text>
-      </View>
     </SafeAreaView>
   );
 };
