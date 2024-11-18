@@ -167,3 +167,33 @@ export const updatePassword = async (req, res) => {
       .json({ message: 'Something went wrong', error: error.message });
   }
 };
+
+export const deleteAvatar = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    if (user.avatar && user.avatar.includes('cloudinary.com')) {
+      const avatarPublicId = user.avatar.split('/').pop().split('.')[0];
+      await cloudinary.uploader.destroy(avatarPublicId);
+    }
+
+    const defaultAvatar = `https://ui-avatars.com/api/?name=${user.firstName}+${user.lastName}&background=random`;
+
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { avatar: defaultAvatar },
+      { new: true }
+    );
+
+    res.status(200).json({
+      avatar: updatedUser.avatar,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'Something went wrong', error: error.message });
+  }
+};

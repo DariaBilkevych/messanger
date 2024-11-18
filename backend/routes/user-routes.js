@@ -7,6 +7,7 @@ import {
   updateName,
   updateAvatar,
   updatePassword,
+  deleteAvatar,
 } from '../controllers/user-controller.js';
 import { upload } from '../middelwares/multer.js';
 
@@ -24,5 +25,6 @@ router.put(
   updateAvatar
 );
 router.put('/update-password', protectRoute, updatePassword);
+router.delete('/delete-avatar', protectRoute, deleteAvatar);
 
 export default router;
