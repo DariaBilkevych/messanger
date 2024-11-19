@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, RefreshControl } from 'react-native';
+import { View, ScrollView, RefreshControl, AppState } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { getUsersForSidebar, searchUsers } from '../services/userService';
 import { logout } from '../services/authService';
@@ -117,6 +117,29 @@ const ContactsScreen = () => {
   useEffect(() => {
     handleSearch(debouncedSearchQuery);
   }, [debouncedSearchQuery]);
+
+  useEffect(() => {
+    const handleAppStateChange = (nextAppState) => {
+      if (nextAppState === 'background' || nextAppState === 'inactive') {
+        if (socket) {
+          socket.emit('userOffline');
+        }
+      } else if (nextAppState === 'active') {
+        if (socket) {
+          socket.emit('userOnline');
+        }
+      }
+    };
+
+    const subscription = AppState.addEventListener(
+      'change',
+      handleAppStateChange
+    );
+
+    return () => {
+      subscription.remove();
+    };
+  }, [socket]);
 
   useEffect(() => {
     if (socket) {

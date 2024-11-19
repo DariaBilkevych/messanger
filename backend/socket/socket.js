@@ -32,6 +32,20 @@ io.on('connection', (socket) => {
 
   io.emit('getOnlineUsers', Object.keys(userSocketMap));
 
+  socket.on('setOffline', () => {
+    console.log('User offline', userId);
+    delete userSocketMap[userId];
+    io.emit('getOnlineUsers', Object.keys(userSocketMap));
+  });
+
+  socket.on('setOnline', () => {
+    console.log('User online again', userId);
+    if (userId != 'undefined') {
+      userSocketMap[userId] = socket.id;
+      io.emit('getOnlineUsers', Object.keys(userSocketMap));
+    }
+  });
+
   // used for listening events (both on client and server)
   socket.on('disconnect', () => {
     console.log('User disconnected', socket.id);
