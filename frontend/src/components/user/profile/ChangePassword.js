@@ -29,6 +29,9 @@ const ChangePassword = ({ navigation }) => {
       clearPasswordFields('all');
       setPasswordError('');
       setCurrentPasswordError('');
+      setShowCurrentPassword(false);
+      setShowNewPassword(false);
+      setShowConfirmPassword(false);
     };
 
     const unsubscribe = navigation.addListener('blur', resetForm);

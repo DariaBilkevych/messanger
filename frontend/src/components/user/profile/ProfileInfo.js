@@ -139,11 +139,15 @@ const ProfileInfo = ({ navigation }) => {
     }
   };
 
+  const navigateToAvatarScreen = () => {
+    navigation.navigate('AvatarScreen', { avatarUri: user.avatar });
+  };
+
   return (
     <View className="border border-gray-200 rounded-lg p-2 bg-white mb-6">
       <View className="flex-row items-center mb-3">
         <View className="items-center">
-          <TouchableOpacity onPress={pickAvatar}>
+          <TouchableOpacity onPress={navigateToAvatarScreen}>
             <View className="relative">
               <Image
                 source={{ uri: user.avatar }}

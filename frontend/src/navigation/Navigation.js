@@ -9,6 +9,7 @@ import SignUpScreen from '../screens/SignUpScreen';
 import LoginScreen from '../screens/LoginScreen';
 import ChatScreen from '../screens/ChatScreen';
 import UserProfileScreen from '../screens/UserProfileScreen';
+import AvatarScreen from '../screens/AvatarScreen';
 import Loading from '../components/common/Loading';
 import { navigationRef } from '../services/navigationService';
 import { useDispatch, useSelector } from 'react-redux';
@@ -103,6 +104,25 @@ const Navigation = () => {
                 },
                 headerTintColor: 'black',
                 title: 'User Info',
+              }}
+            />
+            <Stack.Screen
+              name="AvatarScreen"
+              component={AvatarScreen}
+              options={{
+                headerLeft: () => {
+                  const navigation = useNavigation();
+                  return (
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                      <Ionicons name="chevron-back" size={24} color="black" />
+                    </TouchableOpacity>
+                  );
+                },
+                headerStyle: {
+                  backgroundColor: 'white',
+                },
+                headerTintColor: 'black',
+                title: 'Profile picture',
               }}
             />
           </>

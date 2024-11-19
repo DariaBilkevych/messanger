@@ -37,7 +37,11 @@ export const updateAvatar = async (avatarFile) => {
     return;
   }
 
-  const response = await axiosInstance.put('/users/update-avatar', formData);
+  const response = await axiosInstance.put('/users/update-avatar', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 
   return response.data;
 };
@@ -52,5 +56,10 @@ export const updatePassword = async (
     newPassword,
     confirmPassword,
   });
+  return response.data;
+};
+
+export const deleteAvatar = async () => {
+  const response = await axiosInstance.delete('/users/delete-avatar');
   return response.data;
 };

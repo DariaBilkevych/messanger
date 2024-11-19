@@ -40,11 +40,14 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingView
-      className="flex-1 bg-gray-100 p-6"
+      className="flex-1"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
     >
-      <ScrollView>
+      <ScrollView
+        className="flex-1  bg-gray-100 p-6"
+        keyboardShouldPersistTaps="handled"
+      >
         <ProfileInfo navigation={navigation} />
 
         <View className="border border-gray-200 rounded-lg p-2 bg-white mb-6">
