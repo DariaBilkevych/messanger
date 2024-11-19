@@ -22,13 +22,10 @@ const ChangePassword = ({ navigation }) => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const [currentPasswordError, setCurrentPasswordError] = useState('');
-
   useEffect(() => {
     const resetForm = () => {
       clearPasswordFields('all');
       setPasswordError('');
-      setCurrentPasswordError('');
       setShowCurrentPassword(false);
       setShowNewPassword(false);
       setShowConfirmPassword(false);
@@ -43,7 +40,6 @@ const ChangePassword = ({ navigation }) => {
 
   const handlePasswordUpdate = async () => {
     setPasswordError('');
-    setCurrentPasswordError('');
 
     const errors = validatePassword(
       currentPassword,
@@ -59,6 +55,10 @@ const ChangePassword = ({ navigation }) => {
       ) {
         clearPasswordFields('newConfirm');
       }
+
+      setShowCurrentPassword(false);
+      setShowNewPassword(false);
+      setShowConfirmPassword(false);
 
       return;
     }
@@ -79,8 +79,11 @@ const ChangePassword = ({ navigation }) => {
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || 'Something went wrong';
-      setCurrentPasswordError(errorMessage);
+      setPasswordError(errorMessage);
       clearPasswordFields('all');
+      setShowCurrentPassword(false);
+      setShowNewPassword(false);
+      setShowConfirmPassword(false);
     } finally {
       setLoading(false);
     }
@@ -121,12 +124,6 @@ const ChangePassword = ({ navigation }) => {
           />
         </TouchableOpacity>
       </View>
-
-      {currentPasswordError ? (
-        <Text className="text-red-500 text-xs mb-2">
-          {currentPasswordError}
-        </Text>
-      ) : null}
 
       <View className="flex-row items-center">
         <TextInput
