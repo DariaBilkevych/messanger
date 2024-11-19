@@ -5,10 +5,10 @@ import ChatHeader from '../components/chat/ChatHeader';
 import MessageList from '../components/chat/MessageList';
 import MessageInput from '../components/chat/MessageInput';
 import Loading from '../components/common/Loading';
-import { usePushNotifications } from '../hooks/usePushNotifications';
 
 const ChatScreen = ({ route }) => {
-  const { receiverId, receiverName, receiverAvatar } = route.params;
+  const { receiverId, receiverName, receiverAvatar, receiverPhone } =
+    route.params;
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(true);
   const messageListRef = useRef(null);
@@ -30,7 +30,11 @@ const ChatScreen = ({ route }) => {
 
   return (
     <View className="flex-1 bg-white">
-      <ChatHeader receiverAvatar={receiverAvatar} receiverName={receiverName} />
+      <ChatHeader
+        receiverAvatar={receiverAvatar}
+        receiverName={receiverName}
+        receiverPhone={receiverPhone}
+      />
       {loading ? (
         <Loading />
       ) : messages.length === 0 ? (

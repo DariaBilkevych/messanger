@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, ScrollView, RefreshControl } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import {
-  getUserData,
-  getUsersForSidebar,
-  searchUsers,
-} from '../services/userService';
+import { getUsersForSidebar, searchUsers } from '../services/userService';
 import { logout } from '../services/authService';
 import Toast from 'react-native-toast-message';
 import SearchInput from '../components/common/SearchInput';
@@ -13,7 +9,7 @@ import UserList from '../components/user/UserList';
 import Loading from '../components/common/Loading';
 import UserHeader from '../components/common/UserHeader';
 import { useDispatch, useSelector } from 'react-redux';
-import { deauthenticate } from '../store/auth/authSlice';
+import { deauthenticate, fetchUser } from '../store/auth/authSlice';
 import { disconnectSocket } from '../store/socket/socketSlice';
 import {
   updateLastMessage,
@@ -23,7 +19,6 @@ import { useDebounce } from '../hooks/useDebounce';
 import { fetchLastMessages } from '../utils/messageThunks';
 
 const ContactsScreen = () => {
-  const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [initialLoading, setInitialLoading] = useState(true);
@@ -37,15 +32,7 @@ const ContactsScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const socket = useSelector((state) => state.socket.socket);
-
-  const fetchUserData = async () => {
-    try {
-      const data = await getUserData();
-      setUser(data);
-    } catch (error) {
-      console.error('Failed to load user data:', error);
-    }
-  };
+  const user = useSelector((state) => state.auth.user);
 
   const fetchUsers = async () => {
     try {
@@ -83,6 +70,7 @@ const ContactsScreen = () => {
       receiverId: user._id,
       receiverName: `${user.firstName} ${user.lastName}`,
       receiverAvatar: user.avatar,
+      receiverPhone: user.phoneNumber,
     });
   };
 
@@ -106,7 +94,7 @@ const ContactsScreen = () => {
 
   const onRefresh = async () => {
     setRefreshing(true);
-    await fetchUserData();
+    await dispatch(fetchUser());
     await fetchUsers();
     setSearchQuery('');
     setRefreshing(false);
@@ -114,13 +102,13 @@ const ContactsScreen = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchUserData();
+      await dispatch(fetchUser());
       await fetchUsers();
       setInitialLoading(false);
     };
 
     fetchData();
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     setIsSearching(true);

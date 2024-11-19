@@ -1,4 +1,5 @@
 import { FlatList, TouchableOpacity, Image, Text, View } from 'react-native';
+import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { DateTime } from 'luxon';
 
@@ -12,7 +13,7 @@ const UserList = ({ users, onUserPress, searchQuery }) => {
   };
 
   const formatDate = (dateString) => {
-    const date = DateTime.fromISO(dateString, { zone: 'Europe/Kyiv' });
+    const date = DateTime.fromISO(dateString);
     return date.toFormat('d MMM');
   };
 
