@@ -14,8 +14,12 @@ const UserList = ({ users, onUserPress, searchQuery }) => {
   };
 
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return DateTime.fromJSDate(date, { zone: 'Europe/Kyiv' }).toFormat('d MMM');
+    const date = DateTime.fromISO(dateString);
+    if (!date.isValid) {
+      console.error('Invalid Date:', dateString);
+      return '';
+    }
+    return date.toFormat('d MMM');
   };
 
   useEffect(() => {

@@ -73,6 +73,9 @@ const ChangePassword = ({ navigation }) => {
       });
       clearPasswordFields('all');
       setPasswordError('');
+      setShowCurrentPassword(false);
+      setShowNewPassword(false);
+      setShowConfirmPassword(false);
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || 'Something went wrong';

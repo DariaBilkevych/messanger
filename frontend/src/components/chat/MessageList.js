@@ -5,10 +5,12 @@ import { DateTime } from 'luxon';
 
 const MessageList = forwardRef(({ messages, receiverId }, ref) => {
   const formatDate = (dateString) => {
-    const date = new Date(dateString);
-    return DateTime.fromJSDate(date, { zone: 'Europe/Kyiv' }).toFormat(
-      'd MMM, HH:mm'
-    );
+    const date = DateTime.fromISO(dateString);
+    if (!date.isValid) {
+      console.error('Invalid Date:', dateString);
+      return '';
+    }
+    return date.toFormat('d MMM, HH:mm');
   };
 
   const renderMessageItem = ({ item }) => {
@@ -33,7 +35,7 @@ const MessageList = forwardRef(({ messages, receiverId }, ref) => {
       data={messages}
       renderItem={renderMessageItem}
       keyExtractor={(item) => item._id}
-      contentContainerStyle={{ marginTop: 16 }}
+      contentContainerStyle={{ marginTop: 10 }}
       onContentSizeChange={() => {
         setTimeout(() => {
           ref.current.scrollToEnd({ animated: true });
