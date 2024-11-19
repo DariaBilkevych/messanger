@@ -5,7 +5,6 @@ import { SOCKET_URL } from '../../utils/constants';
 
 const initialState = {
   socket: null,
-  onlineUsers: [],
 };
 
 const socketSlice = createSlice({
@@ -21,9 +20,6 @@ const socketSlice = createSlice({
         state.socket.close();
         state.socket = null;
       }
-    },
-    setOnlineUsers(state, action) {
-      state.onlineUsers = action.payload;
     },
   },
 });
@@ -44,11 +40,8 @@ export const connectSocket = createAsyncThunk(
       });
       dispatch(setSocket(socketInstance));
     }
-    dispatch(setSocket(socketInstance));
 
-    socketInstance.on('getOnlineUsers', (users) => {
-      dispatch(setOnlineUsers(users));
-    });
+    dispatch(setSocket(socketInstance));
 
     socketInstance.on('disconnect', () => {
       dispatch(clearSocket());
@@ -64,5 +57,5 @@ export const disconnectSocket = () => (dispatch, getState) => {
   }
 };
 
-export const { setSocket, clearSocket, setOnlineUsers } = socketSlice.actions;
+export const { setSocket, clearSocket } = socketSlice.actions;
 export default socketSlice.reducer;

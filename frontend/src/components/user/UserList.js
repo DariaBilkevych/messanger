@@ -5,7 +5,6 @@ import { DateTime } from 'luxon';
 
 const UserList = ({ users, onUserPress, searchQuery }) => {
   const { usersWithLastMessages } = useSelector((state) => state.messages);
-  const { onlineUsers } = useSelector((state) => state.socket);
 
   const truncateMessage = (message, maxLength) => {
     return message.length > maxLength
@@ -16,14 +15,6 @@ const UserList = ({ users, onUserPress, searchQuery }) => {
   const formatDate = (dateString) => {
     const date = DateTime.fromISO(dateString);
     return date.toFormat('d MMM');
-  };
-
-  useEffect(() => {
-    isUserOnline();
-  }, [onlineUsers]);
-
-  const isUserOnline = (userId) => {
-    return onlineUsers.some((onlineUserId) => onlineUserId === userId);
   };
 
   const renderItem = ({ item: user }) => (
@@ -49,16 +40,11 @@ const UserList = ({ users, onUserPress, searchQuery }) => {
       className="border-b border-purple-200 py-4 flex-row items-center"
       onPress={() => onUserPress(user)}
     >
-      <View className="relative mr-3">
-        <Image
-          source={{ uri: user.avatar }}
-          className="w-10 h-10 rounded-full"
-          resizeMode="cover"
-        />
-        {isUserOnline(user._id) && (
-          <View className="absolute top-0 right-0 bg-green-500 w-3 h-3 rounded-full border-2 border-white shadow-md" />
-        )}
-      </View>
+      <Image
+        source={{ uri: user.avatar }}
+        className="w-10 h-10 rounded-full mr-3"
+        resizeMode="cover"
+      />
       <View className="flex-1">
         <Text className="text-lg text-purple-900">
           {user.firstName} {user.lastName}
@@ -68,7 +54,7 @@ const UserList = ({ users, onUserPress, searchQuery }) => {
         </Text>
       </View>
       {user.lastMessageDate && (
-        <Text className="text-gray-400 text-sm">
+        <Text className="text-gray-400">
           {formatDate(user.lastMessageDate)}
         </Text>
       )}
