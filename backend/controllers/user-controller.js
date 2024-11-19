@@ -152,6 +152,12 @@ export const updatePassword = async (req, res) => {
       return res.status(400).json({ message: 'Current password is incorrect' });
     }
 
+    if (currentPassword === newPassword) {
+      return res.status(400).json({
+        message: 'New password cannot be the same as the current password',
+      });
+    }
+
     const hashedPassword = await bcrypt.hash(newPassword, 12);
 
     await User.findByIdAndUpdate(

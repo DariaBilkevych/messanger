@@ -80,7 +80,7 @@ const ChangePassword = ({ navigation }) => {
       const errorMessage =
         error.response?.data?.message || 'Something went wrong';
       setCurrentPasswordError(errorMessage);
-      clearPasswordFields('current');
+      clearPasswordFields('all');
     } finally {
       setLoading(false);
     }
