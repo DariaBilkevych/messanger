@@ -6,10 +6,6 @@ import { DateTime } from 'luxon';
 const MessageList = forwardRef(({ messages, receiverId }, ref) => {
   const formatDate = (dateString) => {
     const date = DateTime.fromISO(dateString);
-    if (!date.isValid) {
-      console.error('Invalid Date:', dateString);
-      return '';
-    }
     return date.toFormat('d MMM, HH:mm');
   };
 

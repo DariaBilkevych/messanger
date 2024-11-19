@@ -15,10 +15,6 @@ const UserList = ({ users, onUserPress, searchQuery }) => {
 
   const formatDate = (dateString) => {
     const date = DateTime.fromISO(dateString);
-    if (!date.isValid) {
-      console.error('Invalid Date:', dateString);
-      return '';
-    }
     return date.toFormat('d MMM');
   };
 

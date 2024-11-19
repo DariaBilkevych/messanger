@@ -12,6 +12,10 @@ import { fetchUser } from '../store/auth/authSlice';
 import Loading from '../components/common/Loading';
 import ProfileInfo from '../components/user/profile/ProfileInfo';
 import ChangePassword from '../components/user/profile/ChangePassword';
+import {
+  ANDROID_KEYBOARD_OFFSET,
+  IOS_KEYBOARD_OFFSET,
+} from '../utils/constants';
 
 const ProfileScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
@@ -42,7 +46,9 @@ const ProfileScreen = ({ navigation }) => {
     <KeyboardAvoidingView
       className="flex-1"
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      keyboardVerticalOffset={
+        Platform.OS === 'ios' ? IOS_KEYBOARD_OFFSET : ANDROID_KEYBOARD_OFFSET
+      }
     >
       <ScrollView
         className="flex-1  bg-gray-100 p-6"

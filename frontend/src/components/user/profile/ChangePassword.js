@@ -24,11 +24,9 @@ const ChangePassword = ({ navigation }) => {
 
   useEffect(() => {
     const resetForm = () => {
-      clearPasswordFields('all');
+      clearPasswordFields();
       setPasswordError('');
-      setShowCurrentPassword(false);
-      setShowNewPassword(false);
-      setShowConfirmPassword(false);
+      resetPasswordVisibility();
     };
 
     const unsubscribe = navigation.addListener('blur', resetForm);
@@ -40,29 +38,16 @@ const ChangePassword = ({ navigation }) => {
 
   const handlePasswordUpdate = async () => {
     setPasswordError('');
-
     const errors = validatePassword(
       currentPassword,
       newPassword,
       confirmPassword
     );
 
-    if (Object.keys(errors).length > 0) {
+    if (errors?.password) {
       setPasswordError(errors.password);
-
-      if (
-        errors.password === 'New password and confirm password do not match'
-      ) {
-        clearPasswordFields('newConfirm');
-      }
-
-      setShowCurrentPassword(false);
-      setShowNewPassword(false);
-      setShowConfirmPassword(false);
-
       return;
     }
-
     setLoading(true);
 
     try {
@@ -71,35 +56,28 @@ const ChangePassword = ({ navigation }) => {
         type: 'success',
         text1: 'Password updated successfully',
       });
-      clearPasswordFields('all');
+      clearPasswordFields();
       setPasswordError('');
-      setShowCurrentPassword(false);
-      setShowNewPassword(false);
-      setShowConfirmPassword(false);
+      resetPasswordVisibility();
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || 'Something went wrong';
       setPasswordError(errorMessage);
-      clearPasswordFields('all');
-      setShowCurrentPassword(false);
-      setShowNewPassword(false);
-      setShowConfirmPassword(false);
     } finally {
       setLoading(false);
     }
   };
 
-  const clearPasswordFields = (fieldType) => {
-    if (fieldType === 'all') {
-      setCurrentPassword('');
-      setNewPassword('');
-      setConfirmPassword('');
-    } else if (fieldType === 'newConfirm') {
-      setNewPassword('');
-      setConfirmPassword('');
-    } else if (fieldType === 'current') {
-      setCurrentPassword('');
-    }
+  const clearPasswordFields = () => {
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+  };
+
+  const resetPasswordVisibility = () => {
+    setShowCurrentPassword(false);
+    setShowNewPassword(false);
+    setShowConfirmPassword(false);
   };
 
   return (
