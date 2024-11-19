@@ -30,20 +30,19 @@ const ProfileInfo = ({ navigation }) => {
   useEffect(() => {
     if (editingName) {
       navigation.setOptions({
-        headerLeft: () => (
-          <TouchableOpacity onPress={handleCancelEditing}>
-            <Text className="text-lg ml-3">Cancel</Text>
-          </TouchableOpacity>
-        ),
         headerRight: () => (
-          <TouchableOpacity onPress={handleNameUpdate}>
-            <Text className="text-lg font-bold mr-3">Done</Text>
-          </TouchableOpacity>
+          <View className="flex-row space-x-4 items-center mr-3">
+            <TouchableOpacity onPress={handleCancelEditing}>
+              <Text className="text-lg text-gray-600">Cancel</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={handleNameUpdate}>
+              <Text className="text-lg font-bold text-purple-900">Done</Text>
+            </TouchableOpacity>
+          </View>
         ),
       });
     } else {
       navigation.setOptions({
-        headerLeft: null,
         headerRight: null,
       });
     }
