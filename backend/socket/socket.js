@@ -13,38 +13,44 @@ const io = new Server(server, {
 });
 
 export const getReceiverSocketId = (receiverId) => {
-  return userSocketMap[receiverId];
+  return userSocketMap[receiverId]?.socketId;
 };
 
 export const getSenderSocketId = (senderId) => {
-  return userSocketMap[senderId];
+  return userSocketMap[senderId]?.socketId;
 };
 
-let userSocketMap = {};
+const userSocketMap = {};
 
 io.on('connection', (socket) => {
   console.log('User connected', socket.id);
 
   const userId = socket.handshake.query.userId;
+
   if (userId !== 'undefined') {
-    userSocketMap[userId] = { socketId: socket.id, isActive: true };
+    userSocketMap[userId] = { socketId: socket.id, status: 'online' };
+    updateOnlineUsers();
   }
 
-  io.emit('getOnlineUsers', Object.keys(userSocketMap));
+  socket.on('setOnlineStatus', (status) => {
+    if (userId && userSocketMap[userId]) {
+      userSocketMap[userId].status = status;
+      updateOnlineUsers();
+    }
+  });
 
-  // used for listening events (both on client and server)
   socket.on('disconnect', () => {
     console.log('User disconnected', socket.id);
     delete userSocketMap[userId];
-    io.emit('getOnlineUsers', Object.keys(userSocketMap));
-  });
-
-  socket.on('appStateChange', (appState) => {
-    if (userId in userSocketMap) {
-      userSocketMap[userId].isActive = appState === 'active';
-    }
-    io.emit('getOnlineUsers', Object.keys(userSocketMap));
+    updateOnlineUsers();
   });
 });
+
+const updateOnlineUsers = () => {
+  const onlineUsers = Object.keys(userSocketMap).filter(
+    (userId) => userSocketMap[userId].status === 'online'
+  );
+  io.emit('getOnlineUsers', onlineUsers);
+};
 
 export { app, io, server };

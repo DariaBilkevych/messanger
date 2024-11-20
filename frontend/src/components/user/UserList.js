@@ -19,13 +19,11 @@ const UserList = ({ users, onUserPress, searchQuery }) => {
   };
 
   useEffect(() => {
-    console.log(onlineUsers);
     isUserOnline();
   }, [onlineUsers]);
 
   const isUserOnline = (userId) => {
-    const user = onlineUsers.find((user) => user._id === userId);
-    return user ? user.isActive : false;
+    return onlineUsers.some((onlineUserId) => onlineUserId === userId);
   };
 
   const renderItem = ({ item: user }) => (

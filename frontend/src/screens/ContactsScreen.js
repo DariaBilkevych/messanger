@@ -122,11 +122,11 @@ const ContactsScreen = () => {
     const handleAppStateChange = (nextAppState) => {
       if (nextAppState === 'background' || nextAppState === 'inactive') {
         if (socket) {
-          socket.emit('appStateChange', 'background');
+          socket.emit('setOnlineStatus', 'offline');
         }
       } else if (nextAppState === 'active') {
         if (socket) {
-          socket.emit('appStateChange', 'active');
+          socket.emit('setOnlineStatus', 'online');
         }
       }
     };
