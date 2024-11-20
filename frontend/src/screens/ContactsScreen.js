@@ -121,7 +121,9 @@ const ContactsScreen = () => {
   useEffect(() => {
     const handleAppStateChange = (nextAppState) => {
       if (nextAppState === 'background' || nextAppState === 'inactive') {
+        console.log('hey');
         if (socket) {
+          console.log('here');
           socket.emit('setOnlineStatus', 'offline');
         }
       } else if (nextAppState === 'active') {
@@ -139,11 +141,12 @@ const ContactsScreen = () => {
     return () => {
       subscription.remove();
     };
-  }, []);
+  }, [socket]);
 
   useEffect(() => {
     if (socket) {
       socket.on('newMessage', (newMessage) => {
+        console.log(newMessage);
         dispatch(
           updateLastMessage({
             senderId: newMessage.senderId._id,
