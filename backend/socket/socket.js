@@ -20,14 +20,14 @@ export const getSenderSocketId = (senderId) => {
   return userSocketMap[senderId];
 };
 
-const userSocketMap = {};
+let userSocketMap = {};
 
 io.on('connection', (socket) => {
   console.log('User connected', socket.id);
 
   const userId = socket.handshake.query.userId;
-  if (userId != 'undefined') {
-    userSocketMap[userId] = socket.id;
+  if (userId !== 'undefined') {
+    userSocketMap[userId] = { socketId: socket.id, isActive: true };
   }
 
   io.emit('getOnlineUsers', Object.keys(userSocketMap));
@@ -36,6 +36,13 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('User disconnected', socket.id);
     delete userSocketMap[userId];
+    io.emit('getOnlineUsers', Object.keys(userSocketMap));
+  });
+
+  socket.on('appStateChange', (appState) => {
+    if (userId in userSocketMap) {
+      userSocketMap[userId].isActive = appState === 'active';
+    }
     io.emit('getOnlineUsers', Object.keys(userSocketMap));
   });
 });
