@@ -144,6 +144,7 @@ const ContactsScreen = () => {
   useEffect(() => {
     if (socket) {
       socket.on('newMessage', (newMessage) => {
+        console.log('New message: ', newMessage);
         dispatch(
           updateLastMessage({
             senderId: newMessage.senderId._id,
