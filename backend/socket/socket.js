@@ -26,27 +26,11 @@ io.on('connection', (socket) => {
   console.log('User connected', socket.id);
 
   const userId = socket.handshake.query.userId;
-  if (userId && userId !== 'undefined') {
-    userSocketMap[userId] = { socketId: socket.id, status: 'online' };
+  if (userId != 'undefined') {
+    userSocketMap[userId] = socket.id;
   }
 
   io.emit('getOnlineUsers', Object.keys(userSocketMap));
-
-  socket.on('setOffline', () => {
-    console.log('User offline', userId);
-    if (userSocketMap[userId]) {
-      userSocketMap[userId].status = 'offline';
-    }
-    io.emit('getOnlineUsers', Object.keys(userSocketMap));
-  });
-
-  socket.on('setOnline', () => {
-    console.log('User online again', userId);
-    if (userId !== 'undefined') {
-      userSocketMap[userId].status = 'online';
-      io.emit('getOnlineUsers', Object.keys(userSocketMap));
-    }
-  });
 
   // used for listening events (both on client and server)
   socket.on('disconnect', () => {

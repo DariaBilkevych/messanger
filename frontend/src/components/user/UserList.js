@@ -20,7 +20,6 @@ const UserList = ({ users, onUserPress, searchQuery }) => {
 
   useEffect(() => {
     isUserOnline();
-    console.log('Online users: ', onlineUsers);
   }, [onlineUsers]);
 
   const isUserOnline = (userId) => {
