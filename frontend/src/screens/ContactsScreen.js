@@ -139,7 +139,7 @@ const ContactsScreen = () => {
     return () => {
       subscription.remove();
     };
-  }, [socket]);
+  }, []);
 
   useEffect(() => {
     if (socket) {
