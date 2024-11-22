@@ -17,6 +17,7 @@ import {
 } from '../store/message/messageSlice';
 import { useDebounce } from '../hooks/useDebounce';
 import { fetchLastMessages } from '../utils/messageThunks';
+import { OFFLINE_TIMEOUT_DURATION } from '../utils/constants';
 
 const ContactsScreen = () => {
   const [users, setUsers] = useState([]);
@@ -119,14 +120,17 @@ const ContactsScreen = () => {
   }, [debouncedSearchQuery]);
 
   useEffect(() => {
+    let offlineTimeout;
+
     const handleAppStateChange = (nextAppState) => {
       if (nextAppState === 'background' || nextAppState === 'inactive') {
-        console.log('hey');
-        if (socket) {
-          console.log('here');
-          socket.emit('setOnlineStatus', 'offline');
-        }
+        offlineTimeout = setTimeout(() => {
+          if (socket) {
+            socket.emit('setOnlineStatus', 'offline');
+          }
+        }, OFFLINE_TIMEOUT_DURATION);
       } else if (nextAppState === 'active') {
+        clearTimeout(offlineTimeout);
         if (socket) {
           socket.emit('setOnlineStatus', 'online');
         }
@@ -139,6 +143,7 @@ const ContactsScreen = () => {
     );
 
     return () => {
+      clearTimeout(offlineTimeout);
       subscription.remove();
     };
   }, [socket]);
