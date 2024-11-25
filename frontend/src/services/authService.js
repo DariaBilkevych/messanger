@@ -30,3 +30,16 @@ export const logout = async () => {
 
   return response.data;
 };
+
+export const resetPassword = async () => {
+  const response = await axiosNoAuthInstance.post(
+    '/auth/reset-password',
+    formData
+  );
+  const { accessToken, newRefreshToken } = response.data;
+
+  await AsyncStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+  await AsyncStorage.setItem(REFRESH_TOKEN_KEY, newRefreshToken);
+
+  return response.data;
+};

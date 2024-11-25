@@ -184,7 +184,11 @@ export const resetPassword = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { phoneNumber, newPassword } = req.body;
+    const { phoneNumber, newPassword, confirmPassword } = req.body;
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: 'Passwords do not match' });
+    }
 
     const user = await User.findOne({ phoneNumber });
     if (!user) {

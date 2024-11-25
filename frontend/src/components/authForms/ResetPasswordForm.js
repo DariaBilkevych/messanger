@@ -9,47 +9,50 @@ import {
 import PhoneInput from 'react-native-phone-number-input';
 import Feather from 'react-native-vector-icons/Feather';
 import styles from './styles';
-import { login } from '../../services/authService';
-import { loginValidator } from '../../validators/loginValidator';
+import { resetPassword } from '../../services/authService';
+import { validatePassword } from '../../validators/resetPasswordValidator';
 import Toast from 'react-native-toast-message';
-import { useDispatch } from 'react-redux';
-import { authenticate } from '../../store/auth/authSlice';
-import { usePushNotifications } from '../../hooks/usePushNotifications';
 
-const LoginForm = ({ navigation }) => {
+const ResetPasswordForm = ({ navigation }) => {
   const [formData, setFormData] = useState({
     phoneNumber: '',
-    password: '',
+    newPassword: '',
+    confirmPassword: '',
   });
-  const [errors, setErrors] = useState({});
+  const [error, setError] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
+    useState(false);
   const [loading, setLoading] = useState(false);
   const phoneInputRef = useRef(null);
-  const dispatch = useDispatch();
-
-  const { expoPushToken } = usePushNotifications();
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
   };
 
-  const handleSubmit = async () => {
-    setErrors({});
-    setLoading(true);
+  const toggleConfirmPasswordVisibility = () => {
+    setIsConfirmPasswordVisible(!isConfirmPasswordVisible);
+  };
 
-    const newErrors = loginValidator(formData);
-    if (Object.keys(newErrors).length) {
-      setErrors(newErrors);
-      setLoading(false);
+  const handleSubmit = async () => {
+    setError('');
+    const errors = validatePassword(formData);
+
+    if (errors?.password) {
+      setError(errors.password);
       return;
     }
+    setLoading(true);
 
     try {
-      await login({ ...formData, expoPushToken: expoPushToken.data });
-      dispatch(authenticate());
-
-      navigation.navigate('Contacts');
-      setFormData({ phoneNumber: '', password: '' });
+      await resetPassword(formData);
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'Password successfully reset!',
+      });
+      navigation.navigate('Login');
+      setFormData({ phoneNumber: '', newPassword: '', confirmPassword: '' });
       phoneInputRef.current?.setState({ number: '' });
     } catch (error) {
       const errorMessage =
@@ -67,7 +70,7 @@ const LoginForm = ({ navigation }) => {
   return (
     <View className="bg-white p-6 rounded-lg shadow-lg">
       <Text className="text-3xl font-bold text-purple-700 text-center mb-6">
-        Log In
+        Reset Password
       </Text>
 
       <View className="border border-purple-300 p-3 mb-3 rounded-lg shadow-sm">
@@ -84,16 +87,15 @@ const LoginForm = ({ navigation }) => {
           codeTextStyle={styles.phoneInputCodeText}
         />
       </View>
-      {errors.phoneNumber && (
-        <Text className="text-red-500 text-xs mb-2">{errors.phoneNumber}</Text>
-      )}
 
       <View className="relative">
         <TextInput
           className="border border-purple-300 p-3 mb-3 rounded-lg shadow-sm"
-          placeholder="Password"
-          value={formData.password}
-          onChangeText={(text) => setFormData({ ...formData, password: text })}
+          placeholder="New Password"
+          value={formData.newPassword}
+          onChangeText={(text) =>
+            setFormData({ ...formData, newPassword: text })
+          }
           secureTextEntry={!isPasswordVisible}
         />
         <TouchableOpacity
@@ -106,18 +108,32 @@ const LoginForm = ({ navigation }) => {
             color={styles.passwordIcon.color}
           />
         </TouchableOpacity>
+      </View>
+
+      <View className="relative">
+        <TextInput
+          className="border border-purple-300 p-3 mb-3 rounded-lg shadow-sm"
+          placeholder="Confirm Password"
+          value={formData.confirmPassword}
+          onChangeText={(text) =>
+            setFormData({ ...formData, confirmPassword: text })
+          }
+          secureTextEntry={!isConfirmPasswordVisible}
+        />
         <TouchableOpacity
-          onPress={() => navigation.navigate('Reset Password')}
-          className="mb-4"
+          onPress={toggleConfirmPasswordVisibility}
+          className="absolute right-3 top-4"
         >
-          <Text className="text-purple-700 text-xs text-right">
-            Forgot Password?
-          </Text>
+          <Feather
+            name={isConfirmPasswordVisible ? 'eye' : 'eye-off'}
+            size={styles.passwordIcon.size}
+            color={styles.passwordIcon.color}
+          />
         </TouchableOpacity>
       </View>
-      {errors.password && (
-        <Text className="text-red-500 text-xs mb-2">{errors.password}</Text>
-      )}
+      {error ? (
+        <Text className="text-red-500 text-xs mb-2">{error}</Text>
+      ) : null}
 
       <TouchableOpacity
         onPress={handleSubmit}
@@ -128,7 +144,7 @@ const LoginForm = ({ navigation }) => {
           <ActivityIndicator size="small" color="white" />
         ) : (
           <Text className="text-white text-center text-lg font-semibold">
-            Log In
+            Reset Password
           </Text>
         )}
       </TouchableOpacity>
@@ -136,4 +152,4 @@ const LoginForm = ({ navigation }) => {
   );
 };
 
-export default LoginForm;
+export default ResetPasswordForm;

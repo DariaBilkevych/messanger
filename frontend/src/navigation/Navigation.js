@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import HomeScreen from '../screens/HomeScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import LoginScreen from '../screens/LoginScreen';
+import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 import ChatScreen from '../screens/ChatScreen';
 import UserProfileScreen from '../screens/UserProfileScreen';
 import AvatarScreen from '../screens/AvatarScreen';
@@ -72,6 +73,11 @@ const Navigation = () => {
             <Stack.Screen
               name="Login"
               component={LoginScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Reset Password"
+              component={ResetPasswordScreen}
               options={{ headerShown: false }}
             />
           </>
