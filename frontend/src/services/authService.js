@@ -31,7 +31,7 @@ export const logout = async () => {
   return response.data;
 };
 
-export const resetPassword = async () => {
+export const resetPassword = async (formData) => {
   const response = await axiosNoAuthInstance.post(
     '/auth/reset-password',
     formData

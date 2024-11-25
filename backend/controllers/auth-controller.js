@@ -197,8 +197,7 @@ export const resetPassword = async (req, res) => {
         .json({ message: 'User with this phone number not found' });
     }
 
-    const hashedPassword = await bcrypt.hash(newPassword, 12);
-    user.password = hashedPassword;
+    user.password = newPassword;
     await user.save();
 
     const accessToken = generateAccessToken(user._id);

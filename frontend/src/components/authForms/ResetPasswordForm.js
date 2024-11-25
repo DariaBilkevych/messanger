@@ -55,6 +55,7 @@ const ResetPasswordForm = ({ navigation }) => {
       setFormData({ phoneNumber: '', newPassword: '', confirmPassword: '' });
       phoneInputRef.current?.setState({ number: '' });
     } catch (error) {
+      console.log(error);
       const errorMessage =
         error.response?.data?.message || 'Something went wrong';
       Toast.show({
