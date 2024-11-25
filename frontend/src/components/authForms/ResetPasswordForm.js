@@ -71,7 +71,7 @@ const ResetPasswordForm = ({ navigation }) => {
   return (
     <View className="bg-white p-6 rounded-lg shadow-lg">
       <Text className="text-3xl font-bold text-purple-700 text-center mb-6">
-        Reset Password
+        Reset password
       </Text>
 
       <View className="border border-purple-300 p-3 mb-3 rounded-lg shadow-sm">
@@ -114,7 +114,7 @@ const ResetPasswordForm = ({ navigation }) => {
       <View className="relative">
         <TextInput
           className="border border-purple-300 p-3 mb-3 rounded-lg shadow-sm"
-          placeholder="Confirm Password"
+          placeholder="Confirm New Password"
           value={formData.confirmPassword}
           onChangeText={(text) =>
             setFormData({ ...formData, confirmPassword: text })
@@ -145,7 +145,7 @@ const ResetPasswordForm = ({ navigation }) => {
           <ActivityIndicator size="small" color="white" />
         ) : (
           <Text className="text-white text-center text-lg font-semibold">
-            Reset Password
+            Reset password
           </Text>
         )}
       </TouchableOpacity>
