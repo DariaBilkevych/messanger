@@ -176,3 +176,44 @@ export const refreshToken = async (req, res) => {
       .json({ message: 'Something went wrong', error: error.message });
   }
 };
+
+export const resetPassword = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const { phoneNumber, newPassword } = req.body;
+
+    const user = await User.findOne({ phoneNumber });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: 'User with this phone number not found' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+    user.password = hashedPassword;
+    await user.save();
+
+    const accessToken = generateAccessToken(user._id);
+    const newRefreshToken = generateRefreshToken(user._id);
+
+    user.refreshToken = newRefreshToken;
+    await user.save();
+
+    setHttpOnlyCookie(res, 'refreshToken', newRefreshToken);
+
+    res.status(200).json({
+      message: 'Password successfully changed!',
+      accessToken,
+      newRefreshToken,
+    });
+  } catch (error) {
+    console.error(error);
+    res
+      .status(500)
+      .json({ message: 'Something went wrong', error: error.message });
+  }
+};
