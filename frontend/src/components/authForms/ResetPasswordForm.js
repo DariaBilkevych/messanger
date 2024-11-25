@@ -45,7 +45,7 @@ const ResetPasswordForm = ({ navigation }) => {
     setLoading(true);
 
     try {
-      await resetPassword(formData);
+      await resetPassword({ ...formData });
       Toast.show({
         type: 'success',
         text1: 'Success',

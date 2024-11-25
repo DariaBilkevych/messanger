@@ -35,3 +35,17 @@ export const loginValidation = [
     .isLength({ min: 8 })
     .withMessage('Password must be at least 8 characters long'),
 ];
+
+export const resetPasswordValidation = [
+  body('phoneNumber').notEmpty().withMessage('Phone number is required'),
+  body('newPassword')
+    .isString()
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long'),
+  body('confirmPassword').custom((value, { req }) => {
+    if (value !== req.body.newPassword) {
+      throw new Error('Passwords do not match');
+    }
+    return true;
+  }),
+];
