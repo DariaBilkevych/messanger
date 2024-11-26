@@ -34,7 +34,9 @@ const MessageList = forwardRef(({ messages, receiverId }, ref) => {
       contentContainerStyle={{ marginTop: 10 }}
       onContentSizeChange={() => {
         setTimeout(() => {
-          ref.current.scrollToEnd({ animated: true });
+          if (ref.current) {
+            ref.current.scrollToEnd({ animated: true });
+          }
         }, 300);
       }}
     />
