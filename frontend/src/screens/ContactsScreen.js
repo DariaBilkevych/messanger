@@ -17,7 +17,6 @@ import {
 } from '../store/message/messageSlice';
 import { useDebounce } from '../hooks/useDebounce';
 import { fetchLastMessages } from '../utils/messageThunks';
-import { OFFLINE_TIMEOUT_DURATION } from '../utils/constants';
 
 const ContactsScreen = () => {
   const [users, setUsers] = useState([]);
@@ -120,17 +119,12 @@ const ContactsScreen = () => {
   }, [debouncedSearchQuery]);
 
   useEffect(() => {
-    let offlineTimeout;
-
     const handleAppStateChange = (nextAppState) => {
       if (nextAppState === 'background' || nextAppState === 'inactive') {
-        offlineTimeout = setTimeout(() => {
-          if (socket) {
-            socket.emit('setOnlineStatus', 'offline');
-          }
-        }, OFFLINE_TIMEOUT_DURATION);
+        if (socket) {
+          socket.emit('setOnlineStatus', 'offline');
+        }
       } else if (nextAppState === 'active') {
-        clearTimeout(offlineTimeout);
         if (socket) {
           socket.emit('setOnlineStatus', 'online');
         }
@@ -143,7 +137,6 @@ const ContactsScreen = () => {
     );
 
     return () => {
-      clearTimeout(offlineTimeout);
       subscription.remove();
     };
   }, [socket]);
@@ -151,7 +144,6 @@ const ContactsScreen = () => {
   useEffect(() => {
     if (socket) {
       socket.on('newMessage', (newMessage) => {
-        console.log(newMessage);
         dispatch(
           updateLastMessage({
             senderId: newMessage.senderId._id,
