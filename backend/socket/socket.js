@@ -27,7 +27,7 @@ io.on('connection', (socket) => {
 
   const userId = socket.handshake.query.userId;
 
-  if (userId !== 'undefined') {
+  if (userId) {
     userSocketMap[userId] = { socketId: socket.id, status: 'online' };
     updateOnlineUsers();
   }
