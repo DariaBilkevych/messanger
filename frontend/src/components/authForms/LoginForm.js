@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   View,
   TextInput,
@@ -105,6 +105,14 @@ const LoginForm = ({ navigation }) => {
             size={styles.passwordIcon.size}
             color={styles.passwordIcon.color}
           />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('VerifyPhone')}
+          className="mb-4"
+        >
+          <Text className="text-purple-700 text-xs text-right">
+            Forgot Password?
+          </Text>
         </TouchableOpacity>
       </View>
       {errors.password && (

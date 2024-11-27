@@ -30,3 +30,24 @@ export const logout = async () => {
 
   return response.data;
 };
+
+export const verifyPhoneNumber = async (phoneNumber) => {
+  const response = await axiosNoAuthInstance.post('/auth/verify-number', {
+    phoneNumber,
+  });
+
+  return response.data;
+};
+
+export const resetPassword = async (userId, formData) => {
+  const response = await axiosNoAuthInstance.post(
+    `/auth/reset-password/${userId}`,
+    formData
+  );
+  const { accessToken, newRefreshToken } = response.data;
+
+  await AsyncStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
+  await AsyncStorage.setItem(REFRESH_TOKEN_KEY, newRefreshToken);
+
+  return response.data;
+};

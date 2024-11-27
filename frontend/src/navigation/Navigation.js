@@ -7,6 +7,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import HomeScreen from '../screens/HomeScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import LoginScreen from '../screens/LoginScreen';
+import ResetPasswordScreen from '../screens/ResetPasswordScreen';
 import ChatScreen from '../screens/ChatScreen';
 import UserProfileScreen from '../screens/UserProfileScreen';
 import AvatarScreen from '../screens/AvatarScreen';
@@ -18,6 +19,7 @@ import { connectSocket, disconnectSocket } from '../store/socket/socketSlice';
 import { ACCESS_TOKEN_KEY } from '../utils/constants';
 import TabNavigator from './TabNavigator';
 import { useNavigation } from '@react-navigation/native';
+import VerifyPhoneScreen from '../screens/VerifyPhoneScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -72,6 +74,16 @@ const Navigation = () => {
             <Stack.Screen
               name="Login"
               component={LoginScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="VerifyPhone"
+              component={VerifyPhoneScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="ResetPassword"
+              component={ResetPasswordScreen}
               options={{ headerShown: false }}
             />
           </>
