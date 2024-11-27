@@ -5,6 +5,7 @@ import {
   logout,
   refreshToken,
   resetPassword,
+  verifyPhoneNumber,
 } from '../controllers/auth-controller.js';
 import {
   signupValidation,
@@ -18,6 +19,7 @@ router.post('/signup', signupValidation, signup);
 router.post('/login', loginValidation, login);
 router.post('/logout', logout);
 router.post('/refresh-token', refreshToken);
-router.post('/reset-password', resetPasswordValidation, resetPassword);
+router.post('/verify-number', verifyPhoneNumber);
+router.post('/reset-password/:id', resetPasswordValidation, resetPassword);
 
 export default router;

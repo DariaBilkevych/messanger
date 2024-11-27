@@ -177,6 +177,31 @@ export const refreshToken = async (req, res) => {
   }
 };
 
+export const verifyPhoneNumber = async (req, res) => {
+  try {
+    const { phoneNumber } = req.body;
+
+    if (!phoneNumber) {
+      return res.status(400).json({ message: 'Phone number is required' });
+    }
+
+    const user = await User.findOne({ phoneNumber });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: 'User with this phone number not found!' });
+    }
+
+    res
+      .status(200)
+      .json({ message: 'Phone number verified', userId: user._id });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: 'Something went wrong', error: error.message });
+  }
+};
+
 export const resetPassword = async (req, res) => {
   try {
     const errors = validationResult(req);
@@ -184,17 +209,16 @@ export const resetPassword = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { phoneNumber, newPassword, confirmPassword } = req.body;
+    const { id: userId } = req.params;
+    const { newPassword, confirmPassword } = req.body;
 
     if (newPassword !== confirmPassword) {
       return res.status(400).json({ message: 'Passwords do not match' });
     }
 
-    const user = await User.findOne({ phoneNumber });
+    const user = await User.findById(userId);
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: 'User with this phone number not found' });
+      return res.status(404).json({ message: 'User not found!' });
     }
 
     user.password = newPassword;

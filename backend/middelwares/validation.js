@@ -37,7 +37,6 @@ export const loginValidation = [
 ];
 
 export const resetPasswordValidation = [
-  body('phoneNumber').notEmpty().withMessage('Phone number is required'),
   body('newPassword')
     .isString()
     .isLength({ min: 8 })
