@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,6 +7,7 @@ import {
   SafeAreaView,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -18,6 +19,13 @@ const ChatHeader = ({
 }) => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+  const { onlineUsers } = useSelector((state) => state.socket);
+  const [isUserOnline, setIsUserOnline] = useState(false);
+
+  useEffect(() => {
+    const isOnline = onlineUsers.some((user) => user === receiverId);
+    setIsUserOnline(isOnline);
+  }, [onlineUsers, receiverId]);
 
   const handleProfilePress = () => {
     navigation.navigate('UserProfile', {
@@ -35,7 +43,14 @@ const ChatHeader = ({
           <Ionicons name="chevron-back" size={24} color="black" />
         </TouchableOpacity>
         <View className="flex-row items-center">
-          <Text className="text-md font-semibold">{receiverName}</Text>
+          <View View className="items-center">
+            <Text className="text-base font-semibold">{receiverName}</Text>
+            <Text
+              className={`text-xs ${isUserOnline ? ' text-purple-800' : 'text-gray-500'}`}
+            >
+              {isUserOnline ? 'Online' : 'Offline'}
+            </Text>
+          </View>
         </View>
         <TouchableOpacity onPress={handleProfilePress}>
           <Image

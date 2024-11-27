@@ -34,6 +34,7 @@ const ChatScreen = ({ route }) => {
         receiverAvatar={receiverAvatar}
         receiverName={receiverName}
         receiverPhone={receiverPhone}
+        receiverId={receiverId}
       />
       {loading ? (
         <Loading />

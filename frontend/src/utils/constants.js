@@ -8,3 +8,4 @@ export const DEFAULT_AVATAR_URI = 'https://ui-avatars.com/api/';
 export const TOP_OFFSET_PERCENTAGE = 0.1;
 export const IOS_KEYBOARD_OFFSET = 100;
 export const ANDROID_KEYBOARD_OFFSET = 0;
+export const OFFLINE_TIMEOUT_DURATION = 1 * 60 * 1000;

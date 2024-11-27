@@ -13,11 +13,11 @@ const io = new Server(server, {
 });
 
 export const getReceiverSocketId = (receiverId) => {
-  return userSocketMap[receiverId];
+  return userSocketMap[receiverId]?.socketId;
 };
 
 export const getSenderSocketId = (senderId) => {
-  return userSocketMap[senderId];
+  return userSocketMap[senderId]?.socketId;
 };
 
 const userSocketMap = {};
@@ -26,15 +26,31 @@ io.on('connection', (socket) => {
   console.log('User connected', socket.id);
 
   const userId = socket.handshake.query.userId;
-  if (userId != 'undefined') {
-    userSocketMap[userId] = socket.id;
+
+  if (userId) {
+    userSocketMap[userId] = { socketId: socket.id, status: 'online' };
+    updateOnlineUsers();
   }
 
-  // used for listening events (both on client and server)
+  socket.on('setOnlineStatus', (status) => {
+    if (userId && userSocketMap[userId]) {
+      userSocketMap[userId].status = status;
+      updateOnlineUsers();
+    }
+  });
+
   socket.on('disconnect', () => {
     console.log('User disconnected', socket.id);
     delete userSocketMap[userId];
+    updateOnlineUsers();
   });
 });
+
+const updateOnlineUsers = () => {
+  const onlineUsers = Object.keys(userSocketMap).filter(
+    (userId) => userSocketMap[userId].status === 'online'
+  );
+  io.emit('getOnlineUsers', onlineUsers);
+};
 
 export { app, io, server };
