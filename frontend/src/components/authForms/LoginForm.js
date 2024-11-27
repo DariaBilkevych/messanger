@@ -107,7 +107,7 @@ const LoginForm = ({ navigation }) => {
           />
         </TouchableOpacity>
         <TouchableOpacity
-          onPress={() => navigation.navigate('Reset Password')}
+          onPress={() => navigation.navigate('VerifyPhone')}
           className="mb-4"
         >
           <Text className="text-purple-700 text-xs text-right">

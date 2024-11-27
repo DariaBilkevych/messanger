@@ -6,16 +6,15 @@ import {
   Text,
   ActivityIndicator,
 } from 'react-native';
-import PhoneInput from 'react-native-phone-number-input';
 import Feather from 'react-native-vector-icons/Feather';
 import styles from './styles';
 import { resetPassword } from '../../services/authService';
 import { validatePassword } from '../../validators/resetPasswordValidator';
 import Toast from 'react-native-toast-message';
 
-const ResetPasswordForm = ({ navigation }) => {
+const ResetPasswordForm = ({ navigation, route }) => {
+  const { userId } = route.params;
   const [formData, setFormData] = useState({
-    phoneNumber: '',
     newPassword: '',
     confirmPassword: '',
   });
@@ -24,7 +23,6 @@ const ResetPasswordForm = ({ navigation }) => {
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
   const [loading, setLoading] = useState(false);
-  const phoneInputRef = useRef(null);
 
   const togglePasswordVisibility = () => {
     setIsPasswordVisible(!isPasswordVisible);
@@ -45,17 +43,16 @@ const ResetPasswordForm = ({ navigation }) => {
     setLoading(true);
 
     try {
-      await resetPassword({ ...formData });
+      await resetPassword(userId, { ...formData });
       Toast.show({
         type: 'success',
         text1: 'Success',
         text2: 'Password successfully reset!',
       });
       navigation.navigate('Login');
-      setFormData({ phoneNumber: '', newPassword: '', confirmPassword: '' });
-      phoneInputRef.current?.setState({ number: '' });
+      setFormData({ newPassword: '', confirmPassword: '' });
     } catch (error) {
-      console.log(error);
+      console.log(error.response?.data);
       const errorMessage =
         error.response?.data?.message || 'Something went wrong';
       Toast.show({
@@ -73,21 +70,6 @@ const ResetPasswordForm = ({ navigation }) => {
       <Text className="text-3xl font-bold text-purple-700 text-center mb-6">
         Reset password
       </Text>
-
-      <View className="border border-purple-300 p-3 mb-3 rounded-lg shadow-sm">
-        <PhoneInput
-          ref={phoneInputRef}
-          defaultValue={formData.phoneNumber}
-          defaultCode="UA"
-          onChangeFormattedText={(text) =>
-            setFormData({ ...formData, phoneNumber: text })
-          }
-          containerStyle={styles.phoneInputContainer}
-          textContainerStyle={styles.phoneInputTextContainer}
-          textInputStyle={styles.phoneInputText}
-          codeTextStyle={styles.phoneInputCodeText}
-        />
-      </View>
 
       <View className="relative">
         <TextInput
